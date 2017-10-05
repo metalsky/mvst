@@ -1,0 +1,22 @@
+RCS file: /mnt/cvs/build_scripts/mvl6/contentServer.py,v
+retrieving revision 1.41.4.7
+diff -u -r1.41.4.7 contentServer.py
+--- contentServer.py    5 Nov 2010 21:10:51 -0000       1.41.4.7
++++ contentServer.py    12 Nov 2010 00:08:00 -0000
+@@ -2,6 +2,7 @@
+ import os, shutil, sys, re, commands
+ import buildConfig
+ from datetime import datetime
++SRC_BLACKLIST = ['.git', 'svn', 'git']
+
+
+ class contentServer:
+@@ -61,7 +62,7 @@
+                        cp_src = os.path.join(sourcesDir, collectionDir)
+                        for file in os.listdir(cp_src):
+                                src = os.path.join(cp_src,file)
+-                               if os.path.isdir(src):
++                               if os.path.isdir(src) and src_root not in SRC_BLACKLIST:
+                                        shutil.copytree(src,os.path.join(dest,file))
+                                elif os.path.isfile(src) and src[-5:] != 'patch':
+                                        shutil.copy(src,dest)

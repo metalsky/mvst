@@ -1,0 +1,22 @@
+Index: buildip.py
+===================================================================
+RCS file: /mnt/cvs/build_scripts/mvl6/buildip.py,v
+retrieving revision 1.130
+diff -u -r1.130 buildip.py
+--- buildip.py  30 Nov 2010 21:48:13 -0000      1.130
++++ buildip.py  1 Dec 2010 01:40:50 -0000
+@@ -331,6 +331,14 @@
+        printflush('rm -rf %s' %buildtag)
+        os.system('sudo rm -rf %s' % buildtag)
+
++# nk
++# 2010-11-30
++# Add QA DB update trigger for IP builds:
++qaHost = 'ferret'
++qaHostUser = 'ferret'
++qaHostCmd = '/local/ferret/bin/mvdbc-devtool'
++os.system('ssh -l %s %s "%s -a %s -d \\\"Integration Platform 6\\\" -db"' %(qaHostUser,qaHost,qaHostCmd,buildtag))
++
+
+ os.system('cd /mvista/dev_area/integration_platform/%s;echo %s>buildtag' % (buildtag,buildtag))
+ fini = 'Finished buildip.py on ' + os.popen('uname -n').read().strip() + ' at ' + gettime()

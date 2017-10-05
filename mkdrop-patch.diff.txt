@@ -1,0 +1,17 @@
+Index: mkdrop.sh
+===================================================================
+RCS file: /mnt/cvs/build_scripts/mvl6/utils/mkdrop.sh,v
+retrieving revision 1.4.4.3
+diff -u -r1.4.4.3 mkdrop.sh
+--- mkdrop.sh   9 Nov 2010 22:59:43 -0000       1.4.4.3
++++ mkdrop.sh   12 Nov 2010 00:25:04 -0000
+@@ -76,6 +76,9 @@
+ # piece together the tarball:
+ echo -n "4. Creating engineering drop for $MVL6DIR/$BUILDTAG: "
+ cd $MVL6DIR
++# remove .git and svn dirs:
++/usr/bin/find $BUILDTAG -type d -name .git | xargs sudo rm -rf
++/usr/bin/find $BUILDTAG -type d -name svn | xargs sudo rm -rf
+ tar --owner=bin --group=bin -czf $HOME/engr_drop/$BUILDTAG.tar.gz $BUILDTAG/content/collections \
+ $BUILDTAG/content/msds $BUILDTAG/content/installer/MVL-Integration-Platform-* \
+ $BUILDTAG/content/installer/$TOOLCHAIN* $BUILDTAG/content/installer/i686-gnu* $BUILDTAG/content.html

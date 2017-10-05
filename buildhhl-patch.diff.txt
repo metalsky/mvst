@@ -1,0 +1,23 @@
+Index: buildhhl.py
+===================================================================
+RCS file: /mnt/cvs/build_scripts/hhl/buildhhl.py,v
+retrieving revision 1.885.2.25
+diff -u -r1.885.2.25 buildhhl.py
+--- buildhhl.py 2 Dec 2010 00:40:06 -0000       1.885.2.25
++++ buildhhl.py 13 Dec 2010 23:36:55 -0000
+@@ -1164,11 +1164,14 @@
+ # 2010-11-30
+ # MR #41961
+ # Add QA DB update trigger for DevRocket 6.1 builds:
+-if product == 'devrocket61':
++if product == 'tsuki' and 'drsixone' in buildtag:
+        qaHost = 'ferret'
+        qaHostUser = 'ferret'
+        qaHostCmd = '/local/ferret/tools/mvdb/scripts/mvdbc-devtool.py'
++       print ""
++       print "Triggering QA DB update with: ssh -l %s %s %s -a %s -d \"DevRocket 6.1\" -db" %(qaHostUser,qaHost,qaHostCmd,buildtag)
+        os.system('ssh -l %s %s "%s -a %s -d \\"DevRocket 6.1\\" -db"' %(qaHostUser,qaHost,qaHostCmd,buildtag))
++       print ""
+
+
+ # if mktar is true, run unpack_buildtars.unpackTars(product, buildtag)

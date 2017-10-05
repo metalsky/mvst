@@ -1,0 +1,11 @@
+Query Active Directory with ldapsearch:
+
+	$ ldapsearch -x -LLL -E pr=200/noprompt -h svdc01.mvista.com -D "nkapoor@mvista.com" -w $PASSWD -b "cn=users,dc=mvista,dc=com" -s sub "(cn=*)" cn mail sn
+	
+	$ ldapsearch -x -b "dc=mvista,dc=com" -D "mvista\nkapoor" -h svdc01.mvista.com -p 389 -W
+	
+	$ ldapsearch -H ldap://svdc01.mvista.com -x -D "nkapoor@mvista.com" -b "dc=mvista,dc=com" -W -L "cn=computerobject"
+	
+	
+	
+	$ ldapsearch -x -LLL -H ldap://svdc01.mvista.com -D 'nkapoor@mvista.com' -b 'dc=mvista,dc=com' -W '(sAMAccountName=nkapoor)'

@@ -1,0 +1,45 @@
+ 6231  2010-06-07 @ 11:49:39: pushd redundancy.git
+ 6232  2010-06-07 @ 11:49:53: git --bare init --shared
+ 6233  2010-06-07 @ 11:49:59: pushd /tmp
+ 6234  2010-06-07 @ 11:50:04: rm -rf mylocal/
+ 6235  2010-06-07 @ 11:50:07: mkdir mylocal
+ 6236  2010-06-07 @ 11:50:12: cd mylocal/
+ 6237  2010-06-07 @ 11:50:15: git init
+ 6238  2010-06-07 @ 11:50:38: echo "collections/redundancy" > contentpath
+ 6239  2010-06-07 @ 11:50:49: git add contentpath
+ 6240  2010-06-07 @ 11:50:56: git commit -m "Inital collection creation"
+ 6241  2010-06-07 @ 11:51:12: git remote add origin git.sh.mvista.com:/var/cache/git/mvl6/redundancy.git
+ 6242  2010-06-07 @ 11:51:19: git push origin master:master
+ 6243  2010-06-07 @ 11:51:26: popd
+ 6244  2010-06-07 @ 11:51:29: cd hooks/
+ 6245  2010-06-07 @ 11:51:31: rm *.sample
+ 6246  2010-06-07 @ 11:51:40: ln -s /var/cache/git/kernel/git-hooks-mvl6-userland/post-receive post-receive
+ 6247  2010-06-07 @ 11:51:47: ln -s /var/cache/git/kernel/git-hooks-mvl6-userland/update update
+ 6248  2010-06-07 @ 11:51:51: popd
+ 6249  2010-06-07 @ 11:51:58: cd redundancy-sources.git/
+ 6250  2010-06-07 @ 11:52:17: git --bare init --shared
+ 6251  2010-06-07 @ 11:52:24: pushd /tmp
+ 6252  2010-06-07 @ 11:52:27: rm -rf mylocal/
+ 6253  2010-06-07 @ 11:52:34: mkdir mylocal
+ 6254  2010-06-07 @ 11:52:36: cd mylocal/
+ 6255  2010-06-07 @ 11:52:39: git init
+ 6256  2010-06-07 @ 11:52:55: echo "collections/redundancy-sources" > contentpath
+ 6257  2010-06-07 @ 11:53:06: git add contentpath
+ 6258  2010-06-07 @ 11:53:12: git commit -m "Inital collection creation"
+ 6259  2010-06-07 @ 11:53:31: git remote add origin git.sh.mvista.com:/var/cache/git/mvl6/redundancy-sources.git
+ 6260  2010-06-07 @ 11:53:40: git push origin master:master
+ 6261  2010-06-07 @ 11:53:44: popd
+ 6262  2010-06-07 @ 11:53:47: cd hooks/
+ 6263  2010-06-07 @ 11:53:49: rm *.sample
+ 6264  2010-06-07 @ 11:53:58: ln -s /var/cache/git/kernel/git-hooks-mvl6-userland/post-receive post-receive
+ 6265  2010-06-07 @ 11:54:06: ln -s /var/cache/git/kernel/git-hooks-mvl6-userland/update update
+
+
+ 6277  2010-06-07 @ 11:57:51: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/field-debugging.git
+ 6278  2010-06-07 @ 11:57:59: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/field-debugging-sources.git
+ 6279  2010-06-07 @ 11:58:16: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/system-monitoring.git
+ 6280  2010-06-07 @ 11:58:26: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/system-monitoring-sources.git
+ 6281  2010-06-07 @ 11:58:39: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/x86boot.git
+ 6282  2010-06-07 @ 11:58:49: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/x86boot-sources.git
+ 6283  2010-06-07 @ 11:58:57: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/redundancy.git
+ 6284  2010-06-07 @ 11:59:02: git clone ssh+git://git.sh.mvista.com/var/cache/git/mvl6/redundancy-sources.git

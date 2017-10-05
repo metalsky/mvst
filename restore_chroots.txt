@@ -1,0 +1,13 @@
+Replace the new multi-build chroot environments:
+
+	# time dsh -Mcg node_64 mkdir -p /builds/mvl6/chroot
+	# time dsh -Mcg node_64 mkdir /builds/mvl6/chroot/{1,2,3}
+	
+	# time dsh -Mcg node_64 tar -C /builds/mvl6/chroot/1 -jxf /mvista/dev_area/buildtars/centos4.tar.bz2
+	# time dsh -Mcg node_64 tar -C /builds/mvl6/chroot/2 -jxf /mvista/dev_area/buildtars/centos4.tar.bz2
+	# time dsh -Mcg node_64 tar -C /builds/mvl6/chroot/3 -jxf /mvista/dev_area/buildtars/centos4.tar.bz2
+	
+	# time dsh -Mcg node_64 tar -C /builds/mvl6/chroot/1 -jxf /mvista/dev_area/buildtars/centos4_64.tar.bz2
+	# time dsh -Mcg node_64 tar -C /builds/mvl6/chroot/2 -jxf /mvista/dev_area/buildtars/centos4_64.tar.bz2
+	# time dsh -Mcg node_64 tar -C /builds/mvl6/chroot/3 -jxf /mvista/dev_area/buildtars/centos4_64.tar.bz2
+	

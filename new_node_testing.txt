@@ -1,0 +1,21 @@
+Changes made to main.py for testing new nodes:
+
+* Dont forget to modify threadKicker.py as well... you'll want to change 'nodetype' from 'mvl6node' to the hostname of the node being tested!
+
+
+===================================================================
+RCS file: /cvsdev/build_scripts/mvl6/main.py,v
+retrieving revision 1.210
+retrieving revision 1.211
+diff -u -p -r1.210 -r1.211
+--- mvl6/main.py	2011/09/20 04:06:32	1.210
++++ mvl6/main.py	2011/09/20 12:28:22	1.211
+@@ -71,7 +71,7 @@ printflush('Sending Start email at %s' %
+ be = buildEmail.buildEmail(bcfg)
+ be.sendStartEmail()
+ 
+-nodetype = 'node-54'
++nodetype = 'mvl6node'
+ if msd in ('mvatp-fsl-imx53sabre', 'mvatp-rec-rcarm1bockw', 'ps-seagate-whitney-econa') or 'cge60' in msd:
+ 	nodetype = 'cge60node'
+ mv6node = resourceManager.getResource(buildtag, buildid, nodetype, '%s: Mvl6 msd: %s' % (buildtag, msd))

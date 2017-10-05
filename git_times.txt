@@ -1,0 +1,85 @@
+nkapoor@overlord:~/git-projects$ for ((x=1; x<=5; x++)) do time git clone git.sh.mvista.com:/var/cache/git/kernel/mvlinux.git mvlinux; ls -ld mvlinux; rm -rf mvlinux; done
+Initialized empty Git repository in /home/nkapoor/git-projects/mvlinux/.git/
+remote: Counting objects: 2902089, done.
+remote: Compressing objects: 100% (514213/514213), done.
+Indexing 2902089 objects...
+ 100% (2902089/2902089) done
+remote: Total 2902089 (delta 2371166), reused 2893990 (delta 2364419)
+Resolving 2371166 deltas...
+ 100% (2371166/2371166) done
+Checking 35871 files out...
+ 100% (35871/35871) done
+
+real    26m1.719s
+user    10m9.166s
+sys     1m45.611s
+
+drwxr-xr-x 24 nkapoor engr 4096 2011-01-27 15:48 mvlinux
+
+Initialized empty Git repository in /home/nkapoor/git-projects/mvlinux/.git/
+remote: Counting objects: 2902089, done.
+remote: Compressing objects: 100% (514213/514213), done.
+Indexing 2902089 objects...
+ 100% (2902089/2902089) done
+remote: Total 2902089 (delta 2371166), reused 2893990 (delta 2364419)
+Resolving 2371166 deltas...
+ 100% (2371166/2371166) done
+Checking 35871 files out...
+ 100% (35871/35871) done
+
+real    19m26.522s
+user    11m26.475s
+sys     3m4.328s
+
+drwxr-xr-x 24 nkapoor engr 4096 2011-01-27 16:08 mvlinux
+
+Initialized empty Git repository in /home/nkapoor/git-projects/mvlinux/.git/
+remote: Counting objects: 2902095, done.
+remote: Compressing objects: 100% (514219/514219), done.
+Indexing 2902095 objects...
+ 100% (2902095/2902095) done
+remote: Total 2902095 (delta 2371166), reused 2893990 (delta 2364419)
+Resolving 2371166 deltas...
+ 100% (2371166/2371166) done
+Checking 35871 files out...
+ 100% (35871/35871) done
+
+real    16m20.253s
+user    11m13.178s
+sys     2m28.933s
+
+drwxr-xr-x 24 nkapoor engr 4096 2011-01-27 16:24 mvlinux
+
+Initialized empty Git repository in /home/nkapoor/git-projects/mvlinux/.git/
+remote: Counting objects: 2902095, done.
+remote: Compressing objects: 100% (514219/514219), done.
+Indexing 2902095 objects...
+ 100% (2902095/2902095) done
+remote: Total 2902095 (delta 2371166), reused 2893990 (delta 2364419)
+Resolving 2371166 deltas...
+ 100% (2371166/2371166) done
+Checking 35871 files out...
+ 100% (35871/35871) done
+
+real    23m27.371s
+user    12m20.786s
+sys     2m39.134s
+
+drwxr-xr-x 24 nkapoor engr 4096 2011-01-27 16:48 mvlinux
+
+Initialized empty Git repository in /home/nkapoor/git-projects/mvlinux/.git/
+remote: Counting objects: 2902095, done.
+remote: Compressing objects: 100% (514219/514219), done.
+Indexing 2902095 objects...
+ 100% (2902095/2902095) done
+remote: Total 2902095 (delta 2371166), reused 2893990 (delta 2364419)
+Resolving 2371166 deltas...
+ 100% (2371166/2371166) done
+Checking 35871 files out...
+ 100% (35871/35871) done
+
+real    19m43.672s
+user    10m26.451s
+sys     1m40.438s
+
+drwxr-xr-x 24 nkapoor engr 4096 2011-01-27 17:07 mvlinux

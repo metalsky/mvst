@@ -1,0 +1,22 @@
+for i in `cat bosch-pkgs.out`; do find /disk/home/blackduck -maxdepth 2 -type d -name "$i*" -exec rsync -avz {} /disk/home/
+blackduck/boschbd/ \;; done
+
+
+# time for x in `cat bosch-bd.out | sed -e 's/^\(.*\)-[0-9].*/\1/g'`; do find * -maxdepth 1 -type d -name "$x*" -exec rsync -avz --exclude "**/**/image" --exclude "**/**/package" --exclude "**/**/sysroot-destdir" --exclude "**/**/temp" {} /disk/home/blackduck/bosch-pkg-list/ \;; done
+
+
+[root@blackduck ~]# history | grep rsync | grep exclude
+  764  time for x in `cat bosch-bd.out | sed -e 's/^\(.*\)-[0-9].*/\1/g'`; do find * -maxdepth 1 -type d -name "$x*" -exec rsync -avz --exclude "**/**/image" --exclude "**/**/package" --exclude "**/**/sysroot-destdir" --exclude "**/**/temp" {} /disk/home/blackduck/bosch-pkg-list/ \;; done
+
+
+
+
+118  for i in `cat bosch-bd.out`; do find /disk/home/blackduck -maxdepth 5 -type d -name $i -print; done
+119  for i in `cat bosch-bd.out`; do find /disk/home/blackduck -maxdepth 5 -type d -name $i -print | wc -l; done
+128  for i in `cat bosch-pkgs.out`; do find /disk/home/blackduck -maxdepth 5 -type d -name $i -exec rsync -avz {} /disk/home/blackduck/boschbd/ \;; done
+147  for i in `cat bosch-pkgs.out`; do find /disk/home/blackduck -maxdepth 5 -type d -name "$i*" -exec rsync -avz {} /disk/home/blackduck/boschbd/ \;; done
+151  for i in `cat bosch-pkgs.out`; do find /disk/home/blackduck -maxdepth 2 -type d -name "$i*" -exec rsync -avz {} /disk/home/blackduck/boschbd/ \;; done
+303  for x in `cat bosch-bd.out | sed -e 's/^\(.*\)-[0-9].*/\1/g'`; do find * -maxdepth 1 -type d -name "$x*" -exec rsync -avz {} /disk/home/blackduck/bosch-pkg-list/ \;; done
+306  time for x in `cat bosch-bd.out | sed -e 's/^\(.*\)-[0-9].*/\1/g'`; do find * -maxdepth 1 -type d -name "$x*" -exec rsync -avz --exclude "**/**/image" --exclude "**/**/sysroot-destdir" --exclude "**/**/temp" {} /disk/home/blackduck/bosch-pkg-list/ \;; done
+308  time for x in `cat bosch-bd.out | sed -e 's/^\(.*\)-[0-9].*/\1/g'`; do find * -maxdepth 1 -type d -name "$x*" -exec rsync -avz --exclude "**/**/image" --exclude "**/**/package" --exclude "**/**/sysroot-destdir" --exclude "**/**/temp" {} /disk/home/blackduck/bosch-pkg-list/ \;; done
+954  time for d in `find / -maxdepth 1 -type d ! -path '/proc' ! -path '/dev' ! -path '/sys' ! -path '/' -print`; do du -sh $d; done

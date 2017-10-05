@@ -1,0 +1,23 @@
+/home/build/bin/launch.py --product mvl6 --build_script_branch HEAD --prefix collection_ --msd collection
+
+
+./addcolbuild.py collection_100502_1001994
+
+
+./startEmail.py
+The following MSDs will therefore be built:
+x86-prototype freescale-8377rdb freescale-8548cds xilinx-ml507 mips-malta arm-versatile-926 arm-versatile-1176 x86-target freescale-8349mds ti-omap3-beagle mips-malta-mp freescale-8572ds freescale-imx35 ti-omap3-zoom2 freescale-8569mds freescale-p2020rdb freescale-imx51 x86-target-64 freescale-5121eads fsl-8536ds-printer fsl-8315rdb-printer intel-atom-z530-moblin-v2-1 fsl-4080-netwrk fsl-4080-netwrk-rt ti-omap-l138 cavium-octeonplus-sdk-1-9 cge bosch-triton-es arm-cortex-a9 nec-ne1 ti-omap3-am3517-evm econa-cns3420
+
+
+python
+Python 2.4.4 (#2, Jan 13 2007, 18:15:24)
+[GCC 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> x = 'x86-prototype freescale-8377rdb freescale-8548cds xilinx-ml507 mips-malta arm-versatile-926 arm-versatile-1176 x86-target freescale-8349mds ti-omap3-beagle mips-malta-mp freescale-8572ds freescale-imx35 ti-omap3-zoom2 freescale-8569mds freescale-p2020rdb freescale-imx51 x86-target-64 freescale-5121eads fsl-8536ds-printer fsl-8315rdb-printer intel-atom-z530-moblin-v2-1 fsl-4080-netwrk fsl-4080-netwrk-rt ti-omap-l138 cavium-octeonplus-sdk-1-9 cge bosch-triton-es arm-cortex-a9 nec-ne1 ti-omap3-am3517-evm econa-cns3420'
+>>>
+>>> x.split(' ')
+['x86-prototype', 'freescale-8377rdb', 'freescale-8548cds', 'xilinx-ml507', 'mips-malta', 'arm-versatile-926', 'arm-versatile-1176', 'x86-target', 'freescale-8349mds', 'ti-omap3-beagle', 'mips-malta-mp', 'freescale-8572ds', 'freescale-imx35', 'ti-omap3-zoom2', 'freescale-8569mds', 'freescale-p2020rdb', 'freescale-imx51', 'x86-target-64', 'freescale-5121eads', 'fsl-8536ds-printer', 'fsl-8315rdb-printer', 'intel-atom-z530-moblin-v2-1', 'fsl-4080-netwrk', 'fsl-4080-netwrk-rt', 'ti-omap-l138', 'cavium-octeonplus-sdk-1-9', 'cge', 'bosch-triton-es', 'arm-cortex-a9', 'nec-ne1', 'ti-omap3-am3517-evm', 'econa-cns3420']
+>>>
+
+
+vi threadKicker.py

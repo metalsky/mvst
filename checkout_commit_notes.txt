@@ -1,0 +1,140 @@
+nkapoor@overlord:~/git-projects$ git clone nkapoor@git.sh.mvista.com:/var/cache/git/mvl6/cge-x86.git
+Initialized empty Git repository in /home/nkapoor/git-projects/cge-x86/.git/
+The authenticity of host 'git.sh.mvista.com (10.40.0.151)' can't be established.
+RSA key fingerprint is b3:83:cd:fc:f2:8e:78:3a:39:ea:35:c7:07:93:69:7b.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'git.sh.mvista.com,10.40.0.151' (RSA) to the list of known hosts.
+nkapoor@git.sh.mvista.com's password:
+remote: Counting objects: 77, done.
+remote: Compressing objects: 100% (72/72), done.
+Indexing 77 objects...
+remote: Total 77 (delta 3), reused 0 (delta 0)
+ 100% (77/77) done
+Resolving 3 deltas...
+ 100% (3/3) done
+
+nkapoor@overlord:~/git-projects$
+nkapoor@overlord:~/git-projects$
+nkapoor@overlord:~/git-projects$ ls -la
+total 12
+drwxr-xr-x  3 nkapoor engr 4096 2010-09-30 14:21 .
+drwxr-xr-x 16 nkapoor engr 4096 2010-09-26 12:23 ..
+drwxr-xr-x  4 nkapoor engr 4096 2010-09-30 14:21 cge-x86
+nkapoor@overlord:~/git-projects$ cd cge-x86/
+nkapoor@overlord:~/git-projects/cge-x86$ ls
+contentpath  recipes
+nkapoor@overlord:~/git-projects/cge-x86$ vi contentpath
+
+
+	Fixed contentpath
+	
+	Source: MontaVista Software, LLC
+	MR: 40071
+	Type: Integration
+	Disposition: Local
+	Description:
+	
+	Renamed the git repo, so I modified the contentpath accordingly.
+	
+
+nkapoor@overlord:~/git-projects/cge-x86$ git add contentpath
+nkapoor@overlord:~/git-projects/cge-x86$ git log
+
+commit a46d7130a807d460f828e5b8f12b6e4356959b2c
+Author: Corey Minyard <cminyard@mvista.com>
+Date:   Thu Sep 30 11:02:45 2010 -0500
+
+    Move some recipes from self-hosted-installer to cge-x86
+
+    Source: MontaVista Software, LLC
+    MR: 41085
+    Type: Integration
+    Disposition: Local
+    Description:
+
+    Some packages were put in a sub-optimal location, so move them.
+
+commit 135e6cbd1f42abeaa62689989cf5431eabf473a5
+Author: Andrei Konovalov <akonovalov@mvista.com>
+Date:   Thu Sep 23 14:59:29 2010 +0400
+
+    Add dmidecode to cge-x86 collection
+
+    Source: http://cgit.openembedded.org/
+    MR: 40043
+    Type: Integration
+    Disposition: Local
+    ChangeID: 0b084b1c4fa136ee139888d8c08351d833fe8c3f
+    Description:
+
+    Add dmidecode recipe to cge-x86 collection
+
+    Signed-off-by: Andrei Konovalov <akonovalov@mvista.com>
+
+commit 82db21092445937590e8a6f6364d9c7b8fbc44e1
+Author: Corey Minyard <cminyard@mvista.com>
+Date:   Thu Sep 16 18:43:14 2010 -0500
+nkapoor@overlord:~/git-projects/cge-x86$
+nkapoor@overlord:~/git-projects/cge-x86$
+nkapoor@overlord:~/git-projects/cge-x86$
+nkapoor@overlord:~/git-projects/cge-x86$
+nkapoor@overlord:~/git-projects/cge-x86$ git commit
+Created commit e017f1a: Fixed contentpath
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+nkapoor@overlord:~/git-projects/cge-x86$
+nkapoor@overlord:~/git-projects/cge-x86$ git push
+nkapoor@git.sh.mvista.com's password:
+updating 'refs/heads/master'
+  from a46d7130a807d460f828e5b8f12b6e4356959b2c
+  to   e017f1aa1f90f78a9e8a46b3ed0df9cc53fd11c3
+Generating pack...
+Done counting 5 objects.
+Result has 3 objects.
+Deltifying 3 objects...
+ 100% (3/3) done
+Writing 3 objects...
+ 100% (3/3) done
+Total 3 (delta 0), reused 0 (delta 0)
+INFO  ------------- update --------------------------------
+INFO  processing e017f1aa1f90f78a9e8a46b3ed0df9cc53fd11c3  Fixed contentpath
+ERROR *** no 'Disposition: *' lines
+error: hooks/update exited with error code 2
+error: hook declined to update refs/heads/master
+ng refs/heads/master hook declined
+error: failed to push to 'nkapoor@git.sh.mvista.com:/var/cache/git/mvl6/cge-x86.git'
+nkapoor@overlord:~/git-projects/cge-x86$ git commit --amend
+Created commit 8d55fd0: Fixed contentpath
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+nkapoor@overlord:~/git-projects/cge-x86$ git push
+nkapoor@git.sh.mvista.com's password:
+updating 'refs/heads/master'
+  from a46d7130a807d460f828e5b8f12b6e4356959b2c
+  to   8d55fd0f57dcf70e5705c34c6179d7e41e7fba52
+Generating pack...
+Done counting 5 objects.
+Result has 3 objects.
+Deltifying 3 objects...
+ 100% (3/3) done
+Writing 3 objects...
+ 100% (3/3) done
+Total 3 (delta 0), reused 0 (delta 0)
+INFO  ------------- update --------------------------------
+INFO  processing 8d55fd0f57dcf70e5705c34c6179d7e41e7fba52  Fixed contentpath
+INFO  ------------- post-receive --------------------------
+INFO  processing 8d55fd0f57dcf70e5705c34c6179d7e41e7fba52  Fixed contentpath
+nkapoor@overlord:~/git-projects/cge-x86$
+
+
+
+
+
+SHORT VERSION:
+$ git clone nkapoor@git.sh.mvista.com:/var/cache/git/mvl6/cavium-octeon-sdk-2-0-executive-sources.git
+$ vi $FILE
+$ git commit
+
+DON'T FORGET APPROPRIATE HEADER IN THE COMMENTS
+
+$ git add $FILE
+$ git push
+

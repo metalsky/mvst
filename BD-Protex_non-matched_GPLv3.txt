@@ -1,0 +1,29 @@
+acl-2.2.49:
+	acl-2.2.49
+		ltmain.sh
+
+
+alsa-lib-1.0.23-r0:
+	alsa-lib-1.0.23
+		alsa-lisp
+			Makefile.am		(math-linux)
+		
+		aserver
+			Makefile.am		(math-linux)
+		
+		doc
+			pictures
+				wave1.gif	(math-linux)
+				wave2.gif	(math-linux)
+		
+			asoundrc.txt		(math-linux)
+			
+			README.1st
+			
+		include
+			sound
+				hdsp.h		(math-linux, mokotouch)
+				sb16_csp.h	(math-linux, mokotouch)
+				sscape_ioctl.h	(math-linux, mokotouch, Linux on the Nintendo GameCube and Wii - Buildroot, princess-alist and Mountain Climbing Journal)
+				
+				

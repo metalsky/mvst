@@ -1,0 +1,42 @@
+$ sudo chroot /chroot/centos4_64 /bin/su - root -c "/bin/bash"
+
+{root@box ~]# cd foo
+[root@box foo]# make -f co-gcc.mak
+[root@box foo]# export CC="/opt/montavista/tools/arm-gnueabi/bin/arm-montavista-linux-gnueabi-gcc"
+[root@box foo]# export CXX=/opt/montavista/tools/arm-gnueabi/bin/arm-montavista-linux-gnueabi-g++
+[root@box foo]# /opt/montavista/tools/arm-gnueabi/bin/arm-montavista-linux-gnueabi-gcc -v
+Using built-in specs.
+Target: arm-montavista-linux-gnueabi
+Configured with: /scratch/andrew/2008q3-arm-montavista-linux-gnueabi/src/gcc-4.3-mv/configure --build=i686-pc-linux-gnu --host=i686-pc-linux-gnu --target=arm-montavista-linux-gnueabi --enable-threads --disable-libmudflap --disable-libssp --disable-libstdcxx-pch --with-gnu-as --with-gnu-ld --enable-languages=c,c++ --enable-shared --disable-lto --enable-symvers=gnu --enable-__cxa_atexit --with-pkgversion='MontaVista Linux Sourcery G++ 4.3-283' --with-bugurl=http://support.mvista.com/ --disable-nls --prefix=/opt/codesourcery --with-sysroot=/opt/codesourcery/arm-montavista-linux-gnueabi/libc --with-build-sysroot=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/install/arm-montavista-linux-gnueabi/libc --with-gmp=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --with-mpfr=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --with-libelf=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --disable-libgomp --with-license=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --with-csl-license-version=20100211 --with-csl-license-feature=gcc_ARM_MontaVista_Linux --enable-poison-system-directories --with-build-time-tools=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/install/arm-montavista-linux-gnueabi/bin --with-build-time-tools=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/install/arm-montavista-linux-gnueabi/bin
+Thread model: posix
+gcc version 4.3.3 (MontaVista Linux Sourcery G++ 4.3-283)
+
+
+[root@box foo]# alias gcc=/opt/montavista/tools/arm-gnueabi/bin/arm-montavista-linux-gnueabi-gcc
+[root@box foo]# alias g++=/opt/montavista/tools/arm-gnueabi/bin/arm-montavista-linux-gnueabi-g++
+[root@box foo]# gcc -v
+Using built-in specs.
+Target: arm-montavista-linux-gnueabi
+Configured with: /scratch/andrew/2008q3-arm-montavista-linux-gnueabi/src/gcc-4.3-mv/configure --build=i686-pc-linux-gnu --host=i686-pc-linux-gnu --target=arm-montavista-linux-gnueabi --enable-threads --disable-libmudflap --disable-libssp --disable-libstdcxx-pch --with-gnu-as --with-gnu-ld --enable-languages=c,c++ --enable-shared --disable-lto --enable-symvers=gnu --enable-__cxa_atexit --with-pkgversion='MontaVista Linux Sourcery G++ 4.3-283' --with-bugurl=http://support.mvista.com/ --disable-nls --prefix=/opt/codesourcery --with-sysroot=/opt/codesourcery/arm-montavista-linux-gnueabi/libc --with-build-sysroot=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/install/arm-montavista-linux-gnueabi/libc --with-gmp=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --with-mpfr=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --with-libelf=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --disable-libgomp --with-license=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/obj/host-libs-4.3-283-arm-montavista-linux-gnueabi-i686-pc-linux-gnu/usr --with-csl-license-version=20100211 --with-csl-license-feature=gcc_ARM_MontaVista_Linux --enable-poison-system-directories --with-build-time-tools=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/install/arm-montavista-linux-gnueabi/bin --with-build-time-tools=/scratch/andrew/2008q3-arm-montavista-linux-gnueabi/install/arm-montavista-linux-gnueabi/bin
+Thread model: posix
+gcc version 4.3.3 (MontaVista Linux Sourcery G++ 4.3-283)
+
+
+[root@box foo]# export LM_LICENSE_FILE=27000@overlord
+
+
+[root@box foo]# ls
+co-gcc.mak  empty.c  gcc-include-path.lnt  lint_cmac.h  lint_cppmac.h  size-options.lnt  t.c
+
+
+[root@box foo]# cp /opt/flexelint/supp/lnt/co-gcc.lnt .
+[root@box foo]# cp /opt/flexelint/supp/lnt/co-gcc.h .
+[root@box foo]# touch size-options.lnt gcc-include-path.lnt
+[root@box foo]# echo "co-gcc.lnt" > std.lnt
+
+
+[root@box foo]# /opt/flexelint/flexelint std.lnt t.c
+FlexeLint for C/C++ (Unix) Vers. 9.00d, Copyright Gimpel Software 1985-2009
+
+--- Module:   t.c (C)
+[root@box foo]#

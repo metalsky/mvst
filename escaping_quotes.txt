@@ -1,0 +1,8 @@
+Python 2.4.4 (#2, Jan 13 2007, 18:15:24)
+[GCC 4.1.2 20061115 (prerelease) (Debian 4.1.1-21)] on linux2
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import os
+>>> os.system('ssh -l ferret ferret "echo \\\"test me\\\" again"')
+test me again
+0
+>>>

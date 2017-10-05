@@ -1,0 +1,35 @@
+
+Distributing files across the chroot's:
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bashrc node-$n:/builds/mvl6/chroot/1/centos4/home/build/.bashrc; done
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bashrc node-$n:/builds/mvl6/chroot/1/centos4_64/home/build/.bashrc; done
+	
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bash_profile node-$n:/builds/mvl6/chroot/1/centos4/home/build/.bash_profile; done
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bash_profile node-$n:/builds/mvl6/chroot/1/centos4_64/home/build/.bash_profile; done
+
+	
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bashrc node-$n:/builds/mvl6/chroot/2/centos4/home/build/.bashrc; done
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bashrc node-$n:/builds/mvl6/chroot/2/centos4_64/home/build/.bashrc; done
+	
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bash_profile node-$n:/builds/mvl6/chroot/2/centos4_64/home/build/.bash_profile; done
+	$ time for ((n=; n<=; n++)) do echo "node-$n: " && scp centos4-bash_profile node-$n:/builds/mvl6/chroot/2/centos4_64/home/build/.bash_profile; done
+
+
+
+
+Verifying files in the chroot's:
+
+	$ for ((n=1; n<=8; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4/home/build/.bashrc; done
+	$ for ((n=34; n<=38; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4/home/build/.bashrc; done
+	$ for ((n=40; n<=47; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4/home/build/.bashrc; done
+	$ for ((n=50; n<=63; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4/home/build/.bashrc; done
+	
+	$ for ((n=1; n<=8; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4_64/home/build/.bashrc; done
+	$ for ((n=34; n<=38; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4_64/home/build/.bashrc; done
+	$ for ((n=40; n<=47; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4_64/home/build/.bashrc; done
+	$ for ((n=50; n<=63; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/1/centos4_64/home/build/.bashrc; done
+
+	
+	$ for ((n=1; n<=8; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/2/centos4/home/build/.bashrc; done
+	$ for ((n=34; n<=38; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/2/centos4/home/build/.bashrc; done
+	$ for ((n=40; n<=47; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/2/centos4/home/build/.bashrc; done
+	$ for ((n=50; n<=63; n++)) do echo -n "node-$n:  " && ssh node-$n md5sum /builds/mvl6/chroot/2/centos4/home/build/.bashrc; done

@@ -1,0 +1,30 @@
+ssh-keygen -t dsa
+mv idol .ssh/authorized_keys
+chmod 600 .ssh/authorized_keys
+
+
+for ((x=56; x<=59; x++)) do cat /etc/fstab | tail -25 | ssh node-$x "cat >> /etc/fstab"; done
+
+
+apt-get remove --purge exim4 exim4-base exim4-config busybox debian-faq doc-debian doc-linux-text geoip-database laptop-detect mutt procmail sgml-base w3m wamerican
+apt-get autoremove
+apt-get install less screen ntpdate apt-file sudo rsync cvs git bzip2 strace tcpdump ntp python-mysqldb pyro nfs-common
+apt-file update
+
+
+groupadd -g 510 engr
+usermod -u 5003 -g 510 build
+rm -rf /home/build
+mount /home
+
+
+mkdir -p /mvista/dev_area
+mkdir -p /builds/mvl6/chroot/{1,2}
+mount /mvista/dev_area
+time tar -C /builds/mvl6/chroot/1 -jxf /mvista/dev_area/buildtars/centos4.tar.bz2 &
+time tar -C /builds/mvl6/chroot/2 -jxf /mvista/dev_area/buildtars/centos4.tar.bz2 &
+time tar -C /builds/mvl6/chroot/1 -jxf /mvista/dev_area/buildtars/centos4_64.tar.bz2 &
+time tar -C /builds/mvl6/chroot/2 -jxf /mvista/dev_area/buildtars/centos4_64.tar.bz2 &
+
+
+(- list of shit to install on node-54:/root/post-install.txt -)

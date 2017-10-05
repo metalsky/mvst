@@ -1,0 +1,24 @@
+Index: main.py
+===================================================================
+RCS file: /cvsdev/build_scripts/mvl6/main.py,v
+retrieving revision 1.115.4.53
+diff -u -r1.115.4.53 main.py
+--- main.py     17 Nov 2011 00:01:30 -0000      1.115.4.53
++++ main.py     5 Jan 2012 22:17:46 -0000
+@@ -172,11 +172,11 @@
+ sys.__stdout__.flush()
+ run('''ssh %s "mv /tmp/%s/*.out /mvista/dev_area/bosch/%s/"''' % (node, cnum, buildtag))
+
+-# print 'Cleaning up node %s at %s' % (node, gettime())
+-# sys.__stdout__.flush()
+-# for chroot in ['centos4', 'centos4_64']:
+-#      run('''ssh %s "rm -rf %s/%s/home/build/*"''' % (node, cbase, chroot))
+-#      run('''ssh %s "rm -rf %s/%s/opt/montavista/*"''' % (node, cbase, chroot))
++print 'Cleaning up node %s at %s' % (node, gettime())
++sys.__stdout__.flush()
++for chroot in ['centos4', 'centos4_64']:
++       run('''ssh %s "rm -rf %s/%s/home/build/*"''' % (node, cbase, chroot))
++       run('''ssh %s "rm -rf %s/%s/opt/montavista/*"''' % (node, cbase, chroot))
+
+ print 'Releasing node: %s at %s' % (node, gettime())
+ sys.__stdout__.flush()

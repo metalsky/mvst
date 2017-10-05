@@ -1,0 +1,2 @@
+# ssh node-2 rm -rf /builds/mvl6/chroot/1/centos4_64/opt/montavista/*
+# for p in `ps afxww | grep node | grep mvl6 | grep cp | awk '{ print $1 }'`; do kill -9 $p; done

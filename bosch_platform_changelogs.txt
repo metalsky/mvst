@@ -1,0 +1,9 @@
+Bosch symphony base platform changelogs:
+
+- Make sure you're in the bosch build script directory and invoke the python interpreter:
+
+At the very bottom of main.py you can see what is done to generate changelogs... do this from the interpreter.
+
+Example:
+	>>> cl = changelog.changelog('symphony-ivi-2.6.34_110811_1103952')
+	>>> cl.Write('/mvista/dev_area/bosch/symphony-ivi-2.6.34_110811_1103952')

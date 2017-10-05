@@ -1,0 +1,57 @@
+Checkout HEAD of MVL6 build scripts from CVS:
+	cvs -d nkapoor@cvs.sh.mvista.com:/mnt/cvs/build_scripts co mvl6
+
+
+
+Checkout BOSCH branch tag from CVS:
+	cvs -d nkapoor@cvs.sh.mvista.com:/mnt/cvs/build_scripts co -r bosch mvl6
+
+
+
+CVS Notes:
+- To checkout the bosch branch of the MVL6 build scripts:
+
+	nkapoor@overlord:~$ cd cvs-projects/
+	nkapoor@overlord:~/cvs-projects$ mkdir bosch/build_scripts
+	nkapoor@overlord:~/cvs-projects$ cd bosch/build_scripts
+	nkapoor@overlord:~/cvs-projects/bosch/build_scripts$ cvs -d nkapoor@cvs.sh.mvista.com:/mnt/cvs/build_scripts co -r bosch mvl6
+	cvs server: Updating mvl6
+	U mvl6/GenCollective
+	U mvl6/IPSource.py
+	U mvl6/buildConfig.py
+	U mvl6/buildEmail.py
+	U mvl6/build_bashrc
+	U mvl6/buildip.py
+	U mvl6/changelog.py
+	U mvl6/collectionBuild.py
+	U mvl6/collectiveFunctions.py
+	U mvl6/contentServer.py
+	U mvl6/debug.py
+	U mvl6/gen-content-html.py
+	...
+	...
+
+
+
+- Creating a new tag off of HEAD:
+
+	$ cvs -d nkapoor@cvs.sh.mvista.com:/mnt/cvs/build_scripts rtag -b mvl6test-41528 mvl6
+
+
+
+- Create a test branch of the bosch build scripts from the original bosch branch:
+
+	$ cd cvs-projects/bosch/build_scripts
+	$ cvs -d nkapoor@cvs.sh.mvista.com:/mnt/cvs/build_scripts co -r bosch mvl6	# fresh copy of the bosch branch to be tagged
+	$ cd mvl6
+	$ pwd
+	/home/nkapoor/cvs-projects/bosch/build_scripts/mvl6
+	$ cvs tag -b bosch-test-41705
+	
+	* now verify with CVSWeb!
+
+
+
+Checkout ps_projects module from CVS:
+	nk@box:~$ cd cvs-projects/head/
+	nk@box:~/cvs-projects/head$ cvs -d nkapoor@cvs.sh.mvista.com:/mnt/cvs/ps_projects co .

@@ -1,0 +1,62 @@
+Manually running mips-malta-mp build w/out using launch:
+
+	- Branched build scripts and modified main.py such that nothing was logged or archived as this is a test (see MR38734 branch in CVS).
+	
+	- Checked out the new branch on overlord as such:
+	
+		$ pwd
+		/home/build
+		$ cd build_scripts
+		$ mkdir MR38734
+		$ cd MR38734
+		$ cvs -d build@cvs.sh.mvista.com:/mnt/cvs/build_scripts co -r MR38734 mvl6
+	
+	
+	- Manually invoked main.py as such (refer to launch.py for arguments that main requires):
+	
+		$ pwd
+		/home/build/build_scripts/MR38734
+		$ cd mvl6
+		$ ./main.py 990321_9900001 00001 9900001 mvl6 mips-malta-mp
+
+			buildLink is: latest_build_mips-malta-mp-2.6.28
+			buildid is: 9900001
+			buildLink is: latest_build_mips-malta-mp-2.6.28
+			splitBuildtag is: ['990321', '9900001']
+			splitBuildtag[0] is 990321-2.6.28
+			destBuildtag is 990321-2.6.28_9900001
+			Checked out resource: node-3 chroot: 1
+			Traceback (most recent call last):
+			  File "./main.py", line 72, in ?
+			    pickleFile = open('/home/build/%s-exp/CVSREPOS/build_scripts/mvl6/cfg.cpickle' % buildtag, 'w')
+			IOError: [Errno 2] No such file or directory: '/home/build/990321_9900001-exp/CVSREPOS/build_scripts/mvl6/cfg.cpickle'
+	
+	
+	- Duh moron... launch.py also takes care of exporting the build scripts from CVS and other such admin tasks. Sincer we're not using launch
+	  we'll need to do these manually.
+	  
+	 	$ pwd
+	 	/home/build/build_scripts/MR38734/mvl6
+	 	$ mkdir -p /home/build/990321_9900001-exp/CVSREPOS
+	 	$ cd /home/build/990321_9900001-exp/CVSREPOS
+	 	$ cvs -d build@cvs.sh.mvista.com:/mnt/cvs/build_scripts export -r MR38734 -d build_scripts .
+	 
+	 
+	 - Now that I have the build scripts for this test build exported into the proper directory, I can go back and try running main.py manually:
+	 
+	 	$ pwd
+	 	/home/build/990321_9900001-exp/CVSREPOS
+	 	$ cd ~/build_scripts/MR38734
+	 	$ ./main.py 990321_9900001 00001 9900001 mvl6 mips-malta-mp
+	 	
+			buildLink is: latest_build_mips-malta-mp-2.6.28
+			buildid is: 9900001
+			buildLink is: latest_build_mips-malta-mp-2.6.28
+			splitBuildtag is: ['990321', '9900001']
+			splitBuildtag[0] is 990321-2.6.28
+			destBuildtag is 990321-2.6.28_9900001
+			Checked out resource: node-3 chroot: 1
+			Cleaning up node node-3
+
+
+			Setting up chroot environment

@@ -1,0 +1,44 @@
+root@alimony:~# cat /etc/resolv.conf
+search borg.mvista.com sh.mvista.com mvista.com
+nameserver 10.23.5.3
+
+root@alimony:~# cat /etc/auto.master
+#
+# $Id: auto.master,v 1.4 2005/01/04 14:36:54 raven Exp $
+#
+#/misc  /etc/auto.misc
+#/net   /etc/auto.net
+
+/home           /etc/auto.home          --timeout=15
+/mvista         /etc/auto.mvista        --timeout=15
+
+
+root@alimony:~# cat /etc/auto.mvista
+dev_area        -fstype=nfs,nfsvers=3,tcp,soft,intr,rsize=32768,wsize=32768     san:/vol/dev_area
+release_area    -fstype=nfs,nfsvers=3,tcp,soft,intr,rsize=32768,wsize=32768     san:/vol/release
+engr_area       -fstype=nfs,nfsvers=3,tcp,soft,intr,rsize=32768,wsize=32768     san:/vol/engr_area
+
+
+root@alimony:~# cat /etc/auto.home
+*       -fstype=nfs,nfsvers=3,tcp,soft,intr,rsize=32768,wsize=32768     san:/vol/homedirs/&
+
+
+root@alimony:~# cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto eth0
+iface eth0 inet static
+        address 10.23.5.4
+        netmask 255.255.255.0
+        network 10.23.5.0
+        broadcast 10.23.5.255
+        gateway 10.23.5.254
+        # dns-* options are implemented by the resolvconf package, if installed
+        dns-nameservers 10.23.5.3
+        dns-search borg.mvista.com

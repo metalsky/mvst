@@ -1,0 +1,33 @@
+Python:
+110671	mips-montavista-linux-gnu-ranlib libpython2.6.a
+110672	mips-montavista-linux-gnu-gcc -L/home/build/mvl6-alpha/build/mvl6-alpha-build/work/mips-mv-linux/python-2.6.1-ml8.0.10/Python-2.6.1/ -Xlinker -export-dynamic -o python \
+110673			Modules/python.o \
+110674			-L. -lpython2.6 -lpthread -ldl  -lpthread -lutil   -lm  
+110675	/home/build/mvl6-alpha/build/mvl6-alpha-build/staging/i686-linux/usr/bin/python: error while loading shared libraries: libpython2.6.so.1.0: ELF file data encoding not little-endian
+110676	make: *** [sharedmods] Error 127
+110677	+ die 'oe_runmake failed'
+110678	+ oefatal 'oe_runmake failed'
+110679	+ echo FATAL: 'oe_runmake failed'
+110680	FATAL: oe_runmake failed
+110681	+ exit 1
+110682	ERROR: function do_compile failed
+110683	ERROR: log data follows (/home/build/mvl6-alpha/build/mvl6-alpha-build/work/mips-mv-linux/python-2.6.1-ml8.0.10/temp/log.do_compile.2922)
+
+
+Perl:
+175891	./miniperl -Ilib configpm --heavy=lib/Config_heavy.pl lib/Config.pm
+175892	/home/build/mvl6-alpha/build/mvl6-alpha-build/staging/i686-linux/usr/bin/perl.real: error while loading shared libraries: libperl.so: ELF file data encoding not little-endian
+175893	/home/build/mvl6-alpha/build/mvl6-alpha-build/staging/i686-linux/usr/bin/perl.real: error while loading shared libraries: libperl.so: ELF file data encoding not little-endian
+175894	make[1]: *** [lib/Config.pod] Error 127
+175895	make[1]: Leaving directory `/home/build/mvl6-alpha/build/mvl6-alpha-build/work/mips-mv-linux/perl-5.8.8-r30.3/perl-5.8.8'
+175896	make: *** [perl] Error 2
+175897	+ die 'oe_runmake failed'
+175898	+ oefatal 'oe_runmake failed'
+175899	+ echo FATAL: 'oe_runmake failed'
+175900	FATAL: oe_runmake failed
+175901	+ exit 1
+175902	ERROR: function do_compile failed
+175903	ERROR: log data follows (/home/build/mvl6-alpha/build/mvl6-alpha-build/work/mips-mv-linux/perl-5.8.8-r30.3/temp/log.do_compile.3744)
+
+Check logs with:
+build@node-3:/tmp/1$ grep error * | grep ELF | grep endian

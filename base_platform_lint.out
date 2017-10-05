@@ -1,0 +1,62 @@
+Don't forget:
+- Remove existing /builds/mvl6/chroot/1/centos4/home/build/mvl6-alpha/build/mvl6-alpha-build directory
+- ensure that BB_NUMBER_THREADS is set to 1... BB_NUMBER_THREADS = "1"
+- add IMAGE_FSTYPES = "tar.gz" to local.conf
+- use the new flexelint v6 collection (wiki)
+
+
+>>> import sys, os, shutil
+>>> chroot_path = '/builds/mvl6/chroot/1/centos4/'
+>>> flex_collection = 'flexlint-collection-v5.tar.gz'
+>>> contentpath = os.path.join(chroot_path, 'opt/montavista/content')
+>>> chrootnum = 1
+>>> os.system('''sudo chroot /builds/mvl6/chroot/%s/centos4 /bin/su - build -c "source ~/.bashrc; bitbake -k cm-default-image" > /tmp/%s/bosch-nemid-lint.out''' % (chrootnum,chrootnum))
+KeyboardInterrupt
+256
+>>> os.system('''sudo chroot /builds/mvl6/chroot/%s/centos4 /bin/su - build -c "source ~/.bashrc; bitbake -k cm-default-image" > /tmp/%s/bosch-nemid-lint.out 2>&1''' % (chrootnum,chrootnum))
+256
+>>> os.system('''linux32 sudo chroot /builds/mvl6/chroot/%s/centos4 /bin/su - build -c "source ~/.bashrc; bitbake -k cm-default-image" > /tmp/%s/bosch-nemid-lint.out 2>&1''' % (chrootnum,chrootnum))
+
+
+
+Example:
+>>> import sys, os, shutil
+>>> chrootnum = 1
+>>> chroot_path = '/builds/mvl6/chroot/%s/centos4/' % chrootnum
+>>> flex_collection = 'flexlint-collection-v6.tar.gz'
+>>> flexbins = os.path.join(chroot_path, 'opt/flexlint')
+>>> 
+>>> if not os.path.exists(flexbins):
+...     os.system('sudo mkdir -p %s;sudo chown build:engr %s' % (flexbins,flexbins))
+...     for file in os.listdir('/home/build/flex/optflex/'):
+...             shutil.copy(os.path.join('/home/build/flex/optflex/', file), flexbins)
+... 
+>>> contentpath = os.path.join(chroot_path, 'opt/montavista/content')
+>>> os.system('tar xvf /home/build/flex/%s -C %s' % (flex_collection, contentpath))
+flexlint-collection/
+flexlint-collection/recipes/
+flexlint-collection/recipes/flexlint/
+flexlint-collection/recipes/flexlint/flexlint-native.bb
+flexlint-collection/recipes/flexlint/files/
+flexlint-collection/recipes/flexlint/files/flexlint/
+flexlint-collection/recipes/flexlint/files/flexlint/co-gcc.lnt
+flexlint-collection/recipes/flexlint/files/flexlint/gcc-include-path.lnt
+flexlint-collection/recipes/flexlint/files/flexlint/co-gcc.mak
+flexlint-collection/recipes/flexlint/files/flexlint/size-options.lnt
+flexlint-collection/recipes/flexlint/files/flexlint/lint_cmac.h
+flexlint-collection/recipes/flexlint/files/flexlint/flexelint
+flexlint-collection/recipes/flexlint/files/flexlint/co-gcc.h
+flexlint-collection/recipes/flexlint/files/flexlint/lint_cppmac.h
+flexlint-collection/recipes/flexlint/files/flexlint/std.lnt
+flexlint-collection/recipes/flexlint/files/flexelintCache
+flexlint-collection/recipes/platformtest/
+flexlint-collection/recipes/platformtest/platformtest-native_1.0.bb
+flexlint-collection/recipes/platformtest/files/
+flexlint-collection/recipes/platformtest/files/tests.c
+flexlint-collection/recipes/platformtest/files/PlatformTest.py
+flexlint-collection/classes/
+flexlint-collection/classes/cmake.bbclass
+flexlint-collection/conf/
+flexlint-collection/conf/flexlint.inc
+0
+>>> os.system('''time linux32 sudo chroot /builds/mvl6/chroot/%s/centos4 /bin/su - build -c "source ~/.bashrc; bitbake -k cm-default-image" > /tmp/%s/bosch-nemid-lint.out 2>&1''' % (chrootnum,chrootnum))

@@ -1,0 +1,81 @@
+[root@mvbbugz ~]# /etc/init.d/bugz-mail stop
+Shutting down Bugz email interface...
+fetchmail: background fetchmail at 31536 killed.
+...Done.
+
+
+[root@mvbbugz ~]# /etc/init.d/mysqld stop
+Stopping MySQL:                                            [  OK  ]
+[root@mvbbugz ~]#
+
+
+[root@mvbbugz ~]# /etc/init.d/httpd stop
+Stopping httpd:                                            [FAILED]
+
+
+BACKUP:
+[root@mvbbugz ~]# rsync -avz /var/www/html/bugz backups/var/www/html/
+sending incremental file list
+bugz/
+...
+...
+
+
+REMOVE PREVIOUS RPM:
+[root@mvbbugz ~]# rpm -qa | grep -i bugz
+bugz-3.4.4-3.4
+
+
+INSTALL NEW RPM:
+[root@mvbbugz ~]# rpm -ivh bugz-3.4.7-3.4.noarch.rpm
+Preparing...                ########################################### [100%]
+   1:bugz                   ########################################### [100%]
+
+
+ENABLE AND TURN ON SFBUGZ SERVICE:
+[root@mvbbugz ~]# chkconfig --add sfbugz_ifd
+[root@mvbbugz ~]# chkconfig sfbugz_ifd on
+
+
+
+[root@mvbbugz ~]# mkdir /etc/bugz
+[root@mvbbugz ~]# cp sfbugz_if.jar /etc/bugz/
+[root@mvbbugz ~]# cp deploy.properties /etc/bugz/
+
+[root@mvbbugz ~]# chown ps-bugz-admin /etc/bugz/sfbugz_if.jar
+[root@mvbbugz ~]# chown ps-bugz-admin /etc/bugz/deploy.properties
+
+
+
+RESTART EVERYTHING:
+[root@mvbbugz ~]# /etc/init.d/httpd start
+Starting httpd:                                            [  OK  ]
+[root@mvbbugz ~]# /etc/init.d/mysqld start
+Starting MySQL:                                            [  OK  ]
+
+
+
+[root@mvbbugz ~]# su - ps-bugz-admin
+[ps-bugz-admin@mvbbugz ~]$ cd /var/www/html/bugz/
+[ps-bugz-admin@mvbbugz bugz]$ ./checksetup.pl
+
+
+
+root@mvbbugz ~]# chmod 710 /var/www/html/bugz/bugz/fetchmailrc
+[root@mvbbugz ~]# service bugz-mail start
+Starting up Bugz email interface...
+File /var/www/html/bugz/bugz/fetchmailrc must be owned by you.
+...Failed.
+[root@mvbbugz ~]# chow
+[root@mvbbugz ~]# ls -l /var/www/html/bugz/bugz/fetchmailrc
+-rwx--x--- 1 bugz-admin apache 386 Sep 17 12:22 /var/www/html/bugz/bugz/fetchmailrc
+[root@mvbbugz ~]# chown ps-bugz-admin /var/www/html/bugz/bugz/fetchmailrc
+[root@mvbbugz ~]# service bugz-mail start
+Starting up Bugz email interface...
+...Done.
+[root@mvbbugz ~]#
+
+
+
+[root@mvbbugz bugz]# /etc/init.d/sfbugz_ifd start
+Starting sfbugz_ifd:                                       [  OK  ]

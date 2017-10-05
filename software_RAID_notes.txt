@@ -1,0 +1,44 @@
+Software RAID Notes:
+
+	
+	
+	# fdisk -l /dev/sda
+	
+	Disk /dev/sda: 500.1 GB, 500107862016 bytes
+	255 heads, 63 sectors/track, 60801 cylinders
+	Units = cylinders of 16065 * 512 = 8225280 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	Disk identifier: 0x00031734
+	
+	   Device Boot      Start         End      Blocks   Id  System
+	/dev/sda1   *           1       13055   104857600   fd  Linux raid autodetect
+	/dev/sda2           13055       60802   383527936   fd  Linux raid autodetect
+	
+	
+	
+	# cat /etc/mdadm.conf
+	# mdadm.conf written out by anaconda
+	MAILADDR root
+	AUTO +imsm +1.x -all
+	ARRAY /dev/md0 level=raid1 num-devices=2 UUID=1eaa3a51:51999b4e:165d15f2:034a36f0
+	ARRAY /dev/md1 level=raid5 num-devices=4 UUID=1e0418c7:7d4e7ee8:5d6d3a2a:caf355d5
+	ARRAY /dev/md2 level=raid1 num-devices=2 UUID=601904b3:b66c620e:653fc268:bd0f1fa0
+
+
+	
+	# cat /proc/mdstat
+	Personalities : [raid1] [raid6] [raid5] [raid4]
+	md2 : active raid1 sdc3[0] sdd3[1]
+	      94370748 blocks super 1.1 [2/2] [UU]
+	      bitmap: 0/1 pages [0KB], 65536KB chunk
+	
+	md1 : active raid5 sda2[0] sdd2[4] sdc2[2] sdb2[1]
+	      1150579200 blocks super 1.1 level 5, 512k chunk, algorithm 2 [4/4] [UUUU]
+	      bitmap: 2/3 pages [8KB], 65536KB chunk
+	
+	md0 : active raid1 sda1[0] sdb1[1]
+	      104857528 blocks super 1.0 [2/2] [UU]
+	      bitmap: 1/1 pages [4KB], 65536KB chunk
+	
+	unused devices: <none>

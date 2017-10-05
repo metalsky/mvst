@@ -1,0 +1,1 @@
+overlord:/mvista/dev_area# for dir in `/usr/bin/find . -maxdepth 1 -type d -not -name ".*"`; do echo -n "/mvista/dev_area/$dir: " && du -sh $dir; done
