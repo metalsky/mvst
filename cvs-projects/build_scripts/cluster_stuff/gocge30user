@@ -1,0 +1,51 @@
+#!/bin/bash
+# This script will checkout or update the specified application, tag with orginal release_application_bugid.
+# It cleans up the RPM and SRPM directories if they exist in the application.
+# It then sets off the gomvlcge30 script on each of the CGE nodes.
+
+# args:
+# 1- application or tool to build
+# 2- The bug or defect id (you must have a defect number)
+# 3- type of build -- i.e. target, cross or if app is cross and no arch use cross-noarch
+
+if [ "$#" != "3" ]; then
+  echo "Usage: $0 "<application or tool>" <bug-id> <type>"
+  echo "<application or tool> The app you are rebuilding"
+  echo "<bug-id> The defect number used to check the fixes into cvs"
+  echo "<type> This is the type of app.. target or cross"
+  exit 1
+fi
+
+p="$1" #p=product, application or tool
+b="$2" #b=bugid
+t="$3" #t=type i.e. target, cross, or if app is cross and noarch, use target="cross-noarch"
+
+if ! [ -d "~/cge-userland/$p" ]; then
+  cd ~/cge-userland
+  cvs co -r bartholome $p
+else
+  cd ~/cge-userland/$p
+  cvs update -dPA -r bartholome
+fi
+
+cd ~/cge-userland/$p
+cvs tag -F mvlcge300_$p_$b
+
+if [ -e "~/cge-userland/$p/RPMS" ]; then
+  echo "I'm going to remove the following:"
+  ls ~/cge-userland/$p/RPMS/
+  rm -rf ~/cge-userland/$p/RPMS/*
+else
+  mkdir -p ~/cge-userland/$p/RPMS
+fi
+if [ -e "~/cge-userland/$p/SRPMS" ]; then
+  rm -rf ~/cge-userland/$p/SRPMS/*
+else
+  mkdir -p ~/cge-userland/$p/SRPMS
+fi
+mkdir -p /mvista/dev_area/logs/mvlcge3.0.0-updates/$p-$b
+
+nodes="node-1 node-2 node-3"
+for n in $nodes; do
+  ssh $n "cd /home/build/cge-userland; ./gomvlcge30 $p $b $t" &
+done

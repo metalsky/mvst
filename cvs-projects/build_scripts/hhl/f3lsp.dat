@@ -1,0 +1,64 @@
+#!/usr/bin/python
+
+lsps = {
+	'arm_xscale_be':		[
+					['Intel','intel-ixdp42x-arm_xscale_be'],
+					],
+	'arm_xscale_be_uclibc':		[
+					['Intel','intel-ixdp42x-arm_xscale_be_uclibc'],
+					],
+	'arm_v5t_le':			[
+					['ARM','arm-versatile926ejs'],
+					['TI','ti-omap5912_osk'],
+					],
+	'arm_v5t_le_uclibc':		[
+					['ARM','arm-versatile926ejs'],
+					],
+	'arm_v6_vfp_le':		[
+					['TI','ti-omap2430_sdp'],
+					],
+	'arm_v6_vfp_le_uclibc':		[
+					['TI','ti-omap2430_sdp'],
+					],
+	'ppc_83xx':			[
+					['Freescale','freescale-sandpoint'],
+					],
+	'ppc_85xx':			[
+					['Freescale','freescale-8540ads'],
+					['Freescale','freescale-8548cds'],
+					['Freescale','freescale-8555cds'],
+					],
+	'ppc_7xx':			[
+					['Freescale','freescale-sandpoint'],
+					],
+	'ppc_74xx':			[
+					['Freescale','freescale-sandpoint',],
+					],
+	'x86_586_uclibc':		[
+					['x86','x86-pc_target-x86_586_uclibc'],
+					],
+	'x86_586':			[
+					['x86','x86-pc_target-x86_586'],
+					],
+	'x86_amd64':			[
+					['x86','x86-pc_target-x86_amd64'],
+					],
+	'x86_em64t':			[
+					['x86','x86-pc_target-x86_em64t'],
+					],
+	'x86_pentium3':			[
+					['x86','x86-pc_target-x86_pentium3'],
+					],
+	'x86_pentium4':			[
+					['x86','x86-pc_target-x86_pentium4'],
+					],
+	'mips2_fp_be':			[
+					['Broadcom','broadcom-bcm91250-mips2_fp_be'],
+					],
+	'mips2_fp_be_uclibc':		[
+					['Broadcom','broadcom-bcm91250-mips2_fp_be_uclibc'],
+					],
+	'mips2_nfp_le':			[
+					['MIPS','mips-malta-mips2_nfp_le'],
+					],
+	}

@@ -1,0 +1,13 @@
+#!/bin/sh
+
+mypid=$$
+echo $mypid > ~/.chkpid
+echo dumbo$mypid > /mvista/dev_area/.chkpid
+
+for i in `cat ~/machines` ; do
+	echo -n -e "$i\t"
+	ssh $i 'echo -n "`cat ~/.chkpid 2>&1 ` `cat /mvista/dev_area/.chkpid 2>&1` "; date' 2>&1
+done | expand -t 16
+
+rm ~/.chkpid
+rm /mvista/dev_area/.chkpid

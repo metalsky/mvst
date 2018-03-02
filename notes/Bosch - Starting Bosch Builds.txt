@@ -1,0 +1,21 @@
+Bosch Builds:
+
+
+Brief cookbook-style instructions, substitute appropriate buildtags where necessary:
+
+	1. build@overlord:~$ time /home/build/bin/launch.py --product mvl6 --build_script_branch HEAD --prefix collection_ --msd collection
+	   ... lots of output  (wait about an hour)
+
+
+	2. build@overlord:~$ /home/rell/build_scripts/mvl6/addcolbuild.py collection_100709_1003204
+	   /home/rell/build_scripts/mvl6/server.py:80: Warning: Field 'status' doesn't have a default value
+	     ret = self.DB_CURSOR.execute(cmd)
+
+
+	3. build@overlord:~$ time /home/rell/build_scripts/bosch/boschThreadKicker.py
+	   ... this will take some time to complete. generally 8 minimum and up to 20 maximum (so far).
+
+
+$ time /home/build/bin/launch.py --product mvl6 --build_script_branch HEAD --prefix collection_ --msd collection
+$ time /home/rell/build_scripts/mvl6/addcolbuild.py $COLLECTION_BUILD (collection_110319_1101246)
+$ time /home/rell/build_scripts/bosch/boschThreadKicker.py

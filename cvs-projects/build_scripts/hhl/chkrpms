@@ -1,0 +1,31 @@
+#!/bin/bash
+#
+rc=0
+
+TOPDIR=$1
+
+DIRS="$(find $TOPDIR -type d)"
+
+for dir in $DIRS; do
+    dirbase="$(basename $dir)"
+
+    case $dirbase in
+    	mandrake* | redhat* | suse* | yellowdog* | solaris* | windows*)
+	(
+	    cd $dir
+	    RPMVERSION="$(rpm --query --queryformat "%{RPMVERSION}\n" -p *.mvl | sort -u)"
+	    for package in $(ls -1 *.mvl 2>/dev/null); do
+                chkval="$(/usr/bin/rpm2cpio $package | cpio -it 2>&1 | egrep "cpio|magic|^[0-9][0-9]*  *blocks")"
+                if [ "$(echo $chkval | grep cpio | grep warning)" ]; then
+ 			echo -e "$dir/$package:\n    $chkval rpm version ${RPMVERSION}\n"
+		fi
+	    done
+	)
+	;;
+
+    esac
+done
+
+exit $rc
+
+

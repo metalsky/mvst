@@ -1,0 +1,11 @@
+#!/bin/bash
+
+buildid="$1"
+hhldist="$2"
+app="$3"
+
+export HOME=/home/build
+cd /home/build/dailybuild
+
+/opt/montavista/host/bin/mvl-rpmbuild -ba --define "_topdir /home/build/dailybuild" --define "_hhl_build_id $buildid" --define "_hhl_dist $hhldist" --define "vendor MontaVista Software, Inc." --define "packager <source@mvista.com>" SPECS/$app.spec 2>&1 | tee tmp.log
+

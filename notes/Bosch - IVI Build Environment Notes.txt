@@ -1,0 +1,263 @@
+root@skunk6:/opt/tooling/mvista/MV_20101013
+
+/opt/tooling/mvista/MV_20101013/symphony-ivi-2.6.34	Link to platform installation. Change when using different release. Hardcoded, build looks for this path!
+							Also expects the following to exist in this directory: content.xml, newproject, symphony-ivi-2.6.34_101214_1005148 and tools
+							
+
+
+/opt/bosch/						User build runs as needs to be able to either create or already own this directory.
+
+/opt/bosch/download					Binariess from the build are kept here. This directory is overwritten each time a build is run so if
+							you want to keep binaries from other builds you will need to rename this directory.
+
+/opt/bosch/[x,y]					Links back to your local git repository
+
+
+
+
+# LIST CHROOT DETAILS AND PRE-REQS HERE
+
+- Configure chroot environment appropriately:
+
+	$ sudo mount -o bind /dev /chroot/ubuntu-9.04_32/dev
+	$ sudo mount -t proc none /chroot/ubuntu-9.04_32/proc
+	$ sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "/bin/bash"
+	
+	Another example:
+	# mounting /dev /proc and /sys
+	{ mount -o bind /dev "$MOUNT_POINT"/dev && echo "/dev mounted" ;  } || { echo "mounting of dev failed" ; exit 4 ; }	
+	{ mount -t proc /proc  "$MOUNT_POINT"/proc  && echo "/proc mounted" ; } || { echo "mounting of proc failed" ; exit  5 ;   }	
+	{ mount -o bind /sys   "$MOUNT_POINT"/sys  && echo "/sys  mounted" ; } || { echo "mounting of sys failed" ; exit  6 ;
+
+
+
+- Install the platform from the latest drop into /opt and run the install script. For example, for the C2 platform I installed it in /opt/C2_Platform.
+  Ensure that you can bake a default image.
+  
+  	$ sudo mkdir /opt/C2_Platform
+  	$ sudo chown nk:nk /opt/C2_Platform
+  	$ cp install.sh symphony-ivi-2.6.34_101214_1005148.tar.gz /opt/C2_Platform
+  	$ ./install.sh symphony-ivi-2.6.34_101214_1005148.tar.gz
+
+
+
+- Once you've successfully baked a default image, try baking the 'gm-default-image' as well.
+
+	
+
+- Once you've successfully baked both a 'default-image' and a 'gm-default-image' you'll need to manually create the '/opt/tooling/mvista/MV_20101013' directory
+  as well as a link within that directory to point back to your platform installation directory:
+
+	$ mkdir /opt/tooling/mvista/MV_20101013
+	$ ln -s /opt/C2_Platform/symphony-ivi-2.6.34_101214_1005148 /opt/tooling/mvista/MV_20101013/symphony-ivi-2.6.34
+
+
+
+- Ensure that the user running the ivi builds (nk in this case) owns /opt (weird weird weird) so that the script that sets up the ivi build environment can create 
+  the '/opt/bosch' directory:
+
+	$ sudo chown nk:nk /opt
+
+
+
+- Checkout the appropriate branch from git (in this case I used origin/C2/11.0V006... remember that you'll need to clone the whole repo first):
+	
+	$ git clone bosch@source.mvista.com:di_projects.git
+	$ cd di_projects					# cloned repository
+	$ git branch -a						# lists branches - you don't really need to do this
+	* bosch_deliveries
+	  origin/C1
+	  origin/C2/10.0V011
+	  origin/C2/10.0V011_IA_FCAT_1_7_1_1
+	  origin/C2/11.0V006
+	  origin/C2/11.0V006-FCAT_1.7.1.1
+	  origin/C2/11.0V006-FCAT_1.7.1.1-v2
+	  origin/C2/MediaPlayer
+	  origin/C2/phonebook
+	  origin/HEAD
+	  origin/bosch_deliveries
+	  origin/bugfixes/205160
+	  origin/bugfixes/205180
+	  origin/bugfixes/205551
+	  origin/c2-phonebook
+	  origin/local_C2_new3_phonebook
+	  origin/origin/C2/phonebook
+	  origin/v11/bts-test
+	  origin/v11/dev
+	  origin/v11/master
+	  origin/v11/phone-test
+
+	$ git checkout -b origin/C2 origin/C2/11.0V006		# checks out the origin/C2/11.0V006 branch from the local repo to a new origin/C2 branch
+								# git checkout -b my_build_branch origin/origin_branch
+
+
+- Configure the build environment by running the included environment setup script:
+
+	$ . set_env.sh
+
+
+
+- Once the environment prep script has run, you can start building the IVI project. This currently takes about 30 mins to complete. Upon successful completion
+  you will see the following message:
+
+	$ build --release					# wait ~30 mins
+	
+	INFO     all products were built successfully
+	INFO     build time was -1:21:43
+
+
+
+- Upon success you can run the final step in the build process:
+
+	$ makednl --release
+
+
+
+- Despite errors about certain files missing, this step is completing successfully (at least that's what I'm told). To verify success, check the
+  /opt/bosch/download/opt/bosch/processes directory for the following binaries:
+  
+  	$ <SAMIR TO PROVIDE ME THIS LIST>
+
+
+
+LATEST:
+
+INFO     Executing makednl to create a download directory...
+INFO     Using release variant...
+INFO     Removing old directory...
+INFO     Creating directory tree...
+INFO     Copying executables and scripts...
+INFO     Extracting addon packages
+INFO     ... gst-plugin-mp3_0.5-r1_armv6.ipk
+INFO     ... qwa-alsa_0.1.0-r1_armv6.ipk
+INFO     ... totem-pl-parser_2.28.0-r1_armv6.ipk
+INFO     Copying HMI resources...
+cp: cannot stat `/opt/bosch/x/di_projects/linked/ai_gm_hmi/hmi/gui/generated/luabin/*.lua': No such file or directory
+cp: cannot stat `/opt/bosch/x/di_projects/linked/ai_gm_hmi/hmi/gui/generated/images/*': No such file or directory
+INFO     Copying MAP resources...
+cp: cannot stat `/opt/bosch/x/di_projects/linked/di_map/fastmap/mapengine/media/DebugHMI_Buttons/*': No such file or directory
+INFO     Renaming process files...
+INFO     Setting executable flags...
+chown: invalid user: `tritonsu'
+ERROR    script ended with failure(s)
+
+
+nk@box:/opt/bosch> ls /opt/bosch/x/di_projects/linked/ai_gm_hmi/hmi/gui/generated/
+fonts/    include/  lua/      resource/ trc/
+
+nk@box:/opt/bosch> ls /opt/bosch/x/di_projects/linked/di_map/fastmap/mapengine/media/
+DCM  DTM_Config  Polygon_Border  Registry  SHADERS  binary
+
+
+
+
+
+>>> commands.getoutput('''sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "cd git-projects/source.mvista.com; git clone bosch@source.mvista.com:di_projects.git"''')
+'Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/\nremote: warning: suboptimal pack - out of memory\x1b[K\nerror: pack-objects died of signal 9\nerror: git upload-pack: git-pack-objects died with error.\nfatal: git upload-pack: aborting due to possible repository corruption on the remote side.\nremote: aborting due to possible repository corruption on the remote side.\x00\nfatal: early EOF\nfatal: index-pack failed'
+>>>
+
+
+\_ sh -c ssh node-1 "sudo chroot /chroot/centos4 /bin/su - build -c \"cd /home/build/integration-platform-build; make PlatformFullVersion=6.1.1102081150 -C /home/build/integration-platform-build CURRENT_TAG=toolchain_110208_1100706 all\"" >> /mvista/dev_area/integration_platform/toolchain_110208_1100706/logs/ipbuild-1100706.log 2>&1 < /dev/null
+27740 build    S                             
+
+\_ ssh node-1 sudo chroot /chroot/centos4 /bin/su - build -c "cd /home/build/integration-platform-build; make PlatformFullVersion=6.1.1102081150 -C /home/build/integration-platform-build CURRENT_TAG=toolchain_110208_1100706 all"
+
+
+
+nk@box:~$ sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "/bin/bash"
+nk@box:~>
+nk@box:~> cd git-projects/source.mvista.com/
+nk@box:~> git clone bosch@source.mvista.com:di_projects.git
+
+
+
+nk@box:~/git-projects/source.mvista.com> git clone bosch@source.mvista.com:di_projects.git
+Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/
+remote: Counting objects: 66373, done.
+error: pack-objects died of signal 9/32566)
+error: git upload-pack: git-pack-objects died with error.
+fatal: git upload-pack: aborting due to possible repository corruption on the remote side.
+remote: aborting due to possible repository corruption on the remote side.
+fatal: early EOF
+fatal: index-pack failed
+nk@box:~/git-projects/source.mvista.com>
+
+nk@box:~/git-projects/source.mvista.com> git clone bosch@source.mvista.com:di_projects.git
+Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/
+remote: Counting objects: 66373, done.
+error: pack-objects died of signal 9/32566)
+error: git upload-pack: git-pack-objects died with error.
+fatal: git upload-pack: aborting due to possible repository corruption on the remote side.
+remote: aborting due to possible repository corruption on the remote side.
+fatal: early EOF
+fatal: index-pack failed
+nk@box:~/git-projects/source.mvista.com> git clone bosch@source.mvista.com:di_projects.git
+Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/
+remote: Counting objects: 66373, done.
+remote: warning: suboptimal pack - out of memory
+remote: Compressing objects:   5% (1879/32566)
+
+
+nk@box:~/git-projects/source.mvista.com> git clone bosch@source.mvista.com:di_projects.git
+Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/
+remote: Counting objects: 66373, done.
+remote: warning: suboptimal pack - out of memory
+error: pack-objects died of signal 92290/32566)
+error: git upload-pack: git-pack-objects died with error.
+fatal: git upload-pack: aborting due to possible repository corruption on the remote side.
+remote: aborting due to possible repository corruption on the remote side.
+fatal: early EOF
+fatal: index-pack failed
+nk@box:~/git-projects/source.mvista.com>
+
+
+nk@box:~/cvs-projects/head/ps_projects/di_projects$ ./iviBuild.py
+Found symphony-ivi-2.6.34_101214_1005148
+Executing: sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "cd /home/nk/git-projects/source.mvista.com && git clone bosch@source.mvista.com:di_projects.git"
+Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/
+remote: Counting objects: 66407, done.
+remote: warning: suboptimal pack - out of memory
+error: pack-objects died of signal 94054/32600)
+error: git upload-pack: git-pack-objects died with error.
+fatal: git upload-pack: aborting due to possible repository corruption on the remote side.
+remote: aborting due to possible repository corruption on the remote side.
+fatal: early EOF
+fatal: index-pack failed
+Executing: sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "cd ~/git-projects/source.mvista.com/di_projects && git fetch"
+-su: line 0: cd: /home/nk/git-projects/source.mvista.com/di_projects: No such file or directory
+ERROR: git fetch failed with code 256!
+nk@box:~/cvs-projects/head/ps_projects/di_projects$
+
+
+nk@box:~/cvs-projects/head/ps_projects/di_projects$ ./iviBuild.py
+Found symphony-ivi-2.6.34_101214_1005148
+No local copy of di_projects repository found, cloning...
+Executing: sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "cd /home/nk/git-projects/source.mvista.com && git clone bosch@source.mvista.com:di_projects.git"
+Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/
+remote: Counting objects: 66527, done.
+remote: warning: suboptimal pack - out of memory
+remote: Compressing objects: 100% (32644/32644), done.
+Receiving objects:   2% (1904/66527), 23.78 MiB | 3729 KiB/s
+
+
+nk@box:~/cvs-projects/head/ps_projects/di_projects$ time ./iviBuild.py
+Found symphony-ivi-2.6.34_101214_1005148
+No local copy of di_projects repository found, cloning...
+Executing: sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "cd /home/nk/git-projects/source.mvista.com && git clone bosch@source.mvista.com:di_projects.git"
+Initialized empty Git repository in /home/nk/git-projects/source.mvista.com/di_projects/.git/
+remote: Counting objects: 66541, done.
+remote: warning: suboptimal pack - out of memory
+error: pack-objects died of signal 94084/32658)
+error: git upload-pack: git-pack-objects died with error.
+fatal: git upload-pack: aborting due to possible repository corruption on the remote side.
+remote: aborting due to possible repository corruption on the remote side.
+fatal: early EOF
+fatal: index-pack failed
+Executing: sudo linux32 chroot /chroot/ubuntu-9.04_32 /bin/su - nk -c "cd ~/git-projects/source.mvista.com/di_projects && git fetch"
+-su: line 0: cd: /home/nk/git-projects/source.mvista.com/di_projects: No such file or directory
+ERROR: git fetch failed with code 256!
+
+real    26m56.490s
+user    0m0.060s
+sys     0m0.070s
+nk@box:~/cvs-projects/head/ps_projects/di_projects$

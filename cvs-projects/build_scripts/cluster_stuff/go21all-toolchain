@@ -1,0 +1,20 @@
+#!/bin/bash
+
+nodes="node-7 node-8 node-9 node-10 node-11 node-12 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31"
+
+apps="glibc"
+
+for p in $apps; do
+  if [ -d "~/toolchain/$p/RPMS" ]; then
+    m -rf ~/toolchain/$p/RPMS
+  fi
+  if [ -d "~/toolchain/$p/SRPMS" ]; then
+    rm -rf ~/toolchain/$p/SRPMS
+  fi
+  mkdir -p /mvista/dev_area/logs/mvl2.1.0-updates/$p
+done
+
+for n in $nodes; do
+  ssh $n "cd /home/build/toolchain; ./go21" &
+  #ssh $n "hostname -s"
+done

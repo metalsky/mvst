@@ -1,0 +1,177 @@
+#!/usr/bin/python
+import os, string, time
+
+# This file contains all data necessary for completing a build
+# using the buildhhl.py script. All values are common among all builds or null
+# Any build will exec this data file, then exec a build specific data file
+# in order to get build specific info. 
+#
+# This file gets executed as python commands, so if you want
+# to do something strange to set up variables, go ahead,
+# but do so at your own risk
+# 
+copydir         = 'copydir'
+cpdir		= 'cpdir'
+logdir		= 'logdir'
+installdir	= '/opt/montavista'
+homepath	= os.getcwd() + '/../..'
+collectivelogdir = homepath + '/dynamicCollectiveLogs'
+buildtag	= 'buildtag'
+buildid		= 'buildid'
+product		= 'product'
+aptedition	= ''
+docsmodule      = 'skip'
+docsgp          = { }
+nodetype	= 'node'
+cygport		= '322'
+mktar		= 0
+stopbuild	= 0
+chkrpms		= 0
+changelog	= 'null'
+cvspaths 	= { }
+lspbuildpath	= '/var/tmp/BUILD'
+scripttest	= 0
+runprep		= 1
+multihost	= 1
+runqa		= 1
+mktar		= 0
+mkcd		= 1
+mkdvd		= 0
+hostcdinstall   = 1
+targetcdinstall = 1
+mkdoccd		= 0
+mkhostcd	= 0
+mktargetcd	= 0
+mkcommoncd	= 0
+mksrccd		= 0
+mklicensecd	= 0
+mkcdbom		= 0
+mkvert		= 1
+rebuildgcc	= 0
+uploaddays 	= ()
+toolsonly	= 0
+lsps		= 1
+remoteonly	= 0
+email		= 1
+cdtype		= 'rel'
+testb		= 'notest'
+lsprev		= '1'
+lsptype		= 'std'
+selinux		= 'no'
+cleanexp	= 1
+version		= ''
+nocl		= 0
+scriptpath	= os.getcwd()
+btype		= 'null'
+varstr		= 'null'          # for devrocket
+dvdname		= ''
+appsfile	= 'appsfile'
+libraryapps	= 'libraryapps'
+em64tapps	= 'em64tapps'
+mips64apps	= 'mips64apps'
+ppc9xxapps	= 'ppc9xxapps'
+lspdat		= 'lspdat'
+gcclicense	= ''
+sht		= 0
+sht_only	= 0
+shttar		= 'montavista.f3.tar'
+cht		= 0
+kernel		= '0.0.0'
+hhlversion	= 'null'
+startingkernel  = "null"
+starttag	= 'starttag'
+foundation	= "foundation"
+hosttoolpath	= 'null'
+releaseimgpath	= ''
+extrareleaseimgs = {}
+selfhosttarget	= ''
+selfhostinstalldata	= {}
+edition		= 'edition'
+mkretardlink	= 0
+linkname	= 'null'
+chroothosts	= ()
+targethost	= ''
+hosts		= ()
+abitargets	= (
+	'mips64_fp_be-64',
+	'mips64_fp_be_uclibc-64',
+	'mips64_fp_le-64',
+	'mips64_octeon_be-64',
+	'mips64_octeon_v2_be-64',
+	'ppc_9xx-64',
+	#'ppc_e500mc-64',
+	'x86_amd64-32',
+	'x86_em64t-32',
+	)
+multilibtargets = {
+	'mips64_fp_be':		'64',
+	'mips64_fp_be_uclibc':	'64',
+	'mips64_fp_le':		'64',
+	'mips64_octeon_be':	'64',
+	'mips64_octeon_v2_be':	'64',
+	'ppc_9xx':		'64',
+	#'ppc_e500mc':		'64',
+	'x86_amd64':		'32',
+	'x86_em64t':		'32',
+	}
+all_targets	= () 
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps	= { }
+brhhostapps	= { }
+brhnoarchapps	= { }
+
+# here are the definitions for apps built in buildcore.py
+# crossapps = { string:            [path,type,directory,spec,rpm type,extra,[install]]
+crossapps	= { }
+
+# these are the apps built in buildremote.py
+mvltapps	= ()
+x86brcrossapps	= ()
+x86uclibcbrcrossapps = ()
+uclibcbrcrossapps = ()
+brcrossapps	= ()
+
+# these are the required apps to be installed with sudo before making the tar file of the install
+requiredTarApps	= ('makedev-devnodes','rpm','base-passwd')
+
+removerpms = ()
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps	= ()
+
+# these are the testing apps that go in <arch>/target/testing
+testapps	= ()
+
+# moved from buildtargetapps.py
+targnoarch = ('mvlpk','mvl-installer')
+crossnoarch = ('filesystem','glib','libtool')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes	= ['nis','nss_ldap','libposixtime','pax','libinet6','sctl','utempter','xalan','libmtraq']
+
+# these are the xtensa apps to not build
+xtensaxcludes	= ('xorg-x11','cairo','pango','gtk2','libmng','icewm','matchbox','rxvt','xkbd')
+
+cdnames		= []
+
+lspIsos		= {}
+lspouttakes	= {}
+
+outtakes	= (
+		'common-jdk',
+		'common-mozilla-devel',
+		'common-man2html'
+		)
+srcouttakes	= ()
+devrocket_src_outtakes	=	(
+	"common-jdk",
+	"common-jre",
+	"common-mozilla-devel"
+	)
+uclibc_outtakes	= ()
+src_link_exclusions = ()
+host_link_exclusions = ()
+cross_link_exclusions = ()
+target_link_exclusions = ()
+targopt_link_exclusions = ()
+x11apps = ()

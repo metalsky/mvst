@@ -1,0 +1,177 @@
+##################
+# arm_720t_le
+##################
+ARM/arm-integrator-previewkit
+##################
+# arm_sa_le
+##################
+ADS/ads-gcplus-previewkit
+##################
+# arm_v4t_le
+##################
+Altera/altera-epxa1-previewkit
+ARM/arm-integrator-previewkit
+TI/ti-innovator-previewkit
+#Motorola/motorola-mx1ads-previewkit
+##################
+# arm_xscale_be
+##################
+ADI/adi-brh-previewkit
+Intel/intel-ixdp2400-previewkit
+Intel/intel-ixdp2800-previewkit
+Intel/intel-ixdp4xx-previewkit
+Motorola/motorola-prpmc1100-previewkit
+##################
+# arm_xscale_le
+##################
+Intel/intel-iq80310-previewkit
+Intel/intel-iq80321-previewkit
+Intel/intel-dbpxa2xx-previewkit
+##################
+# mips_fp_be
+##################
+Broadcom/broadcom-bcm91250-previewkit
+MIPS/mips-malta-mips_fp_be-previewkit
+Toshiba/toshiba-rbhma3100-mips_fp_be-previewkit
+Toshiba/toshiba-rbhma4300-mips_fp_be-previewkit
+Toshiba/toshiba-rbhma4400-mips_fp_be-previewkit
+Toshiba/toshiba-rbhma4500-mips_fp_be-previewkit
+##################
+# mips_fp_le
+##################
+AMD/amd_alchemy-dbau1100-mips_fp_le-previewkit
+AMD/amd_alchemy-dbau1500-mips_fp_le-previewkit
+IDT/idt-79eb438-previewkit
+ITE/ite-it8172_qed5231-previewkit
+MIPS/mips-malta-mips_fp_le-previewkit
+NEC/nec-ddb-vr5xxxa-previewkit
+NEC/nec-ddb4131-previewkit
+NEC/nec-smvr4181a-previewkit
+NEC/nec-cmb-vr7701-previewkit
+Toshiba/toshiba-rbhma3100-mips_fp_le-previewkit
+Toshiba/toshiba-rbhma4300-mips_fp_le-previewkit
+Toshiba/toshiba-rbhma4400-mips_fp_le-previewkit
+Toshiba/toshiba-rbhma4500-mips_fp_le-previewkit
+#AMD/amd-ti1500-previewkit
+##################
+# mips_nfp_le
+##################
+ATI/ati-xilleon_x225-previewkit
+##################
+# ppc_405
+##################
+IBM/ibm-405ep_eval-previewkit
+IBM/ibm-405gp_eval-previewkit
+IBM/ibm-np4gs3_e405_ref-previewkit
+IBM/ibm-npe405h_ref-previewkit
+IBM/ibm-stb025xxx_eval-previewkit
+IBM/ibm-stb04xxx_eval-previewkit
+Xilinx/xilinx-ml300-previewkit
+#IBM/ibm-np4gs3_405pci_ref-previewkit
+##################
+# ppc_440
+##################
+IBM/ibm-440gp_eval-previewkit
+##################
+# ppc_74xx
+##################
+Force/force-pcore680-previewkit
+Marvell/marvell-ev64260-previewkit
+Motorola/motorola-mvme5100-previewkit
+Motorola/motorola-prpmc800-previewkit
+Motorola/motorola-sandpoint-previewkit
+##################
+# ppc_7xx
+##################
+Force/force-cpci690-previewkit
+Force/force-pcore6750-previewkit
+Force/force-pcore680-previewkit
+Force/force-powerpmc260-previewkit
+IBM/ibm-750_eval-previewkit
+IBM/ibm-np4gs3_pwrk2_ref-previewkit
+Marvell/marvell-ev64260-previewkit
+Motorola/motorola-mcp750-previewkit
+Motorola/motorola-mcpn750-previewkit
+Motorola/motorola-mcpn765-previewkit
+Motorola/motorola-mvme5100-previewkit
+Motorola/motorola-prpmc750-previewkit
+Motorola/motorola-sandpoint-previewkit
+SBS/sbs-k2-previewkit
+##################
+# ppc_82xx
+##################
+EmbeddedPlanet/embeddedplanet-ep8260-previewkit
+EST/est-sbc8260-previewkit
+Motorola/motorola-8260ads-previewkit
+Motorola/motorola-8266ads-previewkit
+Motorola/motorola-sandpoint-previewkit
+##################
+# ppc_85xx
+##################
+null
+##################
+# ppc_8xx
+##################
+EmbeddedPlanet/embeddedplanet-cllf-previewkit
+EmbeddedPlanet/embeddedplanet-rpxlite-previewkit
+Motorola/motorola-fads-previewkit
+Motorola/motorola-mbx860-previewkit
+##################
+# sh_sh3_be
+##################
+Hitachi/hitachi-ms7709sse01-sh_sh3_be-previewkit
+##################
+# sh_sh3_le
+##################
+Hitachi/hitachi-ms7709sse01-sh_sh3_le-previewkit
+##################
+# sh_sh4_be
+##################
+Hitachi/hitachi-ms7750rse01-sh_sh4_be-previewkit
+Hitachi/hitachi-ms7751rse01-sh_sh4_be-previewkit
+##################
+# sh_sh4_le
+##################
+Hitachi/hitachi-ms7750rse01-sh_sh4_le-previewkit
+Hitachi/hitachi-ms7751rse01-sh_sh4_le-previewkit
+##################
+# x86_486
+##################
+ZFMicro/zfmicro-zfx86ids-previewkit
+##################
+# x86_586
+##################
+Arcom/arcom-sbcgx1-previewkit
+generic_x86/generic_x86-pc_target-previewkit
+##################
+# x86_crusoe
+##################
+Hitachi/hitachi-webpad-previewkit
+##################
+# x86_pentium2
+##################
+Motorola/motorola-cpn5360-previewkit
+##################
+# x86_pentium3
+##################
+Force/force-cpci735-previewkit
+##################
+# x86_pentium4
+##################
+IBM/ibm-x335-previewkit
+##################
+# xtensa_linux_be
+##################
+Tensilica/tensilica-xt2000-xtensa_linux_be-previewkit
+##################
+# xtensa_linux_le
+##################
+Tensilica/tensilica-xt2000-xtensa_linux_le-previewkit
+##################
+# xtensa_linux_test
+##################
+Tensilica/tensilica-xt2000-xtensa_linux_test-previewkit
+##################
+# end
+##################
+

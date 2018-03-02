@@ -1,0 +1,404 @@
+#!/bin/bash
+#
+
+PRODUCTNAME="MontaVista Linux"
+EDITIONNAME="Professional Edition"
+VERSION=3.0
+EDITION=Professional
+CROSS_ROOT=/opt/montavista/devkit/x86/586/
+INSTROOT=$CROSS_ROOT/target
+FLOPPY_DEV=/dev/fd0
+FLOPPY_IMAGE=bootflop.img
+LSPNAME=
+KERNELNAME=vmlinuz-generic_x86-hhl_install
+KERNELVERSION=2.4.20_dev
+KERNELRELEASE="*.*"
+SERIAL=0,9600n8
+LOOP=false
+ZERO=false
+VERBOSE=verbose=0
+V=
+CHROOT=
+
+basename=`basename $0`
+
+function usage() {
+    echo "Usage: $basename --help"
+    echo "       $basename [ --output <imagefile> | --nooutput ]"
+    echo "                 [ --floppy $FLOPPY_DEV | <floppy-device> ]"
+    echo "                 [ --installroot <installroot> ]"
+    echo "                 [ --serial { $SERIAL | <serial-console> } |"
+    echo "                   --noserial ]"
+    echo "                 [ --zero ]"
+    echo "                 [ --verbose | --quiet ]"
+    echo "                 [ --version $VERSION | <product-version> ]"
+    echo "                 [ --kernelversion $KERNELVERSION | <kernel-version> ]"
+    echo "                 [ --kernelrelease $KERNELRELEASE | <kernel-release> ]"
+    echo "                 [ --edition Professional | CarrierGrade | 440mx ]"
+    echo "                 [ --lsp <hhl-install-lsp-rpm> ]"
+    echo "                 [ $KERNELNAME | <kernel-name> ]"
+}
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+
+    --help | -h)
+	usage
+	exit 0
+	;;
+
+    --output | -o)
+	shift
+	FLOPPY_IMAGE=$1
+	;;
+
+    --nooutput | -noo)
+	FLOPPY_IMAGE=
+	;;
+
+    --floppy | -f)
+	shift
+	FLOPPY_DEV=$1
+	LOOP=true
+	;;
+
+    --installroot | --prefix | -i)
+	shift
+	INSTROOT=$1
+	;;
+
+    --crossroot)
+	shift
+	CROSS_ROOT=$1
+	;;
+
+    --serial)
+	shift
+	SERIAL=$1
+	;;
+
+    --noserial)
+	SERIAL=
+	;;
+
+    --verbose | -v)
+	VERBOSE=verbose=1
+	V=-v
+	;;
+
+    --quiet | -q)
+	VERBOSE=verbose=0
+	V=
+	;;
+
+    --zero | -z)
+	ZERO=true
+	;;
+
+    --edition | -e | --product | -p)
+	shift
+	EDITION=$1
+	;;
+
+    --version)
+	shift
+	VERSION=$1
+	;;
+
+    --kernelversion)
+	shift
+	KERNELVERSION=$1
+	;;
+
+    --kernelrelease)
+	shift
+	KERNELRELEASE=$1
+	;;
+
+    --lspname | --lsp)
+	shift
+	LSPNAME=$1
+	;;
+
+    -*)
+	echo "Unrecognized option $1"
+	usage
+	exit 1
+	;;
+
+    *)
+	if [ $# -gt 1 ]
+	then
+	    usage
+	    exit 1
+	fi
+	KERNELNAME=$1
+	;;
+
+    esac
+
+    shift
+done
+
+if [ -n "$LSPNAME" ]
+then
+    # Install the RPMs so we can get the kernels
+    if rpm -q ${LSPNAME%%-*.x86_586.rpm}
+    then
+	rpm -e ${LSPNAME%%-*.x86_586.rpm}
+    fi
+    rpm -i --prefix $INSTROOT --ignorearch --force $LSPNAME
+fi
+
+# Put an ext2 filesystem on it
+if $LOOP || $ZERO
+then
+    fdformat /dev/fd0h1440
+    dd if=/dev/zero of=$FLOPPY_DEV bs=1024 count=1440
+fi
+/sbin/mke2fs -q -F -m0 $FLOPPY_DEV
+
+FLOPPY_MNT=$INSTROOT/floppy
+
+# mount it.
+mkdir $FLOPPY_MNT
+if $LOOP
+then
+    mount $V -t ext2 -w -o loop $FLOPPY_DEV $FLOPPY_MNT
+else
+    mount $V -t ext2 -w -o dev $FLOPPY_DEV $FLOPPY_MNT
+fi
+
+# Populate the disk image
+cd $FLOPPY_MNT
+rmdir lost+found
+mkdir boot dev etc 
+cp -p $INSTROOT/boot/*.b boot/
+cp -p $INSTROOT/boot/$KERNELNAME-$KERNELVERSION-$KERNELRELEASE boot/
+ln boot/$KERNELNAME-$KERNELVERSION-$KERNELRELEASE boot/$KERNELNAME-$KERNELVERSION
+ln boot/$KERNELNAME-$KERNELVERSION-$KERNELRELEASE boot/$KERNELNAME
+chmod 444 boot/*
+
+mknod -m 660 dev/fd0 b 2 0
+mknod -m 666 dev/null c 1 3
+
+case "$EDITION" in
+
+440mx | 440MX | intel-440mx-devel-kit)
+    EDITIONNAME="Intel 440MX Development Kit"
+    VGACMD="aic7xxx=no_probe"
+    SERIALCMD="aic7xxx=no_probe console=ttyS${SERIAL%,*}"
+    ;;
+
+CEE | cee | Consumer | consumer)
+    EDITIONNAME="Consumer Electronics Edition"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL}"
+    ;;
+
+CGE | cge | CarrierGrade | carriergrade)
+    EDITIONNAME="Carrier Grade Edition"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL}"
+    ;;
+
+Prof | Professional | prof | pro | professional)
+    EDITIONNAME="Professional Edition"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL}"
+    ;;
+
+Foundation | foundation)
+    EDITIONNAME="Foundation Edition"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL}"
+    ;;
+
+*)
+    $ECHO Unknown edition name \"$EDITION\".
+    EDITIONNAME=
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL}"
+    ;;
+    
+esac
+
+echo "$PRODUCTNAME $VERSION $EDITIONNAME Installer" >etc/message
+
+if [ -n "$SERIAL" ]
+then
+    cat >etc/lilo.conf <<EOF
+serial=${SERIAL}
+boot=/dev/fd0
+map=/boot/map
+install=/boot/boot.b
+message=/etc/message
+menu-title="Select install image and console:"
+compact
+prompt
+$VERBOSE
+timeout=200
+default=hda-vga
+image=/boot/$KERNELNAME
+        label=hda-vga
+	append="root=/dev/hda ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdb-vga
+	append="root=/dev/hdb ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdc-vga
+	append="root=/dev/hdc ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdd-vga
+	append="root=/dev/hdd ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd0-vga
+	append="root=/dev/scd0 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd1-vga
+	append="root=/dev/scd1 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hda-serial
+	append="root=/dev/hda ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdb-serial
+	append="root=/dev/hdb ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdc-serial
+	append="root=/dev/hdc ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdd-serial
+	append="root=/dev/hdd ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd0-serial
+	append="root=/dev/scd0 ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd1-serial
+	append="root=/dev/scd1 ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd2-vga
+	append="root=/dev/scd2 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd3-vga
+	append="root=/dev/scd3 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=nfs-vga
+        append="root=/dev/nfs ip=bootp $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd2-serial
+	append="root=/dev/scd2 ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd3-serial
+	append="root=/dev/scd3 ip=off $SERIALCMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=nfs-serial
+        append="root=/dev/nfs ip=bootp $SERIALCMD"
+	read-only
+EOF
+else
+    cat >etc/lilo.conf <<EOF
+boot=/dev/fd0
+map=/boot/map
+install=/boot/boot.b
+message=/etc/message
+compact
+prompt
+$VERBOSE
+timeout=200
+default=hda-vga
+image=/boot/$KERNELNAME
+        label=hda-vga
+	append="root=/dev/hda ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdb-vga
+	append="root=/dev/hdb ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdc-vga
+	append="root=/dev/hdc ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=hdd-vga
+	append="root=/dev/hdd ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd0-vga
+	append="root=/dev/scd0 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd1-vga
+	append="root=/dev/scd1 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd2-vga
+	append="root=/dev/scd2 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=scd3-vga
+	append="root=/dev/scd3 ip=off $VGACMD"
+	read-only
+image=/boot/$KERNELNAME
+        label=nfs-vga
+        append="root=/dev/nfs ip=bootp $VGACMD"
+	read-only
+EOF
+fi
+
+chmod 444 etc/*
+# Install the boot loader
+if [ -x $CROSS_ROOT/bin/lilo ]
+then
+LILO=$CROSS_ROOT/bin/lilo
+else
+    echo Error: No x86 target LILO available.  Cannot proceed.
+    cd -
+    umount $V $FLOPPY_MNT
+    rm -rf $FLOPPY_MNT
+    exit 1
+fi
+
+if $LILO -V &>/dev/null
+then
+   $LILO $V -r $INSTROOT/floppy -S /dev/null -b $FLOPPY_DEV
+else
+    echo Error: x86 target LILO not executable on this build system.
+    echo Error: Command was \"$LILO -V\".
+    cd -
+    umount $V $FLOPPY_MNT
+    rm -rf $FLOPPY_MNT
+    exit 1
+fi
+
+chown -R root.root $FLOPPY_MNT
+sync
+
+# Go back to the directory we started in, so we can unmount the loopback device
+cd -
+umount $V $FLOPPY_MNT
+rm -rf $FLOPPY_MNT
+
+if [ -n "$FLOPPY_IMAGE" ]
+then
+    dd if=$FLOPPY_DEV of=$FLOPPY_IMAGE bs=1024 count=1440
+fi
+
+exit 0

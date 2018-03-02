@@ -1,0 +1,193 @@
+#!/usr/bin/python
+import string
+
+global hosts, nodes
+
+hosts = {}
+nodes = []
+bfnode = "null"
+####################
+# foundation builds:
+####################
+if product == 'scripttest':
+  hosts = { }
+  nodes = string.split('node-32', ' ')
+  bfnode = 'node-32'
+
+elif product in ('dev','devstaging'):
+  hosts = {
+     'windows2000': (['cygwin-1','cygwin-2','cygwin-3','cygwin-5','cygwin-6'], 'buildcygwin',
+                       '/home/build/dailybuild'),
+     'solaris7': (['solaris8-1','solaris8-2','solaris8-3','solaris8-4','solaris8-5','solaris8-6','solaris8-7'],
+                   'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+  bfnode = 'node-6'
+
+elif product == 'stb':
+  hosts = { }
+  nodes = string.split('node-32', ' ')
+  bfnode = 'node-32'
+
+elif product == 'fe':
+  hosts = {
+      'solaris7': (['solaris8-1','solaris8-2','solaris8-3','solaris8-4','solaris8-5','solaris8-6','solaris8-7'],
+                    'buildsparc', '/opt/dailybuild'),
+      'windows2000': (['cygwin-1','cygwin-2','cygwin-3','cygwin-5','cygwin-6'], 'buildcygwin',
+                       '/home/build/dailybuild'),
+          }
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+  bfnode = 'node-18'
+
+elif product == 'asyncfe':
+  hosts = {
+      'windows2000': (['cygwin-5','cygwin-6','cygwin-8'], 'buildcygwin',
+                       '/home/build/dailybuild'),
+      'solaris7': (['solaris8-4','solaris8-5','solaris8-6','solaris8-7'],
+                   'buildsparc', '/opt/dailybuild')
+          }
+  #nodes = string.split('node-16 node-13 node-14', ' ')
+  #nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17', ' ')
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17', ' ')
+  bfnode = 'node-6'
+
+elif product == 'asyncthumb':
+  hosts = {
+      'windows2000':  (['cygwin-4',], 'buildcygwin','/home/build/dailybuild'),
+          }
+#  nodes = string.split('node-16', ' ')
+  nodes = string.split('node-5', ' ')
+
+elif product == 'mips64':
+  hosts = {
+      'windows2000':  (['cygwin-2',], 'buildcygwin','/home/build/dailybuild'),
+      'solaris7':     (['solaris8-5',], 'buildsparc', '/opt/dailybuild')
+          }
+  nodes           = string.split('node-10 node-11', ' ')
+
+################
+# eclipse builds
+################
+elif product == 'feeclipse':		# use for dev eclipse build only, not dev rocket 1.0 for cge
+  hosts = {
+      'windows2000':  (['cygwin-1',], 'buildcygwin','/home/build/dailybuild'),
+      'solaris7':  (['solaris8-5',], 'buildsparc', '/opt/dailybuild'),
+          }
+  nodes = string.split('node-10 node-11 node-12 node-17 node-18', ' ')	# use for dev rocket 1.1 (pro adk)
+  #nodes = string.split('node-1 node-2 node-3 node-4 node-5', ' ')	# use for dev rocket 1.0 for cge
+
+elif product == 'deveclipse':
+  hosts = {
+      'windows2000':  (['cygwin-3',], 'buildcygwin','/home/build/dailybuild'),
+      'solaris7':     (['solaris8-3',], 'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-18 node-17 node-20', ' ')
+
+elif product == 'ceeeclipse':
+  hosts = {
+      'windows2000':  (['cygwin-4',], 'buildcygwin','/home/build/dailybuild'),
+      'solaris7':  (['solaris8-5',], 'buildsparc', '/opt/dailybuild'),
+          }
+  nodes = string.split('node-16 node-13 node-14', ' ')
+
+elif product == 'proeclipse':
+  hosts = {
+      'windows2000': (['cygwin-1','cygwin-2','cygwin-3','cygwin-5'], 'buildcygwin','/home/build/dailybuild'),
+      'solaris7':    (['solaris8-1','solaris8-2','solaris8-3','solaris8-4','solaris8-5','solaris8-6','solaris8-7'],
+                       'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-7 node-8 node-9 node-10 node-11 node-12 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+
+################
+# edition builds
+################
+elif product == 'pro':
+  hosts = {
+     'windows2000': (['cygwin-1','cygwin-2','cygwin-3','cygwin-5','cygwin-6'],
+                       'buildcygwin','/home/build/dailybuild'),
+     'solaris7': (['solaris8-1','solaris8-2','solaris8-3','solaris8-4','solaris8-5','solaris8-6','solaris8-7'],
+                    'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+  bfnode = 'node-18'
+
+elif product == 'prodb':
+  hosts = {
+      'windows2000': (['cygwin-1','cygwin-2','cygwin-3','cygwin-5'],
+                       'buildcygwin','/home/build/dailybuild'),
+      'solaris7': (['solaris8-1','solaris8-2','solaris8-3','solaris8-4','solaris8-5','solaris8-6','solaris8-7'],
+                    'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+  bfnode = 'node-18'
+
+elif product == 'propk':
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+
+elif product == 'proadk':
+  hosts = {
+      'windows2000': (['cygwin-1','cygwin-2','cygwin-3'], 'buildcygwin','/home/build/dailybuild'),
+      'solaris7':    (['solaris8-1','solaris8-2','solaris8-3','solaris8-4','solaris8-5','solaris8-6','solaris8-7'],
+                       'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+
+elif product == 'proasync':
+  hosts = {
+      'windows2000': (['cygwin-1','cygwin-2','cygwin-3','cygwin-5'], 'buildcygwin',
+                       '/home/build/dailybuild'),
+      'solaris7': (['solaris8-1','solaris8-2','solaris8-3','solaris8-5','solaris8-6','solaris8-7','solaris8-4'],
+                    'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-6 node-7 node-8 node-9 node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+  bfnode = 'node-18'
+
+elif product == 'prom64async':
+  hosts = {
+      'windows2000':  (['cygwin-5',], 'buildcygwin','/home/build/dailybuild'),
+      'solaris7':     (['solaris8-4',], 'buildsparc', '/opt/dailybuild')
+          }
+  nodes = string.split('node-6', ' ')
+  bfnode = 'node-18'
+
+elif product == 'cge':
+  hosts = {
+      'solaris7':  (['solaris8-8',], 'buildsparc', '/opt/dailybuild'),
+          }
+  nodes = string.split('node-1 node-2 node-3 node-4', ' ')
+ # nodes = string.split('node-5', ' ')
+  bfnode = 'node-1'
+
+elif product == 'cgeadk':
+  hosts = {
+      'solaris7':  (['solaris8-8',], 'buildsparc', '/opt/dailybuild'),
+          }
+  nodes = string.split('node-1 node-2 node-3 node-4 node-5', ' ')
+ # nodes = string.split('node-5', ' ')
+  bfnode = 'node-1'
+
+elif product == 'cee':
+  hosts = {
+      'windows2000':  (['cygwin-4',], 'buildcygwin','/home/build/dailybuild'),
+          }
+  nodes = string.split('node-16 node-13 node-14', ' ')
+
+elif product == 'bst':
+  hosts = { }
+  nodes = string.split('node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31', ' ')
+
+elif product == 'krapalua':
+  hosts = {
+      'windows2000':  (['cygwin-8',], 'buildcygwin','/home/build/dailybuild'),
+          }
+  nodes = string.split('node-16 node-13 node-14', ' ')
+  #nodes = string.split('node-14', ' ')
+
+elif product == 'krapthumb':
+  hosts = {
+      'windows2000':  (['cygwin-8',], 'buildcygwin','/home/build/dailybuild'),
+          }
+  nodes = string.split('node-16', ' ')
+
+else:
+  print "Unknown product: " + product

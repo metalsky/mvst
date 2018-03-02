@@ -1,0 +1,172 @@
+#!/bin/bash
+
+#
+# put some words here
+#
+
+recipients="fetemadieh@mvista.com morvek@mvista.com gilbert@mvista.com"
+
+reponame=mvl-kernel
+reporoot=:local:/export/cvsdev/mvl-kernel
+repomodule=linux
+repobranch=sony-mei
+reposedbefore=/export/cvsdev/mvl-kernel/
+repoarches="linux/arch/arm linux/arch/mips"
+reporeferencefile=COPYING
+tagprefix=consumer_snapshot_
+tarbaseprefix=linux-mvlcee-
+
+# A temporary area that has lots of space in it
+tmp=/export/build
+
+# Other constants and derived values
+cvs2cl=~/cvs2cl/cvs2cl.pl
+changelogfile=mvlceeChangelog
+date=$(date +%y%m%d)
+newtag=${tagprefix}${date}
+tarbase=${tarbaseprefix}${date}
+tarfile=${tarbase}.tar.bz2
+filelist=mvlceefiles
+sedscript=sedscript
+
+
+# This bizarre expression determines if this is an even or an odd week.
+# We do snapshot drops every other friday.  Crontab will call this script
+# every friday.  On the odd weeks, we just do nothing.
+
+evenweek=$( expr "(" "(" $(date +%s) / 86400 - 3 ")" % 14 ")" / 7 )
+if [ "$evenweek" = 1 ]; then
+#	echo wrong week
+	exit
+fi
+
+
+# Determine previous tag
+
+previoustag=$(cvs -Q -l -d${reporoot} -q rlog $repomodule/$reporeferencefile \
+		| grep "^	${tagprefix}" \
+		| sed -e "s/.*\($tagprefix[^:]*\).*/\1/" \
+		| sort \
+		| tail -1 )
+
+if [ "$previoustag" = "" ]; then
+	echo "Error -- couldn't determine previous tag"
+	exit 1
+fi
+
+if [ "$previoustag" = "$newtag" ]; then
+	echo "Error -- previoustag is the same as newtag"
+	exit 1
+fi
+
+# Prepare work area
+
+if [ "$tmp" = "" ]; then
+	echo "Error -- tmp variable setting is empty"
+	exit 1
+fi
+
+if ! cd $tmp; then
+	echo "Error -- couldn't cd to tmp dir"
+	exit 1
+fi
+
+# Generate list of files to be delivered
+
+cvs -Q -l -d${reporoot} rlog -R $repomodule \
+| sed -e "s=^${reposedbefore}\(.*\),v$=\1=" -e "s=Attic/==" > ${filelist}.tmp
+
+grep -v "^${repomodule}/arch/" ${filelist}.tmp > $filelist
+for i in ${repoarches}; do grep "^${i}/" ${filelist}.tmp >> $filelist; done
+rm ${filelist}.tmp
+
+# Tag files
+
+cat $filelist | xargs cvs -Q -l -d${reporoot} rtag -r${repobranch} ${newtag}
+
+# Get changelog
+# 	ASSUMPTION: we're still in the $tmp directory
+
+# This sedscript:
+#	munges the output of cvs rlog to look like cvs log
+#	prunes all but the interesting symbolic tags from the cvs rlog output
+
+cat > $sedscript <<SEDSCRIPT
+\=^RCS file: ${reposedbefore}.*,v$={
+	p
+	s=^RCS file: ${reposedbefore}\(.*\),v$=Working file: \1=
+	s=Attic/==
+}
+\=^symbolic names:=,\=^[^	]={
+	\=	={
+		\=^	${repobranch}: ={
+			p
+		}
+		\=^	${previoustag}: ={
+			p
+		}
+		\=^	${newtag}: ={
+			p
+		}
+		d
+	}
+}
+SEDSCRIPT
+
+cat $filelist \
+    | xargs cvs -Q -l -d${reporoot} rlog \
+	 "-r$repobranch,$previoustag::$newtag,$newtag" 2>/dev/null \
+    | sed -f $sedscript \
+    | $cvs2cl --stdin \
+	--stdout \
+	--separate-header \
+	--no-wrap \
+	--follow $repobranch \
+	--delta $previoustag:$newtag > $tmp/$changelogfile
+
+# Use CVS export to create tarfile
+#	ASSUMPTION: still in the $tmp directory
+
+rm -rf $tarbase ${tarbase}.tar.bz2
+cvs -Q -l -d$reporoot export -r $newtag -d $tarbase $repomodule
+tar cf - $tarbase | bzip2 -c -9 > $tarfile
+rm -rf $tarbase
+
+# Create email message
+
+cat << HEADER > $tmp/message
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+
+HEADER
+
+cat << MESSAGE | fmt >> $tmp/message
+Dear CVS snapshot reviewer,
+
+This is the CVS snapshot script running on $(hostname).
+
+There is a new CVS snapshot available.  The Changelog is appended for
+your review.  The snapshot can be found on the machine $(hostname) here:
+	$tmp/$tarfile
+
+The tag "$newtag" was created in $reponame.  This tag was
+applied to the "$repomodule" module, excluding the linux/arch directory,
+but then including $repoarches.
+
+The Changelog represents the checkins along the "$repobranch" branch
+since the "$previoustag" tag up to and including
+"$newtag".
+
+Enjoy!
+MESSAGE
+
+# Send email message
+
+metasend -b -t "$recipients" -s "CVS snapshot available" \
+	 -f $tmp/message -m text/plain -e 7bit -E \
+	 -n \
+	 -f $tmp/$changelogfile -m text/plain -e 7bit -D $changelogfile
+
+# Clean up
+
+rm $tmp/$changelogfile $tmp/message $tmp/$filelist $tmp/$sedscript

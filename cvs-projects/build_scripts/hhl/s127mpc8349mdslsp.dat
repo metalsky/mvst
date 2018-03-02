@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+lsps = {
+	'ppc_83xx':                [
+                                        ['Freescale','freescale-mpc8349mds'],
+                                        ],
+	}

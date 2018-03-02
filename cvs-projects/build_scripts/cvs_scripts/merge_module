@@ -1,0 +1,63 @@
+#!/bin/sh
+
+if [ "$1" = "-m" ] ; then
+    MERGE_COMMENT="$2"
+    shift 2
+else
+    MERGE_COMMENT=""
+fi
+
+# Make sure a module name is specified
+if [ "$1" = "" ] ; then
+    echo "Usage:  $0 [ -m \"<merge_comment>\" ] <module>" >&2
+    exit 1
+fi
+
+# Get true module name and "RCS-safe" module name
+MODULE=$1
+MODULE_UPPER=$(echo $MODULE | tr "[:lower:]." "[:upper:]_")
+
+# Must be in a directory where it's safe to check out the module
+if [ -e "${MODULE}" ] ; then
+    echo "\"${MODULE}\" exists in current directory; cannot proceed" >&2
+    exit 1
+fi
+
+# Module branches to work on
+FROM="DEV"
+TO="stable"
+
+if cvs co -r ${TO} ${MODULE} ; then
+    if [ "${FROM}" = "DEV" ] ; then
+	BRANCH=""
+    else
+	BRANCH="-r ${FROM}"
+    fi
+
+    MERGE_TAG=${MODULE_UPPER}_MERGED_${FROM}_TO_${TO}
+    CURRENT_TAG=${MODULE_UPPER}_CURRENT_${FROM}
+
+    if cvs log -h libopt|sed -ne "/^	[^:]*: [0-9]/p"|grep -q ${MERGE_TAG}
+    then
+	BASE_VERSION="-j ${MERGE_TAG}"
+    else
+	BASE_VERSION=""
+    fi
+
+    if cvs rtag -F ${BRANCH} ${CURRENT_TAG} ${MODULE}; then
+	if cvs update ${BASE_VERSION} -j ${CURRENT_TAG} ${MODULE}; then
+	    if [ "${MERGE_COMMENT}" != "" ] ; then
+		cvs commit -m "${MERGE_COMMENT}" ${MODULE}
+		COMMIT_STATUS=$?
+	    else
+		cvs commit ${MODULE}
+		COMMIT_STATUS=$?
+	    fi
+	    if [ $COMMIT_STATUS -eq 0 ] ; then
+		cvs rtag -F -r ${CURRENT_TAG} ${MERGE_TAG} ${MODULE}
+	    fi
+	fi
+	cvs rtag -d ${CURRENT_TAG} ${MODULE}
+    fi
+    cvs -Q release -d ${MODULE}
+fi

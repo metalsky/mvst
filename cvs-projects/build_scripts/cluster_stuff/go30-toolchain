@@ -1,0 +1,126 @@
+#!/bin/bash
+
+hn="$(hostname -s)"
+if [ "$hn" = "node-7" ]; then
+  archs="sh_sh4_be"
+elif [ "$hn" = "node-8" ]; then
+  archs="x86_486"
+elif [ "$hn" = "node-9" ]; then
+  archs="arm_xscale_le"
+elif [ "$hn" = "node-10" ]; then
+  archs="mips_fp_be"
+elif [ "$hn" = "node-11" ]; then
+  archs="ppc_7xx"
+elif [ "$hn" = "node-6" ]; then
+  archs="mips_nfp_le"
+elif [ "$hn" = "node-12" ]; then
+  archs="arm_sa_be"
+elif [ "$hn" = "node-18" ]; then
+  archs="xtensa_linux_be xtensa_linux_le"
+elif [ "$hn" = "node-19" ]; then
+  archs="sh_sh3_be sh_sh4_le"
+elif [ "$hn" = "node-20" ]; then
+  archs="x86_pentium3"
+elif [ "$hn" = "node-22" ]; then
+  archs="arm_920t_le"
+elif [ "$hn" = "node-23" ]; then
+  archs="arm_sa_le"
+elif [ "$hn" = "node-24" ]; then
+  archs="mips_fp_le"
+elif [ "$hn" = "node-25" ]; then
+  archs="ppc_405"
+elif [ "$hn" = "node-26" ]; then
+  archs="arm_720t_le"
+elif [ "$hn" = "node-21" ]; then
+  archs="x86_crusoe"
+elif [ "$hn" = "node-27" ]; then
+  archs="arm_xscale_be"
+elif [ "$hn" = "node-28" ]; then
+  archs="ppc_8xx"
+elif [ "$hn" = "node-29" ]; then
+  archs="x86_586 x86_pentium2"
+elif [ "$hn" = "node-30" ]; then
+  archs="sh_sh3_le"
+elif [ "$hn" = "node-31" ]; then
+  archs="ppc_82xx ppc_74xx"
+fi
+
+apps="$1"
+type="$2"
+bug="$3"
+
+for p in $apps; do
+  for a in $archs; do
+    if [ "$a" = "mips_nfp_le" ]; then
+      rpmdir="mvl300_x225"
+    elif [ "$a" = "xtensa_linux_be" ] || [ "$a" = "xtensa_linux_le" ]; then
+       rpmdir="mvl300_xtensa"
+    else
+      rpmdir="mvl3.0.0"
+    fi
+    rm -rf /opt/hardhat/*
+    cp -a /var/lib/rpm /opt/hardhat/rpmdb
+    cd /mvista/release_area/"$rpmdir"/host/common/optional/
+    rpm --dbpath /opt/hardhat/rpmdb -i *.rpm
+    cd /mvista/release_area/"$rpmdir"/host/common
+    rpm --dbpath /opt/hardhat/rpmdb -i *file* *ldd* *python* *setperm* *targetconf*
+    if [ "$a" = "xtensa_linux_be" ] || [ "$a" = "xtensa_linux_le" ]; then
+      rpm --dbpath /opt/hardhat/rpmdb -i *rpmconfig* *platformtest*
+    fi
+    cd /mvista/release_area/"$rpmdir"/host/cluster
+    rpm --dbpath /opt/hardhat/rpmdb -i *.rpm
+    if [ "$p" = "ramdisk" ]; then
+      cd /home/build/toolchain/e2fsprogs
+      rpm --dbpath /opt/hardhat/rpmdb -i RPMS/i386/*.rpm
+    fi
+    cd /mvista/release_area/"$rpmdir"/$a/cross/common
+    rpm --dbpath /opt/hardhat/rpmdb -i *.rpm
+    cd /mvista/release_area/"$rpmdir"/$a/cross/cluster
+    if [ "$p" = "gcc" ] && [ "$type" = "cross" ]; then
+      rpm --dbpath /opt/hardhat/rpmdb -i *binutils* *hardhatutils* *ksymoops* *ldd* *linux86*
+    elif [ "$p" = "gcc" ] && [ "$type" = "target" ]; then
+      rpm --dbpath /opt/hardhat/rpmdb -i *binutils* *hardhatutils* *ksymoops* *ldd* *linux86*
+      rpm --dbpath /opt/hardhat/rpmdb -i /mvista/dev_area/mvl3.0.0-updates/gcc-$bug/$a/cross/cluster/*.rpm
+    #elif [ "$p" = "gdb" ] && [ "$type" = "target" ]; then
+    #  ls | grep -v gdb | xargs rpm --dbpath /opt/hardhat/rpmdb -i
+    #  rpm --dbpath /opt/hardhat/rpmdb -i /mvista/release_area/mvl3.0.0-updates/gdb-$bug/$a/cross/cluster/*gdb*
+    else
+      rpm --dbpath /opt/hardhat/rpmdb -i *.rpm
+    fi
+    cd /mvista/release_area/"$rpmdir"/$a/target
+    if [ "$p" = "glibc" ]; then
+      rpm --dbpath /opt/hardhat/rpmdb -i --ignorearch *filesystem* *kernel-headers*
+    elif [ "$p" = "gcc" ]; then
+      rpm --dbpath /opt/hardhat/rpmdb -i --ignorearch *filesystem* *kernel-headers* *binutils* *glibc*
+    elif [ "$p" = "ramdisk" ]; then
+      rpm --dbpath /opt/hardhat/rpmdb -i --ignorearch *.rpm
+    else
+      rpm --dbpath /opt/hardhat/rpmdb -i --ignorearch *filesystem* *kernel-headers* *binutils* *glibc* *ncurses* *gcc* *cpp* *g++* *libstdc++* *protoize* *flex* *libwrap* *zlib* *libpam* *libtool*
+    fi
+    cd ~/toolchain/$p
+    if [ "$type" = "cross" ]; then
+      if [ "$p" = "gcc" ]; then
+        ~/bin/mkappnoclean `pwd` mvl3.0.0 $a cross-"$p"3.2 /opt/hardhat/rpmdb ~/.perpmrc rpm > /mvista/dev_area/logs/mvl3.0.0-updates/$p-$bug/$a.log 2>&1
+      else
+        ~/bin/mkappnoclean `pwd` mvl3.0.0 $a cross-$p /opt/hardhat/rpmdb ~/.perpmrc rpm > /mvista/dev_area/logs/mvl3.0.0-updates/$p-$bug/$a.log 2>&1
+      fi
+      if [ -d RPMS/i386 ]; then
+        mkdir -p /mvista/dev_area/mvl3.0.0-updates/$p-$bug/$a/cross/cluster
+        cp RPMS/i386/*$a* /mvista/dev_area/mvl3.0.0-updates/$p-$bug/$a/cross/cluster
+      elif [ -d RPMS/noarch ]; then
+        mkdir -p /mvista/dev_area/mvl3.0.0-updates/$p-$bug/$a/cross/common
+        cp RPMS/noarch/*$a* /mvista/dev_area/mvl3.0.0-updates/$p-$bug/$a/cross/common
+      fi
+    elif [ "$type" = "target" ]; then
+      if [ "$p" = "gcc" ]; then
+        ~/bin/mkappnoclean `pwd` mvl3.0.0 $a target-"$p"3.2 /opt/hardhat/rpmdb ~/.perpmrc rpm > /mvista/dev_area/logs/mvl3.0.0-updates/$p-$bug/target-$a.log 2>&1
+      else
+        ~/bin/mkappnoclean `pwd` mvl3.0.0 $a target-$p /opt/hardhat/rpmdb ~/.perpmrc rpm > /mvista/dev_area/logs/mvl3.0.0-updates/$p-$bug/target-$a.log 2>&1
+      fi
+      mkdir -p /mvista/dev_area/mvl3.0.0-updates/$p-$bug/$a/target
+      cp RPMS/$a/* /mvista/dev_area/mvl3.0.0-updates/$p-$bug/$a/target
+    fi
+    mkdir -p /mvista/dev_area/mvl3.0.0-updates/$p-$bug/SRPMS
+    cp -f SRPMS/* /mvista/dev_area/mvl3.0.0-updates/$p-$bug/SRPMS
+  done
+done

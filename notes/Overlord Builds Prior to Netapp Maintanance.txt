@@ -1,0 +1,71 @@
+2009-02-06
+OVERLORD Builds Prior to Netapp Maintanance::
+
+13686 root     S  \_ /USR/SBIN/CRON
+13687 build    S  |   \_ /usr/bin/python /home/build/bin/launch.py --product cge --build_script_branch foundation_three_branch --prefix pebblecreek
+13867 build    S  |   |   \_ /usr/bin/python ./buildhhl.py cge pebblecreek090205_0900218 0900218 foundation_three_branch pebblecreek090204_0900208
+23993 build    S  |   |       \_ sh -c /home/build/pebblecreek090205_0900218-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/pebblecreek090205_0900218-exp/CVSREPOS/build_scripts/hhl/pebblec
+23994 build    S  |   |           \_ /usr/bin/python /home/build/pebblecreek090205_0900218-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/pebblecreek090205_0900218-exp/CVSREPOS/build_scrip
+13851 107      S  |   \_ /usr/sbin/sendmail -i -FCronDaemon -oem build@mvista.com
+
+
+27797 root     S  \_ /USR/SBIN/CRON
+27798 build    S  |   \_ /usr/bin/python /home/build/bin/launch.py --product pro --build_script_branch HEAD --prefix jackalope
+27980 build    S  |   |   \_ /usr/bin/python ./buildhhl.py pro jackalope090205_0900219 0900219 HEAD jackalope090129_0900171
+27992 build    S  |   |       \_ sh -c /home/build/jackalope090205_0900219-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/jackalope090205_0900219-exp/CVSREPOS/build_scripts/hhl/jackalope09
+27993 build    S  |   |           \_ /usr/bin/python /home/build/jackalope090205_0900219-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/jackalope090205_0900219-exp/CVSREPOS/build_scripts/h
+27963 107      S  |   \_ /usr/sbin/sendmail -i -FCronDaemon -oem build@mvista.com
+
+
+25413 root     S  \_ /USR/SBIN/CRON
+25415 build    S  |   \_ /usr/bin/python /home/build/bin/launch.py --product fe --build_script_branch HEAD --prefix f2624_
+25601 build    S  |   |   \_ /usr/bin/python ./buildhhl.py fe f2624_090205_0900221 0900221 HEAD f2624_090203_0900205
+25613 build    S  |   |       \_ sh -c /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/f2624_090205_0900
+25615 build    S  |   |       |   \_ /usr/bin/python /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/f26
+25633 build    S  |   |       \_ sh -c /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/buildmvcygwin /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/../.. f2624_0902
+25634 build    S  |   |           \_ /bin/bash /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/buildmvcygwin /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/../.. f2
+28256 build    S  |   |               \_ /bin/bash /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/buildmvcygwin /home/build/f2624_090205_0900221-exp/CVSREPOS/build_scripts/hhl/../.
+28257 build    S  |   |               |   \_ ssh -p 322 cygwin-16 export HOME=/home/build; cd /home/build/dailybuild; rpmbuild -ba --define "_topdir /home/build/dailybuild" --define "_mvl_build_id
+28258 build    S  |   |               \_ tee tmp.log
+25584 107      S  |   \_ /usr/sbin/sendmail -i -FCronDaemon -oem build@mvista.com
+
+
+27007 root     S  \_ /USR/SBIN/CRON
+27009 build    S      \_ /usr/bin/python /home/build/bin/launch.py --product mobilinux --build_script_branch blacktop_branch --prefix blacktop --email bhoos@mvista.com,jlewis@mvista.com
+27195 build    S      |   \_ /usr/bin/python ./buildhhl.py mobilinux blacktop090205_0900222 0900222 blacktop_branch blacktop090204_0900215 bhoos@mvista.com,jlewis@mvista.com
+28140 build    S      |       \_ ssh node-46 cd /home/build/blacktop090205_0900222-exp/CVSREPOS/build_scripts/hhl; ./buildtargetapps.py /home/build/blacktop090205_0900222-exp/CVSREPOS/build_scripts
+
+
+2009-02-08
+OVERLORD Builds Prior to Netapp Failure::
+
+ 3669 root     S /usr/sbin/cron
+24641 root     S  \_ /USR/SBIN/CRON
+24643 build    S  |   \_ /usr/bin/python /home/build/bin/launch.py --product devrocket52 --build_script_branch foundation_three_branch --prefix drfivetwo
+26227 build    S  |   |   \_ /usr/bin/python ./buildhhl.py devrocket52 drfivetwo090207_0900228 0900228 foundation_three_branch drfivetwo090206_0900223
+26243 build    S  |   |       \_ sh -c /home/build/drfivetwo090207_0900228-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/drfivetwo090207_0900228-exp/CVSREPOS/build_scripts/h
+hl/drfivetwo090207_0900228.dat > /mvista/dev_area/devrocket/devrocket_52/drfivetwo090207_0900228/logs/buildprep-0900228.log 2>&1
+26244 build    S  |   |           \_ /usr/bin/python /home/build/drfivetwo090207_0900228-exp/CVSREPOS/build_scripts/hhl/buildprep.py /home/build/drfivetwo090207_0900228-exp/CVSREPOS/b
+uild_scripts/hhl/drfivetwo090207_0900228.dat
+26246 build    S  |   |               \_ cvs -Q -d :ext:cvs.sh.mvista.com:/mnt/cvs/tsuki rtag -R -F -r HEAD drfivetwo090207_0900228 .
+26247 build    S  |   |                   \_ ssh cvs.sh.mvista.com cvs server
+25825 107      S  |   \_ /usr/sbin/sendmail -i -FCronDaemon -oem build@mvista.com
+
+
+10214 root     S  \_ /USR/SBIN/CRON
+10216 build    S      \_ /usr/bin/python /home/build/bin/launch.py --product mobilinux --build_script_branch blacktop_branch --prefix blacktop --email bhoos@mvista.com,jlewis@mvista.com
+10372 build    S      |   \_ /usr/bin/python ./buildhhl.py mobilinux blacktop090207_0900231 0900231 blacktop_branch blacktop090206_0900227 bhoos@mvista.com,jlewis@mvista.com
+16385 build    S      |       \_ ssh node-46 cd /home/build/blacktop090207_0900231-exp/CVSREPOS/build_scripts/hhl; ./buildlsp.py /home/build/blacktop090207_0900231-exp/CVSREPOS/build_
+scripts/hhl/blacktop090207_0900231.dat arm_v6_vfp_le centos3 > /mvista/dev_area/mobilinux/blacktop090207_0900231/logs/lsp-arm_v6_vfp_le-0900231.log 2>&1
+10364 107      S      \_ /usr/sbin/sendmail -i -FCronDaemon -oem build@mvista.com
+
+
+
+
+
+build@rodan:~> ls -la /mnt/cvs/tsuki/pib/com.mvista.devtools.pib.cheatsheets/src/com/mvista/devtools/pib/cheatsheets
+total 16
+-rw-rw-rw-    1 sed      cvs             0 Feb  5 18:34 #cvs.rfl.rodan.28658
+drwxrwsr-x    2 lwharton cvs          4096 Feb  8 10:00 .
+drwxrwsr-x    3 lwharton cvs          4096 Feb  8 10:00 ..
+-r--r--r--    1 build    cvs          6721 Feb  5 03:10 Activator.java,v

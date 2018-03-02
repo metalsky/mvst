@@ -1,0 +1,104 @@
+copydir         = '/mvista/dev_area/foundation'
+nodetype	= 'node'
+#nodetype	= 'node'
+# the cvspaths dictionary is used to indicate the paths to the repositories in 
+# the build, as well as the branches they use
+cvspaths = {
+	'mvl-kernel-26':        [homepath + '/mvl-kernel-26',   "foundation_five_branch"],
+	'lsp':                  [homepath + '/lsp',             "null"],
+	'mvlt':                 [homepath + '/mvlt',            "null"],
+	'toolchain':		[homepath + '/toolchain',	"foundation_three_branch"],
+	'mvl-installer':	[homepath + '/mvl-installer',	"null"],
+	'userland':		[homepath + '/userland',	"null"],
+	}
+runqa		= 0
+mkvert		= 0
+version		= '5.0'
+#btype		= 'Foundation Five Userland'
+btype		= 'Foundation Userland'
+varstr		= 'Foundation_Edition'          # for devrocket
+libraryapps	= scriptpath + '/libraryapps.dat'
+appsfile	= scriptpath + '/commonapps.dat'
+em64tapps	= scriptpath + '/em64tapps.dat'
+mips64apps	= scriptpath + '/mips64apps.dat'
+ppc9xxapps	= scriptpath + '/ppc_9xxapps.dat'
+lspdat		= scriptpath + '/lsp.dat'
+selfhosttarget	= 'x86_586'
+edition		= 'foundation'
+chroothosts	= ( 'centos3',)
+selinux		= 'yes'
+
+targethost	= 'centos3'
+all_targets     = (
+	'x86_586',
+	'x86_586_uclibc',
+	'arm_v6_vfp_le',
+	'arm_v6_vfp_le_uclibc',
+	'mips64_fp_be',
+	'mips64_fp_be-64',
+	) 
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps   = { 'userland': ['gettext','libtool','bison','make','mvlutils','diff','m4',
+                                 'texinfo','minicom','dtc','mozilla-devel','patch','expat',
+                                 'python','sed','libxml2','apt-rpm','mkinitramfs'],
+		    'toolchain': ['elfutils',],
+		}
+brhhostapps	= { 'userland': ['apt-rpm','zsrec','mvlutils','cscope','cvs','lesstif','ddd','tftp-hpa',
+				'e2fsprogs','pkgconfig','quilt','netperf','dhcp','tsload',
+				'doxygen','nasm','mkimage','makedev','libpng',
+				'freetype','xorg-x11','glib','libIDL'],
+		    'mvlt':	['fstools',],
+		}
+brhnoarchapps	= { 'common':       ['filesystem','gettext','mvlutils','autoconf','automake',
+				     'db2html'],
+
+	            'host':         ['filesystem','dejagnu','eclipse-templates','eclipse-edition'], }
+
+# here are the definitions for apps built in buildcore.py
+path = cvspaths['userland'][0]
+toolpath = cvspaths['toolchain'][0]
+crosseclipseinstall = 'eclipse-enabler-arch-' + edition
+crosseclipseadkinstall = 'eclipse-enabler-arch-' + edition + '_adk'
+# crossapps = { string:            [path,type,directory,spec,rpm type,extra,[install]]
+crossapps = { 
+	'a': [toolpath,'cross','glibc','glibc-utils','hostarch','',['glibc-utils',]],
+	'b': [path,'cross','libtool','libtool','noarch','',['libtool',]],
+        'c': [toolpath,'target','binutils','binutils','hostarch','',['binutils',]],
+        'd': [toolpath,'target','gcc','gcc','hostarch','',['gcc',]],
+        'e': [toolpath,'cross','prelink','prelink','hostarch','',['prelink','ldd']],
+        'f': [toolpath,'cross','gdb','gdb','hostarch','',['gdb',]],
+        'g': [path,'cross','linux86','linux86','hostarch','',['linux86',]],
+        'h': [path,'cross','mvlutils','mvlutils','hostarch','',['mvlutils',]],
+        'i': [path,'cross','ksymoops','ksymoops','hostarch','',['ksymoops',]],
+        'j': [path,'cross','glib','glib','hostarch','',['glib',]],
+        'k': [path,'cross','audiofile','libaudiofile','noarch','',['libaudiofile',]],
+        'l': [path,'cross','freetype','freetype','noarch','',['freetype',]],
+        'm': [path,'cross','libxml2','libxml2','noarch','',['libxml2',]],
+        'n': [path,'cross','apache','apache-dev','hostarch','',['apache-dev',]],
+        'o': [path,'cross','lilo','lilo','hostarch','',['lilo',]],
+        'p': [path,'cross','eclipse-templates','eclipse-arch','noarch','',[crosseclipseinstall,]],
+        'q': [path,'cross','etherboot','etherboot','noarch','',['etherboot',]],
+        'r': [path,'cross','syslinux','syslinux','noarch','',['pxelinux','isolinux']],
+        's': [path,'cross','ORBit','ORBit','hostarch','',['ORBit',]],
+	't': [path,'cross','libpcre','libpcre','noarch','',['libpcre',]]
+	}
+
+# these are the apps built in buildremote.py
+mvltapps = ('fstools',)
+x86brcrossapps	= ('glibc-utils','linux86', 'gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+x86uclibcbrcrossapps = ('linux86', 'gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+uclibcbrcrossapps = ('gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+brcrossapps	= ('glibc-utils','gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+                'pango-directfb','cairo-directfb')
+                                                                                                        
+# these are the testing apps that go in <arch>/target/testing
+testapps        = ('ltp','staf','testsuite',)
+                                                                                                        
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+

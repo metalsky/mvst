@@ -1,0 +1,15 @@
+build@overlord:/mvista/dev_area/mvl6$ ls -ld collection* | head -n10 | awk '{ print $8 }'
+collection_090619_0901575
+collection_090619_0901591
+collection_090620_0901606
+collection_090621_0901613
+collection_090622_0901635
+collection_090623_0901659
+collection_090624_0901677
+collection_090625_0901703
+collection_090626_0901722
+collection_090627_0901756
+
+
+
+printf "%s\n" collection_* | head -n10 | xargs rm -rf 

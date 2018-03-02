@@ -1,0 +1,120 @@
+copydir         = '/mvista/dev_area/cge'
+docsmodule	= 'cge'
+docsgp		= {
+                        'docs/':                'docs/ ',
+                        'README':               'README ',
+ }
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+        'mvl-kernel-26':        [homepath + '/mvl-kernel-26',   "cge_50"],
+        'lsp':                  [homepath + '/lsp',             "cge_50"],
+        'mvlt':                 [homepath + '/mvlt',            "null"],
+        'mvl-installer':        [homepath + '/mvl-installer',   "cge_50"],
+        'userland':             [homepath + '/userland',        "cge"],
+	'Documentation':	[homepath + '/Documentation',	"null"],
+        }
+mktar		= 1
+mkcd		= 1
+mkdvd		= 1
+mkdoccd		= 1
+mkhostcd	= 0
+mktargetcd	= 1
+mksrccd		= 1
+mkcdbom		= 1
+mkvert		= 1
+version		= '5.0'
+btype		= 'Carrier Grade Edition 5.0'
+varstr		= 'Carrier_Grade_Edition'	# for eclipse
+dvdname		= 'cge-host'
+appsfile	= scriptpath + '/cgeapps.dat'
+libraryapps	= scriptpath + '/cgelibraryapps.dat'
+lspdat		= scriptpath + '/cgelsp.dat'
+#foundation	= '/mvista/dev_area/foundation/f5_071213_0704625'
+foundation	= '/mvista/dev_area/foundation/last_ffive'
+hosttoolpath	= '/mvista/dev_area/foundation/host-tools/last_ffive'
+#hosttoolpath	= '/mvista/dev_area/foundation/host-tools/f5_071213_0704625'
+selfhosttarget  = 'x86_pentium3'
+selfhostinstalldata = {
+        'x86_pentium3':         ['x86_pentium3','x86-pc_target-x86_pentium3'],
+        'x86_pentium4':         ['x86_pentium4','x86-pc_target-x86_pentium4'],
+        'x86_em64t':            ['x86_em64t','x86-pc_target-x86_em64t'],
+        'x86_amd64':            ['x86_amd64','x86-pc_target-x86_amd64']
+}
+edition		= 'cge'
+chroothosts	= ( 'centos3','suse90','centos3_64')
+targethost	= 'centos3'
+hosts		= ( 'solaris8','windows2000')
+all_targets	= ( 
+		'ppc_440',
+		'ppc_74xx',
+		'ppc_7xx',
+		'ppc_9xx',
+		'ppc_9xx-64',
+		'ppc_85xx',
+		'x86_pentium3',
+		'x86_pentium4',
+		'x86_em64t',
+		'x86_em64t-32',
+		'x86_amd64',
+		'x86_amd64-32',
+		'mips64_fp_be',
+		'mips64_fp_be-64',
+		)
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps	= { 'userland': ['apt-rpm-config','genevent'],}
+brhhostapps     = { 'userland': ['apt-rpm-config','glib','lttv','tool-perl','expat','perl-XML-Parser','initrd-progs'],
+		    'mvlt':     ['nfs-user-server',],}
+brhnoarchapps   = { 'host':     ['eclipse-templates','eclipse-edition','kernel-html',
+                                 'docs-cd-installer'],}
+# here are the definitions for apps built in buildcore.py
+path = cvspaths['userland'][0]
+crosseclipseinstall = 'eclipse-enabler-arch-' + edition
+#crosseclipseadkinstall = 'eclipse-enabler-arch-' + edition + '_adk'
+crossapps = {
+             'a': [path,'cross','lilo','lilo','hostarch','',['lilo',]],
+             'b': [path,'cross','eclipse-templates','eclipse-arch','noarch','',[crosseclipseinstall,]],
+             'c': [path,'cross','apt-rpm-config','apt-rpm-config','hostarch','',['apt-rpm-config',]],
+             'd': [path,'cross','crash','crash','hostarch','',['crash',]],
+             #'c': [path,'cross','eclipse-templates','eclipse-arch-adk','noarch','',[crosseclipseadkinstall,]],
+        }
+
+# these are the apps built in buildremote.py
+brcrossapps	= ('apt-rpm-config','crash',)
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+                'pango-directfb','cairo-directfb')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('netperf','host-netperf','lmbench','dejagnu','host-dejagnu','mvlpk-dev',
+		   'mvlpk-base','preempt','previewkit-dev','previewkit-base','previewkit-fsimages',
+                   'pxelinux-previewkit','rxvt','mvl-installer','mvl_install','x86-hhl_install',
+		   'cross-lilo','common-jdk','common-mozilla','common-apache-ant','lup',
+		   'installation-enum','install-uSDE','install-libuSDE','install-uSDEpolicies',
+		   'install-uSDE-debuginfo','adk','mvTAF','bsglibc','cyclictest','bootstrap'
+		)
+
+lspouttakes     = {
+                #'ppc_74xx':   ['freescale-sandpoint',],
+                #'x86_pentium3':    ['generic_x86-mvl_install',],
+                }
+srcouttakes	= ('cross-eclipse-enabler-arch',
+		'cross-eclipse-enabler-lsp',
+		'host-eclipse-enabler-edition-cge',
+		'host-eclipse-templates',
+		'libxml','common-elfutils',
+		)
+src_link_exclusions = ('common-apt-rpm-config','apt-rpm-config','base-files','ramdisk',
+                'eclipse-edition','eclipse-templates','lsp',
+                'eclipse-enabler','host-kernel','host-rpm','rpm-edition','host-postinstall',
+                'host-cd-installer','host-mvlinstaller','host-glib','netbase',)
+host_link_exclusions = ('host-mvlinstaller','host-rpm','host-postinstall','host-glib',)
+cross_link_exclusions = ('eclipse','ramdisk')
+target_link_exclusions = ('base-files','rpm-edition','netbase','mvl-install')

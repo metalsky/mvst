@@ -1,0 +1,28 @@
+#!/usr/bin/expect
+set prompt "(>|:|%|#|\\\$) $"
+if { $argc != 3 } {
+	puts "Usage $argv0: $argv0 <password> <loop device> <file>"
+	exit 1
+} else {
+	set Password [ lindex $argv 0 ]
+	set LoopDevice [ lindex $argv 1 ]
+	set File [ lindex $argv 2 ]
+}
+
+spawn bash
+expect -re $prompt
+send "/sbin/losetup -e XOR $LoopDevice $File\r"
+expect {
+	"Password:" {
+			send "$Password\r"
+	}
+	"Device or resource busy" {
+			puts "Losetup Error"
+	}
+	timeout {
+			puts "Losetup Error"
+	}
+}
+expect -re $prompt
+send "exit"
+

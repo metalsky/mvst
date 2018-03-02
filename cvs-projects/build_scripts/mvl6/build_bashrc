@@ -1,0 +1,4 @@
+export LM_LICENSE_FILE=27000@overlord
+export LD_LIBRARY_PATH=/opt/montavista/lib:/lib:/usr/lib
+export PATH=/opt/montavista/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/X11R6/bin
+export BBPATH=/opt/montavista/content/foundation:/opt/montavista/content/toolchain:/opt/montavista/content/kernel:/opt/montavista/content/core:/opt/montavista/content/graphics:/opt/montavista/content/audio:/opt/montavista/content/bluetooth:/opt/montavista/content/wireless:/opt/montavista/content/uboot:/opt/montavista/content/multimedia:/opt/montavista/content/ti-omap3:/opt/montavista/content/xfs

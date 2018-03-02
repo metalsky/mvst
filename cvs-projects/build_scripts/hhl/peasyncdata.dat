@@ -1,0 +1,76 @@
+copydir         = '/mvista/dev_area/pro'
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+	'git-kernel':		[homepath+'/pro_5024','kernel/pro_5024','pro_5024','release','branch'],
+        'mvl-installer':        [homepath + '/mvl-installer',   "pro_50"],
+        }
+hostcdinstall	= 0
+mktargetcd	= 1
+mkvert		= 0
+version		= '5.0.24'
+btype		= 'Professional Edition 5.0.24 Async'
+varstr		= 'Professional_Edition'	# for eclipse
+dvdname		= 'pro-host'
+appsfile	= ''
+libraryapps	= scriptpath + '/peasyncapps.dat'
+lspdat		= scriptpath + '/pelsp.dat'
+lsptype		= 'async'
+foundation	= '/mvista/dev_area/pro/jackalope090618_0901553'
+releaseimgpath	= "/mvista/release_area/pro/mvl5.0.x/mvl5024/dvdimages"
+extrareleaseimgs = { 
+		'x86_em64t':		'/mvista/dev_area/pro/jackalope090618_0901553/dvdimages',
+		}
+selfhosttarget  = 'x86_586'
+selfhostinstalldata = { 
+		'x86_586':		['x86_586','x86-pc_target-x86_586'], 
+		'x86_pentium3':		['x86_586','x86-pc_target-x86_586'],
+		'x86_pentium4':		['x86_586','x86-pc_target-x86_586'],
+		}
+edition		= 'pro'
+chroothosts	= ( 'centos3', )
+targethost	= 'centos3'
+hosts 		= ()
+all_targets	= ( 
+        	'arm_v7_vfp_le',
+        	'arm_v7_vfp_le_uclibc',
+		'ppc_405',
+		'ppc_440',
+		'ppc_85xx',
+		'ppc_e500mc',
+		'x86_586',
+		'x86_em64t',
+		'x86_em64t-32',
+		)
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+                'pango-directfb','cairo-directfb')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('netperf','lmbench','dejagnu','mvlpk-dev','mvlpk-base','preempt',
+                   'previewkit-dev','previewkit-base','previewkit-fsimages',
+                   'pxelinux-previewkit','ethereal','mvl-installer','mvl_install',
+		   'cross-lilo','common-elfutils','common-jdk','common-apache-ant',
+		   'lup','common-db2html','common-mozilla','installation-enum','ltp','staf',
+		   'install-uSDE','install-libuSDE','install-uSDEpolicies','install-uSDE-debuginfo'
+		)
+lspIsos		= {
+			#'ppc_405':		['amcc-440grx_eval'],
+			#'ppc_440':		['amcc-440epx_eval'],
+			#'ppc_85xx':		['freescale-8568mds',],
+			'x86_em64t':		['x86-pc_target-x86_em64t',],
+		}
+lspouttakes	= { }
+srcouttakes	= ('cross-eclipse-enabler-arch',
+		'cross-eclipse-enabler-lsp',
+		'host-eclipse-enabler-edition-pro',
+		'host-eclipse-templates',
+		)
+target_link_exclusions = ('kernel-headers-product',)

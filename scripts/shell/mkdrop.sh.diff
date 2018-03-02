@@ -1,0 +1,26 @@
+Index: mkdrop.sh
+===================================================================
+RCS file: /cvsdev/build_scripts/mvl6/utils/mkdrop.sh,v
+retrieving revision 1.4.4.7
+diff -u -r1.4.4.7 mkdrop.sh
+--- mkdrop.sh	5 Apr 2011 20:19:53 -0000	1.4.4.7
++++ mkdrop.sh	12 Apr 2011 22:49:48 -0000
+@@ -98,15 +98,15 @@
+ 
+ # copy over the appropriate toolchain:
+ TCDIR="$MVL6IP/`/bin/cat $MVL6DIR/$BUILDTAG/$BUILDTAG.toolchain`/build/installers"
+-echo -n "6. Copying Toolchain from $TCDIR to $MVL6DIR/$BUILDTAG/content/installer... "
++echo -n "6. Copying Toolchains from $TCDIR to $MVL6DIR/$BUILDTAG/content/installer... "
+ sudo /bin/cp $TCDIR/*$TOOLCHAIN* $MVL6DIR/$BUILDTAG/content/installer
++sudo /bin/cp $TCDIR/*i686-gnu* $MVL6DIR/$BUILDTAG/content/installer
+ echo "done."
+ 
+ # piece together the tarball:
+ echo -n "7. Creating engineering drop for $MVL6DIR/$BUILDTAG: "
+ cd $MVL6DIR
+ tar --owner=bin --group=bin -czf $HOME/engr_drop/$BUILDTAG.tar.gz --exclude=.git --exclude=svn $BUILDTAG/content/collections \
+-$BUILDTAG/content/msds $BUILDTAG/content/installer/MVL-Integration-Platform-* \
+-$BUILDTAG/content/installer/*$TOOLCHAIN* $BUILDTAG/content/installer/i686-gnu* $BUILDTAG/content.html
++$BUILDTAG/content/msds $BUILDTAG/content/installer $BUILDTAG/content.html
+ echo "Done."
+ echo ""

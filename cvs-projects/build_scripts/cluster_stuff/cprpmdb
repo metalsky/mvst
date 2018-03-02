@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm -rf /opt/hardhat/*
+cp -a /var/lib/rpm /opt/hardhat/rpmdb

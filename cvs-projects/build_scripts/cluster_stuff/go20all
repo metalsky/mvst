@@ -1,0 +1,7 @@
+#!/bin/bash
+
+nodes="node-7 node-8 node-9 node-10 node-11 node-12 node-18"
+
+for n in $nodes; do
+  ssh $n "cd /home/build/userland; ./go20.py" &
+done

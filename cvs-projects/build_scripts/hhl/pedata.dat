@@ -1,0 +1,156 @@
+copydir         = '/mvista/dev_area/pro'
+docsmodule	= 'pro'
+docsgp		= { 
+		        'docs/':                'docs/ ',
+                        'README':               'README '
+		  }
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+	'git-kernel':		[homepath+'/pro_5024','kernel/pro_5024','pro_5024','dev','branch'],
+        'mvlt':                 [homepath + '/mvlt',            "null"],
+        'mvl-installer':        [homepath + '/mvl-installer',   "pro_50"],
+        'userland':             [homepath + '/userland',        "jackalope"],
+	'Documentation':	[homepath + '/Documentation',	"null"],
+        }
+mkdvd		= 1
+hostcdinstall	= 1
+targetcdinstall	= 1
+mkdoccd		= 1
+mktargetcd	= 1
+mksrccd		= 1
+mkcdbom		= 1
+mktar		= 1
+version		= '5.0.24'
+btype		= 'Professional Edition 5.0.24'
+varstr		= 'Professional_Edition'	# for eclipse
+dvdname		= 'pro-host'
+appsfile	= ''
+libraryapps	= scriptpath + '/peapps.dat'
+lspdat		= scriptpath + '/pelsp.dat'
+foundation	= '/mvista/dev_area/foundation/last_fp2624'
+hosttoolpath	= '/mvista/dev_area/foundation/host-tools/last_fp2624'
+#foundation	= '/mvista/dev_area/foundation/fp2624_081211_0802834'
+#hosttoolpath	= '/mvista/dev_area/foundation/host-tools/fp2624_081211_0802834'
+selfhosttarget  = 'x86_586'
+selfhostinstalldata = { 
+		'x86_586':		['x86_586','x86-pc_target-x86_586'], 
+		'x86_pentium3':		['x86_586','x86-pc_target-x86_586'],
+		'x86_pentium4':		['x86_586','x86-pc_target-x86_586'],
+		'x86_em64t':		['x86_em64t','x86-pc_target-x86_em64t'],
+		}
+edition		= 'pro'
+chroothosts	= ( 'centos3', 'suse90')
+targethost	= 'centos3'
+hosts 		= ('solaris8','windows2000')
+all_targets	= ( 
+        	#'arm_v5t_le',
+		#'arm_v5t_le_uclibc',
+        	#'arm_v6_vfp_le',
+        	#'arm_v6_vfp_le_uclibc',
+        	'arm_v7_vfp_le',
+        	'arm_v7_vfp_le_uclibc',
+	        #'arm_xscale_be',
+		#'arm_xscale_be_uclibc',
+	        #'mips2_fp_be',
+		#'mips2_fp_be_uclibc',
+	        #'mips2_fp_le',
+		#'mips2_fp_le_uclibc',
+                #'mips64_fp_be',
+	        #'mips64_fp_be-64',
+	        #'mips2_nfp_le',
+	        #'mips2_nfp_le_uclibc',
+		'ppc_405',
+		'ppc_440',
+		#'ppc_440ep',
+		#'ppc_74xx',
+		'ppc_85xx',
+		#'ppc_83xx',
+		#'ppc_83xx_nfp',
+		#'ppc_8xx',
+		#'ppc_9xx',
+		#'ppc_9xx-64',
+		'ppc_e500mc',
+		'x86_586',
+		#'x86_586_uclibc',
+		#'x86_pentium3',
+		#'x86_pentium4',
+		'x86_em64t',
+		'x86_em64t-32',
+		#'arm_v6_le',
+	        #'arm_v6_le_uclibc',
+		#'arm_v6_be',
+	        #'arm_v6_be_uclibc',
+		)
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps	= { 'userland':	['apt-rpm-config',],}
+brhhostapps	= { 'userland':	['apt-rpm-config','glib','lttv'], 
+		    'mvlt':	['nfs-user-server',], }
+brhnoarchapps	= { 'host':	['eclipse-templates','eclipse-edition','kernel-html',
+		                 'pnx8950-tool','docs-cd-installer'],}
+# here are the definitions for apps built in buildcore.py
+path = cvspaths['userland'][0]
+crosseclipseinstall = 'eclipse-enabler-arch-' + edition
+#crosseclipseadkinstall = 'eclipse-enabler-arch-' + edition + '_adk'
+crossapps = { 
+	     #'a': [path,'cross','lilo','lilo','hostarch','',['lilo',]],
+	     'a': [path,'cross','eclipse-templates','eclipse-arch','noarch','',[crosseclipseinstall,]],
+	     'b': [path,'cross','apt-rpm-config','apt-rpm-config','hostarch','',['apt-rpm-config',]],
+	     #'c': [path,'cross','eclipse-templates','eclipse-arch-adk','noarch','',[crosseclipseadkinstall,]],
+	}
+# these are the apps built in buildremote.py
+brcrossapps	= ('apt-rpm-config',)
+
+# remove glibc & kernel-headers rpms in targetapp build since they were installed by buildcore.py
+removerpms = ('glibc','kernel-headers','uclibc')
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+                'pango-directfb','cairo-directfb')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('netperf','lmbench','dejagnu','mvlpk-dev','mvlpk-base','preempt',
+                   'previewkit-dev','previewkit-base','previewkit-fsimages',
+                   'pxelinux-previewkit','ethereal','mvl-installer','mvl_install',
+		   'cross-lilo','common-elfutils','common-jdk','common-apache-ant',
+		   'lup','common-db2html','common-mozilla','installation-enum','ltp','staf',
+		   'install-uSDE','install-libuSDE','install-uSDEpolicies','install-uSDE-debuginfo'
+                   'libsepol','libselinux','libsemanage','audit','policycoreutils','cyclictest',
+		   'bootstrap'
+		)
+uclibc_outtakes	= (
+		   # these are the apps that were omitted from uclibc cds for carbonriver
+		   #'aumix','autoconf','automake','bison','bonnie','bsd-finger','finger','fingerd',
+                   #'cproto','dnrd','doxygen','eject','ethtool','flex','genromfs','hdparm',
+                   #'ilmtk','ipgrab','jpreempt','ksymoops','libpaper','lksctp-tools','nasm',
+                   #'nfs-user-server','ugidd','nfs-utils','nfs-kernel-server','nfs-common',
+                   #'p2linux','parted','patch','pciutils','php4','mod_php4',
+                   #'pidentd','pkgconfig','preempt','proftpd','radvd','rarpd','rdist','rpm-edition',
+                   #'rstatd','samba','swat','smbfs','squid','tcng','tcpdump','texinfo','info','traceroute',
+                   #'watchdog','wu-ftpd','xalan','xfsdump','zebra','cscope','quilt'
+		)
+lspouttakes	= {
+		'arm_v5t_le':	['ti-omap5912_osk',],
+		'arm_v4t_le':	['ti-innovator',],
+		'mips2_fp_le':	['nec-vr5701',],
+		}
+srcouttakes	= ('cross-eclipse-enabler-arch',
+		'cross-eclipse-enabler-lsp',
+		'host-eclipse-enabler-edition-pro',
+		'host-eclipse-templates',
+		)
+src_link_exclusions = ('common-apt-rpm-config','apt-rpm-config','base-files','ramdisk',
+                'eclipse-edition','eclipse-templates','lsp','iptables','netbase',
+                'eclipse-enabler','host-kernel','host-rpm','rpm-edition','host-postinstall',
+                'uSDE','libuSDE','host-cd-installer','host-mvlinstaller')
+host_link_exclusions = ('host-mvlinstaller','host-rpm','host-postinstall')
+cross_link_exclusions = ('eclipse',)
+target_link_exclusions = ('base-files','rpm-edition','netbase','iptables','mvl-install')
+targopt_link_exclusions = ('uSDE','libuSDE')
+

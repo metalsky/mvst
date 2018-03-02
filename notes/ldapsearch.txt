@@ -1,0 +1,17 @@
+ldapsearch Examples:
+
+
+	nk@bx:~$ history | grep ldapsearch
+	 1809  history | grep ldapsearch
+	 1924  ldapsearch -x -h svdc01.mvista.com -D "Administrator@mvista.com" -w EwV0m1T! -b "dc=mvista,dc=com" "cn=nkapoor"
+	 1925  ldapsearch -x -h svdc01.mvista.com -D "Administrator@mvista.com" -w EwV0m1T! -b "dc=mvista,dc=com" "cn=Administrator"
+	 1926  ldapsearch -x -h svdc01.mvista.com -D "Administrator@mvista.com" -w EwV0m1T! -b "dc=mvista,dc=com" "cn=mguillory"
+	 1962  which ldapsearch
+	 1963  sudo apt-file search ldapsearch
+	 1965  ldapsearch -h svdc01.mvista.com -b "dc=mvista,dc=com" "cn=Administrator"
+	 1966  ldapsearch -LLL -h svdc01.mvista.com -b "dc=mvista,dc=com" "cn=Administrator"
+	 1967  ldapsearch -x -h svdc01.mvista.com -b "dc=mvista,dc=com" "cn=Administrator"
+	 1968  ldapsearch --help
+	 1969  ldapsearch -x -h svdc01.mvista.com -D "Administrator@mvista.com" -w EwV0m1T! -b "dc=mvista,dc=com" "cn=Administrator"
+	 1970  ldapsearch -x -h svdc01.mvista.com -D "Administrator@mvista.com" -w EwV0m1T! -b "dc=mvista,dc=com" "cn=nkapoor"
+	 1991  history | grep ldapsearch

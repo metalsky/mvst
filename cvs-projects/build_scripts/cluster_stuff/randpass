@@ -1,0 +1,14 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+my $count = 8;
+my(@chrs) = ( ord("a") .. ord("h"),ord("j"),ord("k"), ord("m") .. ord("z"), ord("A") .. ord("H"),ord("J") .. ord("N"), ord("P") .. ord("Z"), ord("2") .. ord("9") );
+my($pwd) = "";
+
+$count = $ARGV[0] if( scalar @ARGV > 0 and $ARGV[0] =~ m/^\d+$/ );
+for(my $i = 0; $i < $count; $i++) {
+  $pwd .= chr($chrs[rand(@chrs)]);
+}
+printf "%s\n", $pwd;
+

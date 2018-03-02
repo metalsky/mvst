@@ -1,0 +1,24 @@
+#!/bin/bash
+
+nodes="node-10 node-11 node-12 node-17 node-18 node-19 node-20 node-21 node-22 node-23 node-24 node-25 node-26 node-27 node-28 node-29 node-30 node-31"
+
+if [ "$#" != "3" ]; then
+  echo "Usage: $0 <app> <type> <bug>"
+  exit 1
+fi
+
+p="$1"
+t="$2"
+bug="$3"
+
+if [ -d "~/userland/$p/RPMS" ]; then
+  m -rf ~/userland/$p/RPMS
+fi
+if [ -d "~/userland/$p/SRPMS" ]; then
+  rm -rf ~/userland/$p/SRPMS
+fi
+mkdir -p /mvista/dev_area/logs/mvl2.1.0-updates/$p-$bug
+for n in $nodes; do
+  ssh $n "cd /home/build/userland; ./go $p $t $bug" &
+  #ssh $n "hostname -s"
+done

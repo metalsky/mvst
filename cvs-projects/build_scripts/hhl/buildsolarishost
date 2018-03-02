@@ -1,0 +1,189 @@
+#!/usr/bin/bash
+
+# $1 is the build_id
+# $2 is the path to sources for build
+# $3 is the build tag
+# $4 is the product
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 <buildid> <cvs path> <buildtag> <product>"
+  exit 1
+fi
+
+scriptdir="$(pwd)"
+echo "scriptdir = $scriptdir"
+chrootdir="/chroot/solaris8"
+echo "chrootdir = $chrootdir"
+installdir="/opt/montavista"
+echo "installdir = $installdir"
+builddir="/home/build"
+echo "builddir = $builddir"
+PATH=/opt/montavista/common/bin:$PATH
+
+mstart () {
+  fds="$(date '+%H:%M:%S %Z %Y/%m/%d')"
+  sds="$(chroot $chrootdir $installdir/common/bin/date '+%s')"
+  echo "<$0>: building $1 at $fds [$sds]..."
+}
+                                                                                              
+mstop () {
+  fds="$(date '+%H:%M:%S %Z %Y/%m/%d')"
+  sds="$(chroot $chrootdir $installdir/common/bin/date '+%s')"
+  echo "<$0>: finished $1 at $fds [$sds]..."
+}
+
+if [ "$1" = "" ]; then
+  buildid="test"
+else
+  buildid="$1"
+fi
+echo "buildid = $buildid"
+srcpath="$2"
+echo "srcpath = $srcpath"
+commonrpmbin="$installdir/common/bin/mvl-common-rpm"
+commonrpmbuild="$installdir/common/bin/mvl-common-rpmbuild"
+tag="$3"
+echo "tag = $tag"
+product="$4"
+echo "product = $product"
+copydir="$4"
+
+echo "Starting at $(date)"
+
+# clean build area
+dirs="BUILD RPMS SOURCES SPECS SRPMS"
+for d in $dirs; do
+  rm -rf $chrootdir/$builddir/$d
+  mkdir -p $chrootdir/$builddir/$d
+  chown -R build:engr $chrootdir/$builddir/$d
+done
+mkdir -p /mvista/dev_area/foundation/$tag/host-tools/solaris8
+chown -R build:engr /mvista/dev_area/foundation/$tag/host-tools
+
+# copy SOURCES and SPECS for rpm
+cp $srcpath/userland/rpm/SOURCES/* $chrootdir/$builddir/SOURCES
+cp $srcpath/userland/rpm/SPECS/* $chrootdir/$builddir/SPECS
+# build common-rpm
+mstart common-rpm
+if chroot $chrootdir /bin/su - build -c "$commonrpmbuild -bb \
+        --define \"_topdir $builddir\" \
+        --define \"_mvl_build_id $buildid\" \
+        --define \"vendor MontaVista Software, Inc.\" \
+        --define \"packager <source@mvista.com>\" \
+        $builddir/SPECS/common-rpm.spec"; then
+  chroot $chrootdir /bin/su - build -c "$commonrpmbin -Uvh $builddir/RPMS/sun4u/common-rpm*.mvl"
+  ret=$?
+  echo "rpminstall result: $ret"
+  echo "BUILT: common-rpm built."
+  cp $chrootdir/$builddir/RPMS/sun4u/common-rpm*.mvl /mvista/dev_area/foundation/$tag/host/solaris8
+  mstop common-rpm
+else
+  echo "BUILD ERROR: common-rpm did not build...stopping build"
+  mstop common-rpm
+  exit 1
+fi
+
+# install common-autoconf and common-automake
+cp $srcpath/userland/autoconf/RPMS/noarch/* $chrootdir/$builddir
+cp $srcpath/userland/automake/RPMS/noarch/* $chrootdir/$builddir
+mstart common-autoconf_install
+chroot $chrootdir /bin/su - build -c "$commonrpmbin -Uvh $builddir/common-autoconf*.mvl"
+ret=$?
+echo "rpminstall result: $ret"
+mstop common-autoconf_install
+mstart common-automake_install
+chroot $chrootdir /bin/su - build -c "$commonrpmbin -Uvh $builddir/common-automake*.mvl"
+ret=$?
+echo "rpminstall result: $ret"
+mstop common-automake_install
+rm -f $chrootdir/$builddir/common-*.mvl
+
+# build common- rpms
+commons="gettext libtool make mvlutils elfutils m4 texinfo minicom patch sed"
+for common in $commons; do
+  if [ "$common" = "elfutils" ]; then
+    repo="toolchain"
+  else
+    repo="userland"
+  fi
+  cp $srcpath/$repo/$common/SOURCES/* $chrootdir/$builddir/SOURCES
+  cp $srcpath/$repo/$common/SPECS/* $chrootdir/$builddir/SPECS
+  mstart common-$common
+  if chroot $chrootdir /bin/su - build -c "$commonrpmbuild -bb \
+        --define \"_topdir $builddir\" \
+        --define \"_mvl_build_id $buildid\" \
+        --define \"vendor MontaVista Software, Inc.\" \
+        --define \"packager <source@mvista.com>\" \
+        $builddir/SPECS/common-$common.spec"; then
+    if ! chroot $chrootdir /bin/su - build -c "$commonrpmbin -Uvh $builddir/RPMS/sun4u/common-$common*.mvl"; then
+      echo "BUILD ERROR: common-$common built but did not install"
+      mstop common-$common
+    else
+      cp $chrootdir/$builddir/RPMS/sun4u/common-$common*.mvl /mvista/dev_area/foundation/$tag/host/solaris8
+      if [ "$common" = "texinfo" ]; then
+        cp $chrootdir/$builddir/RPMS/sun4u/common-info*.mvl /mvista/dev_area/foundation/$tag/host/solaris8
+      fi
+      echo "BUILT: common-$common built."
+    fi
+  else
+    echo "BUILD ERROR: common-$common did not build...stopping build"
+    mstop common-$common
+    if [ "$common" != "elfutils" ]; then
+      exit 1
+    fi
+  fi
+  mstop common-$common
+done
+
+# get list of mvls to build
+buildlist="$(cat $scriptdir/solaris.dat | grep -v rpm)"
+echo "--> building the following: $buildlist"
+
+# build each mvl 
+for pkg in $buildlist; do
+  pkg="${pkg#host-tool-}"
+  mstart host-tool-$pkg
+  if [ "$pkg" = "binutils" ] || [ "$pkg" = "gcc" ]; then
+    cp $srcpath/toolchain/$pkg/SOURCES/* $chrootdir/$builddir/SOURCES
+    cp $srcpath/toolchain/$pkg/SPECS/* $chrootdir/$builddir/SPECS
+    if chroot $chrootdir /bin/su - build -c "$commonrpmbuild -ba \
+        --define \"_topdir $builddir\" \
+        --define \"_mvl_build_id $buildid\" \
+        --define \"vendor MontaVista Software, Inc.\" \
+        --define \"packager <source@mvista.com>\" \
+        $builddir/SPECS/host-tool-$pkg.spec"; then
+      echo "BUILT: host-tool-$pkg built."
+    else
+      echo "BUILD ERROR: host-tool-$pkg did not build."
+    fi
+  else
+    cp $srcpath/userland/$pkg/SOURCES/* $chrootdir/$builddir/SOURCES
+    cp $srcpath/userland/$pkg/SPECS/* $chrootdir/$builddir/SPECS
+    if chroot $chrootdir /bin/su - build -c "$commonrpmbuild -ba \
+        --define \"_topdir $builddir\" \
+        --define \"_mvl_build_id $buildid\" \
+        --define \"vendor MontaVista Software, Inc.\" \
+        --define \"packager <source@mvista.com>\" \
+        $builddir/SPECS/host-tool-$pkg.spec"; then
+      case $pkg in
+        gcc) rpmsforinstall="$builddir/RPMS/sun4u/*cpp*.mvl $builddir/RPMS/sun4u/*gcc*.mvl $builddir/RPMS/sun4u/*$pkg*.mvl $builddir/RPMS/sun4u/*g++*.mvl $builddir/RPMS/sun4u/*libgcc1*.mvl $builddir/RPMS/sun4u/*libstdc++*.mvl" ;;
+        mvlutils) rpmsforinstall="$builddir/RPMS/sun4u/*libgetopt*.mvl $builddir/RPMS/sun4u/*mktemp*.mvl" ;;
+        *) rpmsforinstall="$builddir/RPMS/sun4u/*$pkg*.mvl"
+      esac
+      if chroot $chrootdir /bin/su - build -c "$commonrpmbin -Uvh $rpmsforinstall"; then
+        echo "BUILT: host-tool-$pkg built."
+      else
+        echo "BUILD ERROR: host-tool-$pkg built but did not install all rpms"
+      fi
+    else
+      echo "BUILD ERROR: host-tool-$pkg did not build."
+    fi
+  fi
+  mstop host-tool-$pkg
+done
+
+# Copy remaining .mvls
+cp $chrootdir/$builddir/RPMS/sun4u/host-tool*.mvl /mvista/dev_area/foundation/$tag/host-tools/solaris8
+cp $chrootdir/$builddir/SRPMS/host-tool*.src.rpm /mvista/dev_area/foundation/$tag/SRPMS
+
+echo "--> build ended at $(date)"

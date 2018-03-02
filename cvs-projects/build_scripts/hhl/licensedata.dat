@@ -1,0 +1,30 @@
+copydir         = '/mvista/dev_area/license_server'
+nodetype	= 'node'
+# the cvspaths dictionary is used to indicate the paths to the repositories in 
+# the build, as well as the branches they use
+cvspaths = {
+	'licensing':	[homepath + '/licensing',	"null"],
+	}
+commoncdinstall = 0
+hostcdinstall   = 0
+targetcdinstall = 0
+mklicensecd	= 1
+mkcdbom		= 1
+mkvert		= 0
+lsps		= 0
+version		= '5.0'
+btype		= 'License Server'
+varstr		= 'License_Server'          # for devrocket
+appsfile	= ''
+lspdat		= ''
+devrocketpath	= ""
+edition		= 'license_server'
+mkretardlink	= 1
+linkname	= 'last_mls'
+chroothosts	= ('centos3', )
+
+targethost	= 'centos3'
+
+outtakes	= ()
+devrocket_src_outtakes  =       ()
+

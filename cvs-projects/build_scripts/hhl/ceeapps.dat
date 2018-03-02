@@ -1,0 +1,33 @@
+###############
+# arm_v4t_be
+# arm_v4t_le
+# arm_v5t_be
+# arm_v5t_le
+# arm_iwmmxt_le
+###############
+mvltd
+base-files
+mpatrol
+jpreempt
+eventbroker
+cross-cd-installer
+arch-cd-installer
+lsp-cd-installer
+application-man-html
+ltt
+###############
+# sh_sh3_le
+###############
+mvltd
+base-files
+mpatrol
+jpreempt
+eventbroker
+cross-cd-installer
+arch-cd-installer
+lsp-cd-installer
+application-man-html
+ltt
+###############
+# end
+###############

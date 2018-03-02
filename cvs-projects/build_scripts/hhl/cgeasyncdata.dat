@@ -1,0 +1,84 @@
+copydir         = '/mvista/dev_area/cge'
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+        'mvl-kernel-26':        [homepath + '/mvl-kernel-26',   "cge_50"],
+        'lsp':                  [homepath + '/lsp',             "cge_50"],
+        'mvl-installer':        [homepath + '/mvl-installer',   "cge_50"],
+        }
+hostcdinstall	= 0
+mktargetcd	= 1
+mkvert		= 0
+version		= '5.0'
+btype		= 'Carrier Grade Edition 5.0 Async'
+varstr		= 'Carrier Grade Edition'	# for eclipse
+dvdname		= 'cge-host'
+appsfile	= ''
+libraryapps	= scriptpath + '/cgeasyncapps.dat'
+lspdat		= scriptpath + '/cgelsp.dat'
+lsptype		= 'async'
+foundation	= '/mvista/dev_area/cge/pebblecreek'
+releaseimgpath	= "/mvista/release_area/cge/mvlcge5.0.x/mvlcge500/dvdimages"
+extrareleaseimgs = { 
+		}
+selfhosttarget  = 'x86_pentium3'
+selfhostinstalldata = { 
+        'x86_pentium3':         ['x86_pentium3','x86-pc_target-x86_pentium3'],
+        'x86_pentium4':         ['x86_pentium4','x86-pc_target-x86_pentium4'],
+        'x86_em64t':            ['x86_em64t','x86-pc_target-x86_em64t'],
+        'x86_amd64':            ['x86_amd64','x86-pc_target-x86_amd64']
+
+		}
+
+edition		= 'cge'
+chroothosts	= ( 'centos3', )
+targethost	= 'centos3'
+hosts 		= ()
+all_targets	= ( 
+		'ppc_440',
+                'ppc_74xx',
+                'ppc_7xx',
+                'ppc_9xx',
+                'ppc_9xx-64',
+                'ppc_85xx',
+                'x86_pentium3',
+                'x86_pentium4',
+                'x86_em64t',
+                'x86_em64t-32',
+                'x86_amd64',
+                'x86_amd64-32',
+                'mips64_fp_be',
+                'mips64_fp_be-64',
+		)
+
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+                'pango-directfb','cairo-directfb')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('netperf','lmbench','dejagnu','mvlpk-dev','mvlpk-base','preempt',
+                   'previewkit-dev','previewkit-base','previewkit-fsimages',
+                   'pxelinux-previewkit','ethereal','mvl-installer','mvl_install',
+		   'cross-lilo','common-elfutils','common-jdk','common-apache-ant',
+		   'lup','common-db2html','common-mozilla','installation-enum','ltp','staf',
+		   'install-uSDE','install-libuSDE','install-uSDEpolicies','install-uSDE-debuginfo'
+		)
+lspIsos		= {
+		#	'mips2_fp_be':		['mips-malta34KC',],
+		#	'mips2_fp_le':		['mips-malta34KC',],
+		}
+lspouttakes	= {
+		}
+srcouttakes	= ('cross-eclipse-enabler-arch',
+		'cross-eclipse-enabler-lsp',
+		'host-eclipse-enabler-edition-pro',
+		'host-eclipse-templates',
+		)
+target_link_exclusions = ('kernel-headers-product',)

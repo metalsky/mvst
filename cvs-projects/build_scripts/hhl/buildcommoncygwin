@@ -1,0 +1,584 @@
+#!/usr/bin/bash 
+
+# This script takes the following arguments:
+# $1- host (the x86 build host)
+# $2- cpdir (the dev_area where rpms are copied from/to)
+# $3- buildid (the buildid in rpm filename)
+# $4- installdir
+# $5- product
+# $6- edition
+# $7- mvlinstal path
+# $8- collectivelogdir
+# $9- scripttest
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 <host machine to copy from/to> <cpdir> <buildid> <install dir> <product> <edition> <mvl-installerpath> <buildtag> <scripttest>"
+  exit 1
+fi
+
+mstart () {
+  echo "<$0>: building $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+  if test -n "$2"; then
+    echo "<$0>: building $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..." >> $2
+  fi
+}
+
+mstop () {
+  echo "<$0>: finished $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+  if test -n "$2"; then
+    echo "<$0>: finished $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..." >> $2
+  fi
+}
+
+echolog () {
+  if test -n "$2"; then
+    echo "$1" | tee -a $2
+    { return ${PIPESTATUS[0]}; }
+  else
+    echo "$1"
+  fi
+}
+
+getdiskspace () {
+  echo "Disk Usage:"
+  df /
+}
+
+systemCmd() {
+  # $1 = command
+  # $2 = scripttest
+  # $3 = log (optional)
+  if [ "$2" = "1" ] || [ "$2" = "2" ]; then
+    echo "command: $1"
+  fi
+  if [ "$2" = "0" ] || [ "$2" = "2" ]; then
+    if test -n "$3"; then
+      eval $1 2>&1 | tee -a $3
+      { return ${PIPESTATUS[0]}; }
+    else
+      eval $1
+    fi
+  fi
+}
+
+# to install src rpms rpminsttd(rpm)
+rpminsttd () {
+  systemCmd "$1 $2 -Uvh --define \"_topdir $builddir\" --ignoreos" $scripttest $3
+  ret=$?
+  return $ret
+}
+rpminst () {
+  if test -n "$4"; then
+    systemCmd "$1 $2 -Uvh --ignoreos $3" $scripttest $4
+    ret=$?
+  else
+    systemCmd "$1 $2 -Uvh --ignoreos" $scripttest $3
+    ret=$?
+  fi
+  return $ret
+}
+rpmnabld () {
+  systemCmd "$1 -bb \
+      --clean \
+      --define \"_topdir $builddir\" \
+      --define \"_mvl_build_id $buildid\" \
+      --define \"vendor MontaVista Software, Inc.\" \
+      --define \"packager <source@mvista.com>\" \
+      --define \"_mvl_host_os_build windows2000\" \
+      --define \"_mvl_vsbasedir C:\\\\\\Program Files\\\\\\Microsoft Visual Studio .NET 2003\" $2" \
+      $scripttest $3
+}
+
+touchDone () {
+  collectivelog="$collectivelogdir/common-cygwin-done"
+  mstart common-cygwin-done $collectivelog
+  echolog "touching host/done/common-cygwin" $collectivelog
+  ssh $host "touch $cpdir/host/done/common-cygwin"
+  mstop common-cygwin-done $collectivelog
+}
+# copy source/specs
+copysource () {
+  echolog "copysource is copying $1 sources..." $collectivelog
+  # $1 = app
+  if [ "$1" = "elfutils" ] || [ "$1" = "gcc-license" ]; then
+    copysourcedir="$toolsourcedir/$1"
+  elif [ "$1" = "fstools" ] || [ "$1" = "nfs-user-server" ]; then
+    copysourcedir="$mvltsourcedir/$1"
+  elif [ "$1" = "elfmbind" ]; then
+    copysourcedir="$sourcedir/numactl"
+  else
+    copysourcedir="$sourcedir/$1"
+  fi
+  let count=0
+  while ! systemCmd "scp $host:$copysourcedir/SOURCES/* $sources" $scripttest $collectivelog; do
+    if [ $count = 5 ]; then
+      echolog "<$0>: tried 10 copies all of which failed...skipping this copy" $collectivelog
+      break
+    fi
+    echolog "<$0>: copy failed, trying again in 5 seconds..." $colelctivelog
+    sleep 5
+    let count=count+1
+  done
+  let count=0
+  while ! systemCmd "scp $host:$copysourcedir/SPECS/* $spec" $scripttest $collectivelog; do
+    if [ $count = 5 ]; then
+      echolog "<$0>: tried 10 copies all of which failed...skipping this copy" $collectivelog
+      break
+    fi
+    echolog "<$0>: copy failed, trying again in 5 seconds..." $colelctivelog
+    sleep 5
+    let count=count+1
+  done
+}
+# remove sources/spec
+cleansource () {
+  systemCmd "rm -f $sources/*" $scripttest $collectivelog
+  systemCmd "rm -f $spec/*" $scripttest $collectivelog
+}
+
+collectivelogdir="/home/build/dailybuild/dynamicCollectiveLogs/hostapps/windows2000"
+mkdir -p $collectivelogdir
+collectivelog="$collectivelogdir/buildcommoncygwin-setup"
+mstart buildcommoncygwin-setup $collectivelog
+builddir="/home/build/dailybuild"
+cd $builddir
+host="$1"
+echolog "host to copy to/from: $host" $collectivelog
+cpdir=$2
+echolog "copy path: $cpdir" $collectivelog
+sources="$builddir/SOURCES"
+spec="$builddir/SPECS"
+rpm="$builddir/RPMS"
+buildid="$3"
+echolog "buildid: $buildid" $collectivelog
+installdir="$4"
+echolog "installdir: $installdir" $collectivelog
+product="$5"
+echolog "product: $product" $collectivelog
+rpmbin="/bin/rpm"
+echolog "rpmbin = $rpmbin" $collectivelog
+rpmbuild="$rpmbin"build
+echolog "rpmbuild = $rpmbuild" $collectivelog
+edition="$6"
+echolog "edition = $edition" $collectivelog
+mvlinstal="$7"
+echolog "mvlinstal = $mvlinstal" $collectivelog
+buildtag="$8"
+echolog "buildtag = $buildtag" $collectivelog
+scripttest="$9"
+echolog "scripttest = $scripttest" $collectivelog
+sourcedir="/home/build/$buildtag-exp/CVSREPOS/userland"
+mvltsourcedir="/home/build/$buildtag-exp/CVSREPOS/mvlt"
+toolsourcedir="/home/build/$buildtag-exp/CVSREPOS/toolchain"
+
+commonrpmbin="/opt/montavista/common/bin/mvl-common-rpm"
+commonrpmbuild="/opt/montavista/common/bin/mvl-common-rpmbuild"
+editionrpmbin="/opt/montavista/$edition/bin/mvl-edition-rpm"
+editionrpmbuild="/opt/montavista/$edition/bin/mvl-edition-rpmbuild"
+
+echolog "resource: $HOSTNAME"
+
+echolog "HOME = $HOME" $collectivelog
+export HOME=/home/build
+echolog "after export, HOME = $HOME" $collectivelog
+
+let buildhost=0
+let hex=0
+let zex=0
+
+echolog "Starting at $(date)" $collectivelog
+
+# set path
+export PATH=/bin:/sbin:/usr/sbin:/opt/montavista/common/bin
+getdiskspace
+# uninstall rpms
+if [ "$installdir" != "" ] && [ -d "$installdir" ]; then
+  systemCmd "rm -rf $installdir/*" $scripttest $collectivelog
+fi
+cd $builddir
+systemCmd "mkdir $sources $spec $rpm" $scripttest $collectivelog
+
+systemCmd "scp $host:$cpdir/host/common/common-*.mvl $rpm" $scripttest $collectivelog
+#systemCmd "scp $host:$cpdir/common/common/common-apache-ant*.mvl $rpm" $scripttest $collectivelog
+#systemCmd "scp $host:$cpdir/common/windows2000/common-jdk*.mvl $rpm" $scripttest $collectivelog
+
+hrpms=""
+cmnrpms=""
+if [ "$product" = "dev" ] || [ "$product" = "fe" ]; then
+  hrpms="apt-rpm zsrec mvlutils pkgconfig cscope cvs mkimage tftp-hpa netperf tsload e2fsprogs dhcp doxygen nasm quilt fstools makedev libpng freetype xorg-x11 glib libIDL postinstall"
+  cmnrpms="bison dtc expat patch python libxml2 apt-rpm-config apt-rpm mkinitramfs"
+  crossprereqs="gettext libtool make mvlutils elfutils m4 texinfo minicom sed flexnet-dev flexnet-utils gcc-license"
+elif [ "$product" = "f3" ]; then
+  hrpms="apt-rpm zsrec mvlutils pkgconfig cscope cvs mkimage tftp-hpa netperf tsload e2fsprogs dhcp doxygen nasm quilt fstools makedev lttv libpng freetype xorg-x11 glib libIDL postinstall"
+  cmnrpms="bison dtc expat patch python libxml2 apt-rpm-config apt-rpm genevent mkinitramfs"
+  crossprereqs="gettext libtool make mvlutils elfutils m4 texinfo minicom sed"
+elif [ "$product" = "scripttest" ]; then
+  hrpms="glib postinstall"
+elif [ "$product" = "devrocket" ]; then
+  cmnrpms="jdk flexnet jre devrocket"
+elif [ "$product" = "pro" ]; then
+  cmnrpms="apt-rpm-config"
+  hrpms="apt-rpm-config glib lttv nfs-user-server postinstall"
+elif [ "$product" = "mobilinux" ]; then
+  hrpms="apt-rpm-config glib lttv nfs-user-server postinstall elfmbind"
+  cmnrpms="apt-rpm-config genevent"
+elif [ "$product" = "cge" ]; then
+  hrpms="apt-rpm-config glib lttv postinstall nfs-user-server"
+  cmnrpms="apt-rpm-config genevent"
+fi
+# install src rpms
+xlist=""
+for x in $xsrcrpms; do
+  xlist="$xlist $(echo SRPMS/$x)"
+done
+for x in $xlist; do
+  if ! rpminsttd $rpmbin $x $collectivelog; then
+    echolog "RPM ERROR: $x src rpm did not install" $collectivelog
+  fi
+done
+
+getdiskspace
+# delete SRPMS/* to free up disk space for devrocket build
+systemCmd "rm -rf $builddir/SRPMS/*" $scripttest $collectivelog
+getdiskspace
+mstop buildcommoncygwin-setup $collectivelog
+cd $builddir
+# build common-rpm using host-rpm from 3.1 (until 4.0 cygwin env is ready)
+if [ "$product" = "dev" ] || [ "$product" = "fe" ] || [ "$product" = "f3" ]; then
+    collectivelog="$collectivelogdir/bootstrap-common-rpm"
+    mstart bootstrap-common-rpm $collectivelog
+    copysource rpm
+    if rpmnabld $rpmbuild $spec/common-rpm.spec $collectivelog; then
+      systemCmd "cd /; rpm2cpio $rpm/i386/common-rpm-4* | cpio -iud" $scripttest $collectivelog
+      systemCmd "cd /; rpm2cpio $rpm/i386/common-rpm-b* | cpio -iud" $scripttest $collectivelog
+      systemCmd "cd /; rpm2cpio $rpm/i386/common-rpm-d* | cpio -iud" $scripttest $collectivelog
+      echolog "BUILT: bootstrap-common-rpm built" $collectivelog
+    else
+      echolog "BUILD ERROR: bootstrap-common-rpm did not build" $collectivelog
+      echolog "stopping build" $collectivelog
+      mstop bootstrap-common-rpm $collectivelog
+      touchDone
+      exit 1
+    fi
+    mstop bootstrap-common-rpm $collectivelog
+    collectivelog="$collectivelogdir/common-rpm"
+    mstart common-rpm $collectivelog
+    if rpmnabld $commonrpmbuild $spec/common-rpm.spec $collectivelog; then
+      systemCmd "scp $rpm/i386/common-rpm*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+      if rpminst $commonrpmbin "$rpm/i386/common-rpm*.mvl" --justdb $collectivelog; then
+        echolog "BUILT: common-rpm built" $collectivelog
+      else
+        echolog "BUILD ERROR: common-rpm built but did not install" $collectivelog
+      fi
+    else
+      echolog "BUILD ERROR: common-rpm did not build" $collectivelog
+      echolog "stopping build" $collectivelog
+      mstop common-rpm $collectivelog
+      touchDone
+      exit 1
+    fi
+    getdiskspace
+    mstop common-rpm $collectivelog
+else
+  collectivelog="$collectivelogdir/common-rpm_install"
+  mstart common-rpm_install $collectivelog
+  # copy common-rpm from foundation
+  systemCmd "scp $host:$cpdir/host/windows2000/common*.mvl $rpm" $scripttest $collectivelog
+  # install common-rpm from foundation
+  systemCmd "cd /; rpm2cpio $rpm/common-rpm-4* | cpio -iud" $scripttest $collectivelog
+  systemCmd "cd /; rpm2cpio $rpm/common-rpm-b* | cpio -iud" $scripttest $collectivelog
+  systemCmd "cd /; rpm2cpio $rpm/common-rpm-d* | cpio -iud" $scripttest $collectivelog
+  if rpminst $commonrpmbin "$rpm/common-rpm*.mvl" --justdb $collectivelog; then
+    echolog "BUILT: common-rpm from foundation installed." $collectivelog
+  else
+    echolog "BUILD ERROR: common-rpm from foundation did not install" $collectivelog
+  fi
+  getdiskspace
+  mstop common-rpm_install $collectivelog
+fi
+
+# install common rpms
+cd $rpm
+collectivelog="$collectivelogdir/common_rpms_install"
+mstart common_rpms_install $collectivelog
+for x in $(ls common*.mvl | grep -v rpm | grep -v elfutils | grep -v expat); do
+  #echolog "$x..." $collectivelog
+  if ! rpminst $commonrpmbin $x $collectivelog; then
+    echolog "RPM ERROR: $x did not install" $collectivelog
+  fi
+done
+# for some lame reason, common-elfutils* won't work, so list out each rpm that 
+# has special install requirements
+specialcommonrpms="apt-rpm elfutils-libelf elfutils expat-libs expat"
+for instrpm in $specialcommonrpms; do
+  if ! rpminst $commonrpmbin "common-$instrpm*" $collectivelog; then
+    echolog "RPM ERROR: common-$instrpm did not install" $collectivelog
+  fi
+done
+mstop common_rpms_install $collectivelog
+getdiskspace
+cd $builddir
+if [ "$product" = "dev" ] || [ "$product" = "fe" ] || [ "$product" = "f3" ] || [ "$product" = "scripttest" ]; then
+  # build common rpms
+  for cpr in $crossprereqs; do
+    collectivelog="$collectivelogdir/common-$cpr"
+    mstart common-$cpr $collectivelog
+    copysource $cpr
+    if rpmnabld $commonrpmbuild $spec/common-$cpr.spec $collectivelog; then
+      if rpminst $commonrpmbin "$rpm/i386/common-$cpr*.mvl" $collectivelog; then
+        echolog "BUILT: common-$cpr built" $collectivelog
+        systemCmd "scp $rpm/i386/common-$cpr*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+      else
+        echolog "BUILD ERROR: common-$cpr built but didn't install" $collectivelog
+      fi
+    else
+      echolog "BUILD ERROR: common-$cpr did not build" $collectivelog
+    fi
+    getdiskspace
+    mstop common-$cpr $collectivelog
+  done
+fi
+cd $builddir
+# build edition-rpm (required for all builds)
+if [ "$product" != "devrocket" ]; then
+  collectivelog="$collectivelogdir/host-rpm"
+  mstart host-rpm $collectivelog
+  copysource rpm
+  if rpmnabld $commonrpmbuild $spec/host-rpm.spec $collectivelog; then
+    systemCmd "cd /; rpm2cpio $rpm/i386/host-rpm* | cpio -iud" $scripttest $collectivelog
+    systemCmd "scp $rpm/i386/host-rpm*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+    if rpminst $editionrpmbin "$rpm/i386/host-rpm*.mvl" --justdb $collectivelog; then
+      echolog "BUILT: host-rpm built" $collectivelog
+    else
+      echolog "BUILD ERROR: host-rpm built but did not install" $collectivelog
+    fi
+  else
+    echolog "BUILD ERROR: host-rpm did not build" $collectivelog
+  fi
+  getdiskspace
+  mstop host-rpm $collectivelog
+else
+  collectivelog="$collectivelogdir/host-rpm_install"
+  mstart host-rpm_install $collectivelog
+  systemCmd "scp $host:$cpdir/host/windows2000/host-rpm*.mvl $rpm" $scripttest $collectivelog
+  # install host-rpm from foundation
+  systemCmd "cd /; rpm2cpio $rpm/host-rpm-* | cpio -iud" $scripttest $collectivelog
+  if rpminst $editionrpmbin "$rpm/host-rpm*.mvl" --justdb $collectivelog; then
+    echolog "BUILT: host-rpm from foundation installed" $collectivelog
+  else
+    echolog "BUILD ERROR: host-erpm from foundation did not install." $collectivelog
+  fi
+  getdiskspace
+  mstop host-rpm_install $collectivelog
+fi
+# install host rpms
+if [ "$product" != "dev" ] && [ "$product" != "fe" ] && [ "$product" != "f3" ]; then
+  collectivelog="$collectivelogdir/host_rpms_install"
+  mstart host_rpms_install $collectivelog
+  # copy host rpms from foundation
+  systemCmd "scp $host:$cpdir/host/windows2000/host*.mvl $rpm" $scripttest $collectivelog
+  cd $rpm
+  for x in $(ls host*.mvl | grep -v host-rpm | grep -v comerr | grep -v e2fslibs-dev); do
+    #echolog "$x..." $collectivelog
+    if ! rpminst $editionrpmbin $x $collectivelog; then
+      echolog "RPM ERROR: $x did not install" $collectivelog
+    fi
+  done
+  specialrpms="comerr e2fslibs-dev"
+  for x in $specialrpms; do
+    if ! rpminst $editionrpmbin "host-$x*" $collectivelog; then
+      echolog "RPM ERROR: host-$x did not install" $collectivelog
+    fi
+  done
+  mstop host_rpms_install $collectivelog
+fi
+cd $builddir
+# for foundation builds, build host-pkgconfig & host-glib since they are a dependency for the cross build
+hostdeps="pkgconfig glib libIDL"
+if [ "$product" = "dev" ] || [ "$product" = "fe" ] || [ "$product" = "f3" ] || [ "$product" = "scripttest" ]; then
+  for h in $hostdeps; do
+    collectivelog="$collectivelogdir/host-$h"
+    mstart host-$h $collectivelog
+    copysource $h
+    if rpmnabld $editionrpmbuild $spec/host-$h.spec $collectivelog; then
+      systemCmd "scp $rpm/i386/host-$h*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+      if rpminst $editionrpmbin "$rpm/i386/host-$h*.mvl" $collectivelog; then
+        echolog "BUILT: host-$h built" $collectivelog
+      else
+        echolog "BUILD ERROR: host-$h built but didn't install" $collectivelog
+      fi
+    else
+      echolog "BUILD ERROR: host-$h did not build." $collectivelog
+    fi
+    getdiskspace
+    mstop host-$h $collectivelog
+  done
+fi
+touchDone
+systemCmd "rm -f $rpm/i386/common-*" $scripttest $collectivelog
+for h in $cmnrpms; do
+  collectivelog="$collectivelogdir/common-$h"
+  mstart common-$h $collectivelog
+  copysource $h
+  if [ -e $(ls SPECS/common-$h.spec) ]; then
+    if [ "$h" = "common-devrocket" ]; then
+      rpminst $commonrpmbin "$rpm/common-apache-ant*" $collectivelog
+    #elif [ "$h" = "common-staf" ]; then
+    #  rpminst $commonrpmbin "$rpm/common-jdk*" $collectivelog
+    fi
+    if rpmnabld $commonrpmbuild $spec/common-$h.spec $collectivelog; then
+      #if [ "$h" = "common-jdk" ] || [ "$h" = "common-jre" ] || [ "$h" = "common-flexnet" ]; then
+      if [ "$h" = "common-flexnet" ]; then
+        systemCmd "scp $rpm/i386/common-*.mvl $host:$cpdir/common/windows2000" $scripttest $collectivelog
+        systemCmd "cd $rpm/i386" $scripttest $collectivelog
+        if rpminst $commonrpmbin "$rpm/i386/common-*" $collectivelog; then
+          echolog "BUILT: common-$h built" $collectivelog
+        else
+          echolog "BUILD ERROR: common-$h built but did not install" $collectivelog
+        fi
+        cd $builddir
+      elif [ "$h" = "common-devrocket" ]; then
+        systemCmd "scp $rpm/i386/$h*.mvl $host:$cpdir/common/windows2000" $scripttest $collectivelog
+      elif [ "$h" = "common-staf" ]; then
+        systemCmd "scp $rpm/i386/$h*.mvl $host:$cpdir/host/windows2000/testing/" $scripttest $collectivelog
+      else
+        systemCmd "scp $rpm/i386/common-*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+        if rpminst $commonrpmbin "$rpm/i386/common-*.mvl" $collectivelog; then
+          echolog "BUILT: common-$h built" $collectivelog
+        else
+          echolog "BUILD ERROR: common-$h built but did not install" $collectivelog
+        fi
+      fi
+      systemCmd "rm -f $rpm/i386/common-*" $scripttest $collectivelog
+    else
+      echolog "BUILD ERROR: common-$h did not build" $collectivelog
+    fi
+    getdiskspace
+  else
+    echolog "*** error *** common-$h.spec did not exist...skipping build." $collectivelog
+    echolog "Here's the listing for SPECS:" $collectivelog
+    systemCmd "ls SPECS" $scripttest $collectivelog
+    echolog "BUILD ERROR: common-$h did not build" $collectivelog
+  fi
+  mstop common-$h $collectivelog
+done
+for h in $hrpms; do
+  dep=0
+  for hostdep in $hostdeps; do
+    if [ "$h" = "$hostdep" ]; then
+      dep=1
+    fi
+  done
+  if ! [ $dep -eq 0 ]; then
+    continue
+  fi
+  collectivelog="$collectivelogdir/host-$h"
+  mstart host-$h $collectivelog
+  copysource $h
+  if [ -e $(ls SPECS/host-$h.spec) ]; then
+    if rpmnabld $editionrpmbuild $spec/host-$h.spec $collectivelog; then
+      if [ "$h" = "e2fsprogs" ]; then
+        systemCmd "scp $rpm/i386/host-$h*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+	systemCmd "scp $rpm/i386/host-comerr-dev*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+        systemCmd "scp $rpm/i386/host-e2fslibs-dev*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+        systemCmd "scp $rpm/i386/host-ss-dev*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+        systemCmd "scp $rpm/i386/host-uuid-dev*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+        if rpminst $editionrpmbin "$rpm/i386/host-e2fsprogs-1*.mvl" $collectivelog; then
+          if rpminst $editionrpmbin "$rpm/i386/host-e2fsprogs-doc*.mvl" $collectivelog; then
+            if rpminst $editionrpmbin "$rpm/i386/host-comerr-dev*.mvl" $collectivelog; then
+              if rpminst $editionrpmbin "$rpm/i386/host-ss-dev*.mvl" $collectivelog; then
+                if rpminst $editionrpmbin "$rpm/i386/host-uuid-dev*.mvl" $collectivelog; then
+                  if rpminst $editionrpmbin "$rpm/i386/host-e2fslibs*.mvl" $collectivelog; then
+                    echolog "BUILT: host-$h built" $collectivelog
+                  else
+                    echolog "BUILD ERROR: host-$h built but did not install" $collectivelog
+                  fi
+                else
+                  echolog "BUILD ERROR: host-$h built but did not install" $collectivelog
+                fi
+              else
+                echolog "BUILD ERROR: host-$h built but did not install" $collectivelog
+              fi
+            else
+              echolog "BUILD ERROR: host-$h built but did not install" $collectivelog
+            fi
+          else
+            echolog "BUILD ERROR: host-$h built but did not install" $collectivelog
+          fi
+        else
+          echolog "BUILD ERROR: host-$h built but did not install" $collectivelog
+        fi
+      else
+        systemCmd "scp $rpm/i386/host-$h*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+        if [ "$h" != "postinstall" ]; then
+          if rpminst $editionrpmbin "$rpm/i386/host-$h*.mvl" $collectivelog; then
+            echolog "BUILT: host-$h built" $collectivelog
+          else
+            echolog "BUILD ERROR: host-$h built but did not install" $collectivelog
+          fi
+        else
+          echolog "BUILT: host-$h built" $collectivelog
+        fi
+      fi
+    else
+      echolog "BUILD ERROR: host-$h did not build" $collectivelog
+    fi
+    getdiskspace
+  else
+    echolog "*** error *** host-$h.spec did not exist...skipping build." $collectivelog
+    echolog "Here's the listing for SPECS:" $collectivelog
+    systemCmd "ls SPECS" $scripttest $collectivelog
+  fi
+  mstop host-$h $collectivelog
+done
+
+# build installer
+if [ "$mvlinstal" != "null" ]; then
+  if [ "$product" != "devrocket" ]; then
+    collectivelog="$collectivelogdir/host-cd-installer"
+    mstart host-cd-installer $collectivelog
+    if rpmnabld $editionrpmbuild $spec/host-cd-installer.spec $collectivelog; then
+      echolog "BUILT: host-cd-installer built" $collectivelog
+    else
+      echolog "BUILD ERROR: host-cd-installer did not build." $collectivelog
+    fi
+    getdiskspace
+    mstop host-cd-installer $collectivelog
+    collectivelog="$collectivelogdir/host-mvlinstaller"
+    mstart host-mvlinstaller $collectivelog
+    if rpmnabld $editionrpmbuild $spec/host-mvlinstaller.spec $collectivelog; then
+      echolog "BUILT: host-mvlinstaller built" $collectivelog
+    else
+      echolog "BUILD ERROR: host-mvlinstaller did not build." $collectivelog
+    fi
+    getdiskspace
+    systemCmd "scp $rpm/i386/host-cd-installer*.mvl $host:$cpdir/installer_rpms/host/windows2000" $scripttest $collectivelog
+    systemCmd "scp $rpm/i386/host-mvlinstaller*.mvl $host:$cpdir/host/windows2000" $scripttest $collectivelog
+    mstop host-mvlinstaller $collectivelog
+  else
+    collectivelog="$collectivelogdir/license_server_installer"
+    mstart license_server_installer $collectivelog
+    systemCmd "rm -rf /cygdrive/c/nsis_exp/*" $scripttest $collectivelog
+    systemCmd "cp -r license-installer/windows.src/nsis_exp/* /cygdrive/c/nsis_exp" $scripttest $collectivelog
+    systemCmd "rm -f /cygdrive/c/nsis_exp/compiles/*" $scripttest $collectivelog
+    systemCmd "cd /cygdrive/c/nsis_exp" $scripttest $collectivelog
+    systemCmd "`cygpath -W`/../Program\ Files/NSIS/makensis.exe /V4 `cygpath -w "/cygdrive/c/nsis_exp/example2.nsi"`" $scripttest $collectivelog
+    systemCmd "scp /cygdrive/c/nsis_exp/compiles/lminstaller.exe $host:$cpdir/installer_rpms/host/windows2000" $scripttest $collectivelog
+    getdiskspace
+    mstop license_server_installer $collectivelog
+  fi
+fi
+
+# copy dynamic collective logs to /home/build on nodes
+systemCmd "scp -r /home/build/dailybuild/dynamicCollectiveLogs/* $host:$buildtag-exp/CVSREPOS/dynamicCollectiveLogs" $scripttest
+
+#Clean Up
+cd /home/build/dailybuild
+rm -rf BUILD/* RPMS/* SRPMS/* SOURCES/* SPECS/*
+rm -rf /home/build/dynamicCollectiveLogs
+
+cd $installdir
+rm -rf devkit config common host $edition
+rm -rf /var/tmp/*
+getdiskspace
+echo "Ending at $(date)"

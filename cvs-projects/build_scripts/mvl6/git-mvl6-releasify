@@ -1,0 +1,301 @@
+#!/opt/montavista/bin/python
+"""Usage: git-mvl6-releasify [-r <repo>] [-s <since>] <committish> <output_dir>
+
+Places a series of patches in <output_dir> corresponding to the commits
+in <committish>, contained in the mvl6 git repository <repo>, a directory
+on the local machine.  If <repo> is not specified, the current directory
+is used.  The patch series begins with the first commit following <since>.
+If <since> is not specified, the value contained in the file
+MONTAVISTA/upstream_version of the limb-info branch in the same limb
+as <committish> is used for <since>.
+"""
+
+import getopt
+import sys
+import os
+import subprocess
+import re
+import tarfile
+
+git = "/opt/montavista/bin/git"
+
+config = {
+    "debug"		: False,
+}
+
+
+def usage(msg=None):
+    """
+    Print a usage message and exit with an error code
+    """
+
+    if msg:
+	sys.stderr.write("%s\n" % str(msg).rstrip())
+
+    sys.stderr.write("\n%s\n" % __doc__.strip())
+    sys.exit(1)
+
+
+def call(cmd, **kwargs):
+    """
+    Call the given Linux command.  By default, returns the command's
+    stdout.  For more details, see subprocess.Popen().
+    """
+
+    sys.stdout.flush()
+
+    error = True
+    if 'error' in kwargs:
+	if not kwargs['error']:
+	    error = False
+	    if 'stderr' not in kwargs:
+		kwargs['stderr'] = None
+	del kwargs['error']
+
+    dev_null = None
+    if 'stdout' not in kwargs:
+	kwargs['stdout'] = subprocess.PIPE
+    elif kwargs['stdout'] == None:
+	dev_null = open('/dev/null', 'w')
+	kwargs['stdout'] = dev_null
+
+    if kwargs.get('stderr') == None:
+	if not dev_null:
+	    dev_null = open('/dev/null', 'w')
+	kwargs['stderr'] = dev_null
+
+    p = subprocess.Popen(cmd, **kwargs)
+
+    if dev_null:
+	dev_null.close()
+
+    if kwargs['stdout'] == subprocess.PIPE:
+	output = p.stdout.read()
+    else:
+	output = ''
+
+    if p.wait() != 0 and error:
+	try:
+	    cmd + ''
+	except:
+	    cmd = ' '.join(cmd)
+	raise Exception('failed: "%s"\n' % cmd)
+
+    return output
+
+
+def process_options():
+    """
+    Process command line options
+    """
+
+    global config
+
+    short_opts = "r:s:"
+    long_opts = []
+
+    try:
+        options, args = getopt.getopt(sys.argv[1:], short_opts, long_opts)
+
+    except getopt.GetoptError, err:
+        usage(err)
+
+    repo = None
+    since_commit = None
+
+    for option, value in options:
+        if option == "--help" or option == "-h":
+	    usage()
+	elif option == "--debug":
+	    config["debug"] = True
+        elif option == "-r":
+	    repo = value
+        elif option == "-s":
+	    since_commit = value
+
+    if len(args) != 2:
+	usage()
+
+    committish, output_dir = args
+
+    if repo:
+	if not os.path.isdir(repo):
+	    sys.stderr.write("Not a directory: %s\n" % repo)
+	    usage()
+
+	try:
+	    os.chdir(repo)
+	except:
+	    sys.stderr.write("failed: chdir %s\n" % repo)
+	    usage()
+    
+    if not os.path.isdir(output_dir):
+	sys.stderr.write("Not a directory: %s\n" % output_dir)
+	usage()
+
+    if not since_commit:		# first look on the current branch
+	upstream_version_ref = "%s:%s" % (
+		committish, "MONTAVISTA/upstream_version")
+	try:
+	    cmd = [git, "show", upstream_version_ref]
+	    since_commit = "v%s" % call(cmd).strip()
+	except:
+	    pass
+
+    if not since_commit:		# then look on limb-info branch
+	limb_info = os.path.join(os.path.dirname(committish), "limb-info")
+	cmd = [git, "rev-parse", "--symbolic-full-name", limb_info]
+	info_fullname = call(cmd, error=None).strip()
+	if not info_fullname:
+	    sys.stderr.write("Invalid limb-info branch: %s\n" % limb_info)
+	    usage()
+
+	upstream_version_ref = "%s:%s" % (
+		limb_info, "MONTAVISTA/upstream_version")
+	try:
+	    cmd = [git, "show", upstream_version_ref]
+	    since_commit = "v%s" % call(cmd).strip()
+	except:
+	    sys.stderr.write("failed: git show %s\n" % upstream_version_ref)
+	    usage()
+
+    try:
+	cmd = [git, "rev-parse", "--verify", since_commit]
+	call(cmd, stdout=None, stderr=None)
+    except:
+	sys.stderr.write("Invalid since_commit: %s\n" % since_commit)
+	usage()
+
+    config["since_commit"] = since_commit
+    config["committish"] = committish
+    config["output_dir"] = output_dir
+
+
+def non_metadata_commits(commits):
+    """
+    Examine each commit in commits.  Return a list of those commits
+    that do NOT modify MontaVista metadata files.
+    """
+
+    result = []
+    for commit in commits:
+	cmd = [git, "diff", "--name-only", commit, "%s^" % commit]
+	filenames = call(cmd).splitlines()
+	metadata = False
+	non_metadata = False
+	for name in filenames:
+	    if name.startswith("MONTAVISTA"):
+		metadata = True
+	    else:
+		non_metadata = True
+
+	if non_metadata:
+	    if metadata:
+		sys.stderr.write("commit has both metadata and "
+			       	"non-metadata files: %s\n" % commit)
+	    result.append(commit)
+
+    return result
+
+
+def create_patches():
+    """
+    Create a patch in config["output_dir"]/recipes/linux/patches for
+    each commit that modifies non-metadata-files on config["committish"]
+    since config["since_commit"].
+    """
+
+    since_commit = config["since_commit"]
+    committish = config["committish"]
+    output_dir = config["output_dir"]
+
+    patch_dir = os.path.join(output_dir, "recipes/linux/patches")
+
+    if not os.path.isdir(patch_dir):
+	try:
+	    os.makedirs(patch_dir)
+	except:
+	    sys.stderr.write("failed: mkdir %s\n" % patch_dir)
+	    sys.exit(1)
+
+    series_filename = os.path.join(patch_dir, "series")
+    try:
+	series_file = open(series_filename, "w")
+    except:
+	sys.stderr.write("open for writing failed: %s\n" % series_filename)
+	sys.exit(1)
+
+    cmd = [git, "rev-list", "--reverse", "%s..%s" % (since_commit, committish)]
+    all_commits = call(cmd).splitlines()
+
+    commits = non_metadata_commits(all_commits)
+    re_patch_dir = re.compile("%s/" % patch_dir)
+
+    for index, commit in enumerate(commits):
+	cmd = [git, "format-patch", "-o", patch_dir, "-1",
+		"--start-number", str(index + 1), commit]
+	patchname = call(cmd)
+	patchname = re_patch_dir.sub('', patchname)
+	series_file.write(patchname)
+
+    series_file.close()
+
+
+def copy_metadata():
+    """
+    Copy the directory hierarchy from the MONTAVISTA/bitbake
+    directory in config["committish"] to config["output_dir"].
+    """
+
+    committish = config["committish"]
+    output_dir = config["output_dir"]
+
+    bitbake_dir = "MONTAVISTA/bitbake"
+    bitbake_dir_ref = "%s:%s" % (committish, bitbake_dir)
+
+    try:
+	call([git, "rev-parse", bitbake_dir_ref], stdout=None, stderr=None)
+    except:
+	sys.stderr.write("Directory %s not found in %s\n" %
+			    (bitbake_dir, committish))
+	sys.exit(1)
+
+    repo_dir = os.getcwd()
+
+    try:
+	os.chdir(output_dir)
+    except:
+	sys.stderr.write("failed: chdir %s\n" % output_dir)
+	usage()
+
+    cmd = [git, 'archive', '--remote=%s' % repo_dir, bitbake_dir_ref]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+    tar = tarfile.open(fileobj=p.stdout,mode='r|tar')
+    file = tar.next()
+    #tar.extractall()
+    while file != None:
+    	tar.extract(file)
+	file = tar.next()
+    tar.close()
+
+    git_exit_code = p.wait()
+    if git_exit_code:
+	raise Exception('%s returned %d\n' % (' '.join(cmd), git_exit_code))
+
+
+
+def main():
+    """
+    Main Program
+    """
+
+    process_options()
+
+    create_patches()
+    copy_metadata()
+
+    sys.exit(0)
+
+
+main()

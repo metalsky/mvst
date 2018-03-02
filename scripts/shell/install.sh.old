@@ -1,0 +1,96 @@
+#!/bin/bash
+
+
+# location where the drop archive has been downloaded to
+# modify $TARBALL as necessary
+ARCHIVE="$PWD/$1"
+
+
+# the name of the drop archive (minus extension)
+DROP="${ARCHIVE##*/}"
+DROP="${DROP%.tar.gz}"
+
+# the name of the MSD
+MSD=${DROP%%_*}
+
+# the directory where the archive should be installed
+INSTALLDIR="$PWD/$DROP"
+
+
+# these commands will unpack the archive, create the content.xml
+# file, and install the Integration Platform and toolchain.
+mkdir -p $INSTALLDIR
+cd $INSTALLDIR
+echo "Untarring MSD... "
+echo ""
+tar zxvf $ARCHIVE
+echo "done."
+echo ""
+echo ""
+
+
+sed -e "s|http://collective\.sh\.mvista\.com/dev_area/bosch|file://$PWD|g" < $DROP/content.html > content.xml
+echo "Installing Integration Platform... "
+echo ""
+
+
+# determine which version of the IP we're working with so we can use mvl-project accordingly:
+IP_INSTALLER="$DROP/content/installer/MVL-I*-P*-Linux*Install"
+if [[ `basename $IP_INSTALLER` = MVL-I*-P*-6.0.*-Install ]]; then
+	IP=6.0
+else
+	IP=6.1
+fi
+
+
+./$DROP/content/installer/MVL-Integration-Platform-*-Install --mode silent --prefix $PWD/tools
+echo "done."
+echo ""
+echo ""
+
+
+echo "Installing the toolchain... "
+echo ""
+for TC in ./$DROP/content/installer/MVL-Toolchain-*-Install; do
+	$TC --mode silent --prefix $PWD/tools;
+done
+echo "done."
+echo ""
+echo ""
+
+
+# the following commands show how to create a project that uses
+# the installed engineering drop archive to create and build
+# a project called "newproject".  They can be executed anywhere
+# on the host regardless of where the INSTALLDIR is.
+PATH=$INSTALLDIR/tools/bin:$PATH
+
+# based on the IP we found in the drop, we'll run mvl-project accordingly:
+if [ $IP = 6.0 ]; then
+	echo "IP 6.0 detected, running mvl-project accordingly... "
+	mvl-project -m $MSD --content-xml-dir=$INSTALLDIR newproject
+	echo "MVLCONTENT_OPTS = \" --content-xml-dir=$INSTALLDIR\"" >> newproject/conf/local.conf
+else
+	echo "IP 6.1 detected, running mvl-project accordingly... "
+	mvl-project --create --dir=newproject
+	mvl-project --dir=newproject --add --uri=file://$INSTALLDIR/$DROP/symphony-ivi-2.6.34/solutions/mvista.com/symphony-ivi-2.6.34/symphony-ivi-2.6.34.xml
+	mvl-project --dir=newproject --add --uri=file://$INSTALLDIR/$DROP/symphony-ivi-cm/solutions/mvista.com/symphony-ivi-cm/symphony-ivi-cm.xml
+fi
+
+
+echo " done."
+echo ""
+echo ""
+echo "MVLCONTENT_OPTS = \" --content-xml-dir=$INSTALLDIR\"" >> newproject/conf/local.conf
+cd newproject
+echo "Sourcing setup.sh... "
+source setup.sh
+echo "done."
+echo ""
+echo ""
+echo "Running bitbake... "
+echo ""
+bitbake default-image
+echo "done."
+echo ""
+echo ""

@@ -1,0 +1,28 @@
+##############
+# ppc_440
+# ppc_74xx
+# ppc_7xx
+# ppc_9xx
+# ppc_85xx
+# x86_pentium3
+# x86_pentium4
+# x86_em64t
+# x86_amd64
+# mips64_fp_be
+###############
+rpm-edition
+apt-rpm-config
+librmon 
+evlog 
+libscsihotswap 
+libdevmapper
+openais 
+OpenIPMI 
+openhpi
+fsad 
+libintl-perl
+base-files
+libsmi
+##################
+#  end
+##################

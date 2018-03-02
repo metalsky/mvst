@@ -1,0 +1,29 @@
+#!/bin/bash
+
+archs="arm_xscale_le"
+foo="xscale"
+
+rm -rf /opt/hardhat/*
+cp -a /var/lib/rpm /opt/hardhat/rpmdb
+
+for a in $archs; do   
+   cd /mnt/hhl2.0-$foo/common;   
+   rpm -ivh *.rpm
+   cd /mnt/hhl2.0-$foo/host/cluster
+   rpm -ivh *.rpm
+   cd /mnt/hhl2.0-$foo/$a/tools
+   rpm -ivh hhl-cross-$a*.rpm
+   cd cluster
+   rpm -ivh hhl-cross-$a*.rpm
+   cd ../../apps
+   rpm -ivh --ignorearch *filesystem* *binutils* *kernel-headers* *glibc* *gcc* *g++* *cpp* *libstdc++* *protoize* *ncurses* *pam*
+   cd ~/userland/ppp
+   mkapp `pwd` hhl2.0 $a target-ppp /opt/hardhat/rpmdb ~/.mvlrpmrc
+   if ! [ -d /mvista/dev_area/rp-pppoe-update/$a ]; then
+       mkdir -p /mvista/dev_area/rp-pppoe-update/$a/apps
+   fi
+   cp RPMS/$a/* /mvista/dev_area/rp-pppoe-update/$a/apps
+   cd ~/userland/rp-pppoe
+   mkapp `pwd` hhl2.0 $a target-rp-pppoe /opt/hardhat/rpmdb ~/.mvlrpmrc
+   cp RPMS/$a/* /mvista/dev_area/rp-pppoe-update/$a/apps
+done

@@ -1,0 +1,41 @@
+/mvista/release_area/pro/mvl5.0.x:
+
+Each directory needs to have a corresponding link into /mvista/dev_area/RELEASED_by_buildtag/pro:
+
+	build@overlord:/mvista/release_area/pro/mvl5.0.x$ ls -l
+	total 104
+	drwxr-xr-x  2 root root 4096 2009-10-27 18:38 adk-installers
+	drwxr-xr-x 56 root root 8192 2009-09-28 15:33 asyncs
+	drwxr-xr-x  3 root root 4096 2009-06-04 16:19 engr-drops
+	drwxr-xr-x  2 root root 4096 2009-06-24 15:23 files
+	drwxr-xr-x  2 root root 4096 2009-09-16 08:50 host-tool-30182
+	drwxr-xr-x  7 root root 4096 2009-04-21 12:15 libmtraq_beta
+	drwxr-xr-x 15 root root 4096 2008-02-19 15:10 mvl500
+	drwxr-xr-x 13 root root 4096 2008-09-22 11:36 mvl500-arm_v6_le
+	drwxr-xr-x 13 root root 4096 2008-06-25 10:51 mvl500-arm_v6_vfp_le
+	drwxr-xr-x  3 root root 4096 2009-06-24 16:01 mvl500-asyncs
+	drwxr-xr-x  5 root root 4096 2007-01-29 12:21 mvl5.0.0-eap
+	drwxr-xr-x 12 root root 4096 2007-11-13 14:50 mvl500-mips2_fp_le
+	drwxr-xr-x 14 root root 4096 2008-04-07 13:47 mvl500-mips64_fp_be
+	drwxr-xr-x 13 root root 4096 2008-10-16 10:02 mvl500-ppc_405
+	drwxr-xr-x 13 root root 4096 2008-02-21 09:51 mvl500-ppc_440
+	drwxr-xr-x 12 root root 4096 2007-12-14 10:47 mvl500-ppc_440ep
+	drwxr-xr-x 12 root root 4096 2008-02-29 09:58 mvl500-ppc_74xx
+	drwxr-xr-x 12 root root 4096 2008-03-25 08:30 mvl500-ppc_83xx
+	drwxr-xr-x 14 root root 4096 2008-04-03 12:12 mvl500-ppc_83xx_nfp
+	drwxr-xr-x 13 root root 4096 2009-02-03 12:40 mvl500-ppc_8xx
+	drwxr-xr-x 12 root root 4096 2007-11-27 11:14 mvl500-x86_em64t
+	drwxr-xr-x  7 root root 4096 2009-01-21 19:58 mvl5024
+	drwxr-xr-x  7 root root 4096 2009-06-18 17:38 mvl5024-x86_em64t
+	drwxr-xr-x  7 root root 4096 2008-12-19 17:36 orginalmvl5024
+	drwxr-xr-x  4 root root 4096 2009-03-27 10:28 ti-puma-ps-special
+
+
+For example:
+
+/mvista/release_area/pro/mvl5.0.x/mvl500-arm_v6_le is linked to /mvista/dev_area/RELEASED_by_buildtag/pro/blackfoot080719_0801570:
+
+	blackfoot080719_0801570 -> /mvista/release_area/pro/mvl5.0.x/mvl500-arm_v6_le
+
+
+The same goes for all the async builds as well! Do this for cge, mobilinux and pro!

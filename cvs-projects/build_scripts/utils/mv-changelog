@@ -1,0 +1,165 @@
+#!/bin/bash
+
+repository=""
+branch="HEAD"
+starttag=""
+endtag=""
+modules="all"
+usage=1
+
+progname=$(basename $0)
+cvs2cl="cvs2cl"
+TMP="/tmp"
+sedscript="${TMP}/sedscript_$$"
+
+while [ "$1" != "" ]; do
+	usage=0
+	case "$1" in
+		--repository)	shift;
+				repository="$1";
+				shift;
+				;;
+		--branch)	shift;
+				branch="$1";
+				shift;
+				;;
+		--start-tag)	shift;
+				starttag="$1";
+				shift;
+				;;
+		--end-tag)	shift;
+				endtag="$1";
+				shift;
+				;;
+		--modules)	shift;
+				modules="$1";
+				shift;
+				;;
+		--help)		usage=1;
+				break;;
+		*)		echo "$progname: unknown argument: \"$1\"" >&2;
+				usage=1;
+				break;
+				;;
+	esac
+done
+
+if [ $usage = 0 ]; then
+
+    if [ "${repository}" = "" ]; then
+	echo "$progname: You must specify a repository with --repository." >&2
+	usage=1
+    fi
+
+    if [ "${starttag}" = "" ]; then
+	echo "$progname: You must specify a start tag with --start-tag." >&2
+	usage=1
+    fi
+
+    if [ "${endtag}" = "" ]; then
+	echo "$progname: You must specify a repository with --end-tag." >&2
+	usage=1
+    fi
+
+fi
+
+if [ $usage = 1 ]; then
+    cat <<USAGE >&2
+Usage: ${progname} [option parameter]...
+ options:
+  --repository		required
+  --branch		not required, default is "HEAD"
+  --start-tag		required
+  --end-tag		required
+  --modules		not required, default is "all"
+  --help		displays this message
+
+Each option should be followed by one parameter.  Do not use "=".
+
+$progname is a shell script that generates MontaVista-style changelogs
+between two tags in a CVS repository.  The script is really just a
+front-end to the opensource cvs2cl.pl script.
+
+$progname has two main advantages over using cvs2cl.pl directly:
+
+1) $progname does not need to have a checked-out copy of the CVS
+   repository.  $progname does this by using "cvs rlog" on the
+   CVS repository, fixing up the output so that it looks like the
+   output of "cvs log" (which is what cvs2cl.pl would normally use
+   internally), and feeds it to cvs2cl.pl.
+
+2) $progname works around a fault in cvs2cl.pl.  Repositories that
+   have a large number of branch and/or revision tags cause cvs2cl.pl
+   to use tremendous amounts of memory.  This often causes the machine
+   running cvs2cl.pl to start swapping heavily and thrash.  $progname
+   addresses this by stripping out all unnecessary tags from the output
+   of "cvs rlog" which is presented as the input to cvs2cl.pl.
+   As a result, changelogs that took hours to generate now take just
+   a few minutes and are limited by how long it takes to do the
+   "cvs rlog".
+
+Example:
+  $progname \\
+	--repository :ext:cvs.sh.mvista.com:/export/cvs/mvl-kernel \\
+	--branch druid_peak \\
+	--start-tag druid_peak_start \\
+	--end-tag mvlcge310 \\
+	--modules "linux rpm"
+USAGE
+	exit 1
+fi
+
+rcsprefix=$(echo ${repository} | sed "s=.*:\([^:]*\)$=\1/=")
+
+# Generate the sed script to munge output of "cvs rlog".  Grab
+# the branch tag, start and end revision tags from the output.
+# Discard all other tags.  Note: there probably isn't a symbolic
+# tag named "HEAD", but it wont hurt to have it in the sed script.
+
+cat > ${sedscript} <<SEDSCRIPT
+\=^RCS file: ${rcsprefix}.*,v$={
+	p
+	s=^RCS file: ${rcsprefix}\(.*\),v$=Working file: \1=
+	s=Attic/==
+}
+\=^symbolic names:=,\=^[^	]={
+	\=	={
+		\=^	${starttag}: ={
+			p
+		}
+		\=^	${endtag}: ={
+			p
+		}
+		\=^	${branch}: ={
+			p
+		}
+		d
+	}
+}
+SEDSCRIPT
+
+if [ "${branch}" = "HEAD" ]; then
+    rlogrev="${starttag}::${endtag},${endtag}"
+    cvs2clfollow="trunk"
+else
+    rlogrev="${branch},${starttag}::${endtag},${endtag}"
+    cvs2clfollow="${branch}"
+fi
+
+cat <<HEADER
+Changelog for:	${repository}
+Branch:		${branch}
+Start Tag:	${starttag}
+End Tag:	${endtag}
+Modules:	${modules}
+
+HEADER
+
+cvs -Q -d${repository} rlog -r${rlogrev} ${modules} 2>/dev/null \
+| sed -f $sedscript \
+| $cvs2cl \
+	--stdin --stdout \
+	--separate-header --no-wrap \
+	--follow ${cvs2clfollow} --delta ${starttag}:${endtag}
+
+rm -f $sedscript

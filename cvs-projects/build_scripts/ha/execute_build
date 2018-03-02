@@ -1,0 +1,266 @@
+#!/bin/sh
+#
+# execute_build
+#
+# Copyright (C) 2001 MontaVista Software, Inc.
+# Steven Dake (sdake@mvista.com)
+#
+# This script takes the output of prepare_build and generates binaries and a
+# cdrom image.
+#
+# /var/lib/cleanrpm must be a working RPM database with all supported targets
+# toolchains installed.
+#
+# CAREFUL this script will delete /var/lib/rpm during its build process.
+# MAKE SURE TO BACKUP YOUR RPM DATABASE
+
+# $1 is cluster (for cluster build) or null (for user build)
+# $2 is the build_id (for cluster)
+# $3 is _hhl_kernel_base_version (for cluster)
+# $4 is _hhl_kernel_hhl_version (for cluster)
+
+if [ "$1" = "cluster" ]; then
+  bt="-ba --clean"
+else
+  bt="-ba"
+fi
+
+# Create build directory structure
+echo "BUILD: Creating BUILD directory structure ..."
+rm -rf build
+mkdir -p build/apps/BUILD
+mkdir -p build/apps/RPMS
+mkdir -p build/apps/SRPMS
+mkdir -p build/lsps/BUILD
+mkdir -p build/lsps/RPMS
+mkdir -p build/lsps/SRPMS
+mkdir -p build/common/BUILD
+mkdir -p build/common/RPMS
+mkdir -p build/common/SRPMS
+
+# Create cdrom directory structure
+echo "BUILD: Creating CDROM directory structure ..."
+mkdir -p build/cdrom/ppc_7xx/apps
+mkdir -p build/cdrom/ppc_8xx/apps
+mkdir -p build/cdrom/ppc_74xx/apps
+mkdir -p build/cdrom/ppc_82xx/apps
+mkdir -p build/cdrom/x86_586/apps
+mkdir -p build/cdrom/x86_pentium/apps
+mkdir -p build/cdrom/x86_pentium2/apps
+mkdir -p build/cdrom/x86_pentium3/apps
+mkdir -p build/cdrom/source/apps
+mkdir -p build/cdrom/ppc_7xx/lsps
+mkdir -p build/cdrom/x86_pentium2/lsps
+mkdir -p build/cdrom/x86_pentium3/lsps
+mkdir -p build/cdrom/source/lsps
+mkdir -p build/cdrom/etc/init.d
+mkdir -p build/cdrom/bin
+mkdir -p build/cdrom/common
+mkdir -p build/cdrom/source/common
+mkdir -p build/cdrom/docs
+
+echo "BUILD: Copying docs ..."
+cp hadocs/pdf/* build/cdrom/docs
+
+echo "BUILD: Initializing installer ..."
+cp install/hhl-ha-install build/cdrom/bin
+cp install/hhl_LSPs.2.0 build/cdrom/etc/init.d
+
+echo "BUILD: Building hhl-host-kernel package ..."
+
+if [ "$1" = "cluster" ]; then
+	rpm --define "_specdir `pwd`/common/SPECS" \
+		--define "_sourcedir `pwd`/common/SOURCES" \
+		--define "_builddir `pwd`/build/common/BUILD" \
+		--define "_rpmdir `pwd`/build/common/RPMS" \
+		--define "_srcrpmdir `pwd`/build/common/SRPMS" \
+		--define "_hhl_build_id $2" \
+		--define "_hhl_kernel_base_version $3" \
+		--define "_hhl_kernel_hhl_version $4" \
+		--define "vendor MontaVista Software, Inc." \
+		--define "packager <source@mvista.com>" \
+		$bt common/SPECS/hhl-host-kernel.spec
+else
+        rpm --define "_specdir `pwd`/common/SPECS" \
+                --define "_sourcedir `pwd`/common/SOURCES" \
+                --define "_builddir `pwd`/build/common/BUILD" \
+                --define "_rpmdir `pwd`/build/common/RPMS" \
+                --define "_srcrpmdir `pwd`/build/common/SRPMS" \
+                --define "vendor MontaVista Software, Inc." \
+                --define "packager <source@mvista.com>" \
+                $bt common/SPECS/hhl-host-kernel.spec
+fi
+
+echo "BUILD: Installing hhl-host-kernel package ..."
+
+rpm -ivh build/common/RPMS/noarch/hhl-host-kernel*rpm
+
+echo "BUILD: Building ALL lsps ..."
+for target in lsps/*
+do
+	target=${target#lsps/}
+	# Skip CVS directory
+	if [ $target = "CVS" ]; then
+		continue;
+	fi
+	for lspname in lsps/$target/*
+	do
+		if [ $lspname = "lsps/$target/CVS" ]; then
+			continue;
+		fi
+
+		specfilename=hhl-cross-lsp-${lspname#lsps/$target/}.spec
+		echo "BUILD: Building cross lsp $lspname/$specfilename ..."
+		bwd=`pwd`/$lspname
+		specdir=$bwd/SPECS
+		sourcedir=$bwd/SOURCES
+		builddir=`pwd`/build/lsps/BUILD
+		rpmdir=`pwd`/build/lsps/RPMS
+		srcrpmdir=`pwd`/build/lsps/SRPMS
+
+		# build cross RPM
+		if [ "$1" = "cluster" ]; then
+			rpm --define "_specdir $specdir" \
+				--define "_sourcedir $sourcedir" \
+				--define "_builddir $builddir" \
+				--define "_rpmdir $rpmdir" \
+				--define "_srcrpmdir $srcrpmdir" \
+				--define "_hhl_build_id $2" \
+				--define "_hhl_kernel_base_version $3" \
+				--define "_hhl_kernel_hhl_version $4" \
+				--define "vendor MontaVista Software, Inc." \
+				--define "packager <source@mvista.com>" \
+				$bt --target=$target $bwd/SPECS/$specfilename
+		else
+			rpm --define "_specdir $specdir" \
+                        	--define "_sourcedir $sourcedir" \
+                        	--define "_builddir $builddir" \
+                        	--define "_rpmdir $rpmdir" \
+                        	--define "_srcrpmdir $srcrpmdir" \
+                        	--define "vendor MontaVista Software, Inc." \
+                        	--define "packager <source@mvista.com>" \
+                        	$bt --target=$target $bwd/SPECS/$specfilename
+		fi
+
+		# install new cross RPM
+		erasename=hhl-cross-$target-lsp-${lspname#lsps/$target/}
+		rpmfilename=$rpmdir/noarch/hhl-cross-$target-lsp-${lspname#lsps/$target/}*.rpm
+		if [ "$1" = "" ] || [ "$1" != "cluster" ]; then
+			echo installing new rpm database
+			rm -rf /var/lib/rpm
+			cp -R /var/lib/cleanrpm /var/lib/rpm
+		fi
+		echo installing rpm $rpmfilename
+		rpm -ivh $rpmfilename
+
+		# build target RPM
+		specfilename=hhl-target-lsp-${lspname#lsps/$target/}.spec
+		echo "BUILD: Building target lsp $lspname/$specfilename ..."
+
+		if [ "$1" = "cluster" ]; then
+			rpm --define "_specdir $specdir" \
+				--define "_sourcedir $sourcedir" \
+				--define "_builddir $builddir" \
+				--define "_rpmdir $rpmdir" \
+				--define "_srcrpmdir $srcrpmdir" \
+				--define "_hhl_build_id $2" \
+                                --define "_hhl_kernel_base_version $3" \
+                                --define "_hhl_kernel_hhl_version $4" \
+				--define "vendor MontaVista Software, Inc." \
+				--define "packager <source@mvista.com>" \
+				$bt --target=$target $bwd/SPECS/$specfilename
+		else
+			rpm --define "_specdir $specdir" \
+                                --define "_sourcedir $sourcedir" \
+                                --define "_builddir $builddir" \
+                                --define "_rpmdir $rpmdir" \
+                                --define "_srcrpmdir $srcrpmdir" \
+                                --define "vendor MontaVista Software, Inc." \
+                                --define "packager <source@mvista.com>" \
+                                $bt --target=$target $bwd/SPECS/$specfilename
+		fi
+	done
+done
+
+# Build all application targets
+echo "BUILD: Building all application targets ..."
+for target in ppc_74xx ppc_8xx ppc_7xx ppc_82xx x86_586 x86_pentium x86_pentium2 x86_pentium3
+do
+	echo "BUILD: Building applications for $target ..."
+	# BUILD all applications
+	for bwd in apps/*
+	do
+		if [ "${bwd#apps/}" = "CVS" ]; then
+			continue
+		fi
+		specfilename=hhl-target-${bwd#apps/}.spec
+
+		bwd=`pwd`/$bwd
+		specdir=$bwd/SPECS
+		sourcedir=$bwd/SOURCES
+		builddir=`pwd`/build/apps/BUILD
+		rpmdir=`pwd`/build/apps/RPMS
+		srcrpmdir=`pwd`/build/apps/SRPMS
+	
+		# For ppc_7xx, ppc_8xx, ppc_74xx skip lilo, hsctool, ipmi code
+		if [ $target = "ppc_7xx" -o $target = "ppc_8xx" -o \
+			$target = "ppc_74xx" -o $target = "ppc_82xx" ] && \
+			[ $specfilename = "hhl-target-lilo.spec" -o \
+			  $specfilename = "hhl-target-hsctool.spec" -o \
+			  $specfilename = "hhl-target-libipmi.spec" -o \
+			  $specfilename = "hhl-target-ipmisamples.spec" ]; then
+			continue;
+		fi
+
+		echo "BUILD: Building application $specfilename ..."
+
+		if [ "$1" = "cluster" ]; then	
+			rpm --define "_specdir $specdir" \
+				--define "_sourcedir $sourcedir" \
+				--define "_builddir $builddir" \
+				--define "_rpmdir $rpmdir" \
+				--define "_srcrpmdir $srcrpmdir" \
+				--define "_hhl_build_id $2" \
+				--define "vendor MontaVista Software, Inc." \
+				--define "packager <source@mvista.com>" \
+				$bt --target=$target $bwd/SPECS/$specfilename
+		else
+			rpm --define "_specdir $specdir" \
+                                --define "_sourcedir $sourcedir" \
+                                --define "_builddir $builddir" \
+                                --define "_rpmdir $rpmdir" \
+                                --define "_srcrpmdir $srcrpmdir" \
+                                --define "vendor MontaVista Software, Inc." \
+                                --define "packager <source@mvista.com>" \
+                                $bt --target=$target $bwd/SPECS/$specfilenam
+		fi
+	done
+done
+
+# Copy RPMS to cdrom directory structure
+
+echo "BUILD: Copying BUILT files to CDROM directory structure ..."
+cp -R build/apps/RPMS/ppc_7xx/* build/cdrom/ppc_7xx/apps
+cp -R build/apps/RPMS/ppc_8xx/* build/cdrom/ppc_8xx/apps
+cp -R build/apps/RPMS/ppc_74xx/* build/cdrom/ppc_74xx/apps
+cp -R build/apps/RPMS/ppc_82xx/* build/cdrom/ppc_82xx/apps
+cp -R build/apps/RPMS/x86_586/* build/cdrom/x86_586/apps
+cp -R build/apps/RPMS/x86_pentium/* build/cdrom/x86_pentium/apps
+cp -R build/apps/RPMS/x86_pentium2/* build/cdrom/x86_pentium2/apps
+cp -R build/apps/RPMS/x86_pentium3/* build/cdrom/x86_pentium3/apps
+cp -R build/apps/SRPMS/* build/cdrom/source/apps
+
+cp -R build/lsps/RPMS/x86_pentium2/* build/cdrom/x86_pentium2/lsps
+cp -R build/lsps/RPMS/x86_pentium3/* build/cdrom/x86_pentium3/lsps
+cp -R build/lsps/RPMS/ppc_7xx/* build/cdrom/ppc_7xx/lsps
+cp -R build/lsps/RPMS/noarch/*x86_pentium2* build/cdrom/x86_pentium2/lsps
+cp -R build/lsps/RPMS/noarch/*x86_pentium3* build/cdrom/x86_pentium3/lsps
+cp -R build/lsps/RPMS/noarch/*ppc_7xx* build/cdrom/ppc_7xx/lsps
+cp -R build/lsps/SRPMS/* build/cdrom/source/lsps
+
+cp -R build/common/RPMS/noarch/hhl-host-kernel* build/cdrom/common
+cp -R build/common/SRPMS/hhl-host-kernel* build/cdrom/source/common
+
+# Build CDROM media
+#echo "BUILD: building cdrom media ..."
+mkisofs -r -J -V haf20 -o build/cdrom.iso build/cdrom

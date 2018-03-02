@@ -1,0 +1,40 @@
+overlord:~# for dir in `find / -maxdepth 1 -type d \( -name export -o -name mvista \) -prune -o -print`; do du -sh $dir; done
+
+du: `/mvista/release_area/.snapshot': No such file or directory
+du: `/mvista/dev_area/.snapshot': No such file or directory
+11T	/
+0	/vmlinuz
+6.8G	/var
+3.9G	/chroot
+8.0K	/media
+80G	/home
+0	/lib64
+350M	/etc
+1.7G	/srv
+8.0K	/mnt
+4.3M	/bin
+19M	/boot
+0	/sys
+0	/lib32
+189M	/testmirror
+770M	/local
+25G	/tmp
+1.4M	/root
+108G	/usr
+0	/proc
+4.0K	/initrd
+188K	/dev
+0	/initrd.img
+134M	/lib
+0	/cdrom
+25M	/emul
+4.1M	/sbin
+16K	/lost+found
+261M	/opt
+overlord:~# 
+overlord:~# mailx -s "Find" nevin.kapoor@mvista.com
+overlord:~# for dir in `find / -maxdepth 1 -type d \( -name export -o -name mvista \) -prune -o -print`; do du -sh $dir; done
+.
+Cc: 
+overlord:~# 
+

@@ -1,0 +1,80 @@
+#!/bin/bash
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 <new tag> <oldtag> <last eclipse build> <test|run>"
+  exit 1
+fi
+
+newtag="$1"
+oldtag="$2"
+lasteclipsebld="$3"
+debug="$4"
+
+echo "linking new eclipse build ($newtag) into $oldtag..."
+
+olddir="/mvista/dev_area/foundation/$oldtag"
+newdir="/mvista/dev_area/foundation/$newtag"
+
+# common
+echo "common directory..."
+if [ "$debug" = "test" ]; then
+  echo "mv $olddir/common $olddir/common.$lasteclipsebld"
+  echo "cp -a $newdir/common $olddir"
+elif [ "$debug" = "run" ]; then
+  mv $olddir/common $olddir/common.$lasteclipsebld
+  cp -a $newdir/common $olddir
+fi
+
+# etc
+echo "etc directory..."
+if [ "$debug" = "test" ]; then
+  echo "mv $olddir/etc $olddir/etc.$lasteclipsebld"
+  echo "cp -a $newdir/etc $olddir"
+elif [ "$debug" = "run" ]; then
+  mv $olddir/etc $olddir/etc.$lasteclipsebld
+  cp -a $newdir/etc $olddir
+fi
+
+# install-components
+echo "install-components directory..."
+if [ "$debug" = "test" ]; then
+  echo "mv $olddir/install-components $olddir/install-components.$lasteclipsebld"
+  echo "cp -a $newdir/install-components $olddir"
+elif [ "$debug" = "run" ]; then
+  mv $olddir/install-components $olddir/install-components.$lasteclipsebld
+  cp -a $newdir/install-components $olddir
+fi
+
+# installer_rpms
+echo "installer_rpms directory..."
+if [ "$debug" = "test" ]; then
+  echo "mv $olddir/installer_rpms $olddir/installer_rpms.$lasteclipsebld"
+  echo "cp -a $newdir/installer_rpms $olddir"
+elif [ "$debug" = "run" ]; then
+  mv $olddir/installer_rpms $olddir/installer_rpms.$lasteclipsebld
+  cp -a $newdir/installer_rpms $olddir
+fi
+
+# mv original install_area/<cross|host|lsps|target> to original build
+if [ -e "$olddir/installer_rpms.$oldtag/install_area" ]; then
+  cp -a $olddir/installer_rpms.$oldtag/install_area/cross/* $olddir
+  cp -a $olddir/installer_rpms.$oldtag/install_area/host/* $olddir
+  cp -a $olddir/installer_rpms.$oldtag/install_area/lsps/* $olddir
+  cp -a $olddir/installer_rpms.$oldtag/install_area/target/* $olddir
+fi
+
+# cdimage
+echo "cdimage directory..."
+if [ "$debug" = "test" ]; then
+  echo "mkdir $olddir/../cdimages/$oldtag/$lasteclipsebld"
+  echo "mv $olddir/../cdimages/$oldtag/BOMS $olddir/../cdimages/$oldtag/$lasteclipsebld"
+  echo "mv $olddir/../cdimages/$oldtag/README.md5sum $olddir/../cdimages/$oldtag/$lasteclipsebld"
+  echo "mv $olddir/../cdimages/$oldtag/development_environment-* $olddir/../cdimages/$oldtag/$lasteclipsebld"
+  echo "cp -a $newdir/../cdimages/$newtag/* $olddir/../cdimages/$oldtag"
+elif [ "$debug" = "run" ]; then
+  mkdir $olddir/../cdimages/$oldtag/$lasteclipsebld
+  mv $olddir/../cdimages/$oldtag/BOMS $olddir/../cdimages/$oldtag/$lasteclipsebld
+  mv $olddir/../cdimages/$oldtag/README.md5sum $olddir/../cdimages/$oldtag/$lasteclipsebld
+  mv $olddir/../cdimages/$oldtag/development_environment-* $olddir/../cdimages/$oldtag/$lasteclipsebld
+  cp -a $newdir/../cdimages/$newtag/* $olddir/../cdimages/$oldtag
+fi

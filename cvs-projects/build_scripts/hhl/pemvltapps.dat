@@ -1,0 +1,47 @@
+###############
+# arm_720t_be
+# arm_720t_le
+# arm_sa_be
+# arm_sa_le
+# arm_v4t_be
+# arm_v4t_le
+# arm_xscale_be
+# arm_xscale_le
+# mips_fp_be
+# mips_fp_le
+# mips_nfp_be
+# mips_nfp_le
+# mips2_fmath_be
+# mips2_fmath_le
+# mips64_fp_be
+# mips64_fp_le
+# ppc_405
+# ppc_440
+# ppc_74xx
+# ppc_7xx
+# ppc_82xx
+# ppc_83xx
+# ppc_85xx
+# ppc_8xx
+# ppc_e500mc
+# sh_sh3_be
+# sh_sh3_le
+# sh_sh4_be
+# sh_sh4_le
+# x86_486
+# x86_586
+# x86_crusoe
+# x86_crusoe
+# x86_pentium
+# x86_pentium2
+# x86_pentium3
+# x86_pentium4
+# xtensa_linux_be
+# xtensa_linux_le
+# xtensa_linux_test
+###############
+null
+#systools
+###############
+# end
+###############

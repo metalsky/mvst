@@ -1,0 +1,13 @@
+###############
+# mips64_fp_be
+# mips64_fp_le
+# mips64_nfp_be
+# mips64_nfp_le
+# ppc_9xx
+# x86_amd64
+# x86_em64t
+###############
+glib
+###############
+# end
+###############

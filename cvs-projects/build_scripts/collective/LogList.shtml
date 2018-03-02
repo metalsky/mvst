@@ -1,0 +1,6 @@
+
+<!--#exec cmd="cat include/header.inc" -->
+<center>
+<!--#exec cmd="scripts/logdirs" -->
+</center>
+<!--#exec cmd="cat include/footer.inc" -->

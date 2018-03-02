@@ -1,0 +1,16 @@
+#!/usr/bin/python
+
+lsps = {
+	'arm_v7_vfp_le':		[
+					['TI','ti-omap3530_evm'],
+					],
+	'arm_v7_vfp_le_uclibc':		[
+					['TI','ti-omap3530_evm'],
+					],
+	'x86_586':			[
+					['x86','x86-pc_target-x86_586'],
+					],
+	'x86_586_uclibc':		[
+					['x86','x86-pc_target-x86_586_uclibc'],
+					],
+	}

@@ -1,0 +1,28 @@
+@	IN SOA	borg.mvista.com. root.borg.mvista.com. (
+		2006090802	; serial
+		900
+		30
+		604800
+		900
+							)
+
+	IN NS	ns1.borg.mvista.com.
+	IN NS	finance-gateway.mvista.com.
+
+0	IN PTR	network.borg.mvista.com.
+254	IN PTR	gateway.borg.mvista.com.
+255	IN PTR	broadcast.borg.mvista.com.
+
+1	IN PTR	ns1.borg.mvista.com.
+2	IN PTR	nfs.borg.mvista.com.
+3	IN PTR	power.borg.mvista.com.
+4	IN PTR	vtrak.borg.mvista.com.
+6	IN PTR	multiboot.borg.mvista.com.
+8	IN PTR	dumbo.borg.mvista.com.
+9	IN PTR	san.borg.mvista.com
+10	IN PTR  glue.borg.mvista.com.
+
+$GENERATE	1-20	${70}	PTR	cygwin-$.borg.mvista.com.
+$GENERATE	1-89	${110}	PTR	node-$.borg.mvista.com.
+$GENERATE	1-2	${210}	PTR	yellowdog21-$.borg.mvista.com.
+$GENERATE	1-19	${220}	PTR	solaris8-$.borg.mvista.com.

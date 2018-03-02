@@ -1,0 +1,1 @@
+macrofiles: /usr/lib/rpm/macros:/opt/hardhat/config/rpm/hosts/%{_host}:/opt/hardhat/config/rpm/targets/%{_target}:/opt/hardhat/config/rpm/common:~/.rpmmacros

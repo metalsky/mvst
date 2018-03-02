@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# arg 1 = build_tag
+# arg 2 = product 
+# arg 3 = buildid
+
+if [ "$2" = "pro" ]; then
+  imgs="host-$3.iso lsps-x86_586-$3.iso target-x86_586-$3.iso cross-x86_586-$3.iso lsps-sh_sh3_be-$3.iso target-sh_sh3_be-$3.iso cross-sh_sh3_be-$3.iso lsps-sh_sh3_le-$3.iso target-sh_sh3_le-$3.iso cross-sh_sh3_le-$3.iso lsps-sh_sh4_be-$3.iso target-sh_sh4_be-$3.iso cross-sh_sh4_be-$3.iso lsps-sh_sh4_le-$3.iso target-sh_sh4_le-$3.iso cross-sh_sh4_le-$3.iso lsps-mips_fp_le-$3.iso target-mips_fp_le-$3.iso cross-mips_fp_le-$3.iso"
+elif [ "$2" = "cge" ]; then
+  imgs="host-$3.iso"
+fi
+cd /mvista/dev_area/"$2"/cdimages/"$1"
+devenvcd="$(ls development*)"
+cd /mvista/dev_area/"$2"/cdimages/"$2"_for_japan
+mkdir $1
+cd $1
+
+for i in $imgs; do
+  ln ../../"$1"/"$i" .
+  cat ../../"$1"/README.md5sum | grep "$i" >> md5sums
+done
+
+# link development_environment cd
+ln ../../"$1"/"$devenvcd" .

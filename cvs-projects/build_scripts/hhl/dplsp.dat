@@ -1,0 +1,70 @@
+##################
+# x86_pentium2
+##################
+generic_x86/SPECS/cross-lsp-generic_x86-hhl_install.spec
+generic_x86/SPECS/lsp-generic_x86-hhl_install.spec
+generic_x86/SPECS/cross-lsp-generic_x86-pc_target.spec
+generic_x86/SPECS/lsp-generic_x86-pc_target.spec
+Motorola/SPECS/cross-lsp-motorola-cpv5350.spec
+Motorola/SPECS/lsp-motorola-cpv5350.spec
+##################
+# x86_pentium3
+##################
+generic_x86/SPECS/cross-lsp-generic_x86-pc_target.spec
+generic_x86/SPECS/lsp-generic_x86-pc_target.spec
+Force/SPECS/cross-lsp-force-cpci735.spec
+Force/SPECS/lsp-force-cpci735.spec
+Intel/SPECS/cross-lsp-intel-tsrlt2.spec
+Intel/SPECS/lsp-intel-tsrlt2.spec
+Intel/SPECS/cross-lsp-intel-zt5524.spec
+Intel/SPECS/lsp-intel-zt5524.spec
+Intel/SPECS/cross-lsp-intel-zt5504.spec
+Intel/SPECS/lsp-intel-zt5504.spec
+Motorola/SPECS/cross-lsp-motorola-cpip5365.spec
+Motorola/SPECS/lsp-motorola-cpip5365.spec
+Motorola/SPECS/cross-lsp-motorola-cpn5365.spec
+Motorola/SPECS/lsp-motorola-cpn5365.spec
+Radisys/SPECS/cross-lsp-radisys-epc3307.spec
+Radisys/SPECS/lsp-radisys-epc3307.spec
+Radisys/SPECS/cross-lsp-radisys-epc3311.spec
+Radisys/SPECS/lsp-radisys-epc3311.spec
+##################
+# x86_pentium4
+##################
+generic_x86/SPECS/cross-lsp-generic_x86-pc_target.spec
+generic_x86/SPECS/lsp-generic_x86-pc_target.spec
+Intel/SPECS/cross-lsp-intel-cpi1.spec
+Intel/SPECS/lsp-intel-cpi1.spec
+Intel/SPECS/cross-lsp-intel-zt5515.spec
+Intel/SPECS/lsp-intel-zt5515.spec
+Intel/SPECS/cross-lsp-intel-se750Xwv2.spec
+Intel/SPECS/lsp-intel-se750Xwv2.spec
+Intel/SPECS/cross-lsp-intel-mpcbl0001.spec
+Intel/SPECS/lsp-intel-mpcbl0001.spec
+IBM/SPECS/cross-lsp-ibm-x335.spec
+IBM/SPECS/lsp-ibm-x335.spec
+Supermicro/cross-lsp-supermicro-6012p6.spec
+Supermicro/lsp-supermicro-6012p6.spec
+##################
+# ppc_7xx
+##################
+Force/SPECS/cross-lsp-force-cpci690.spec
+Force/SPECS/lsp-force-cpci690.spec
+##################
+# ppc_74xx
+##################
+Motorola/SPECS/cross-lsp-motorola-cpip805.spec
+Motorola/SPECS/lsp-motorola-cpip805.spec
+Force/SPECS/cross-lsp-force-pmc240.spec
+Force/SPECS/lsp-force-pmc240.spec
+##################
+# ppc_4xx
+##################
+IBM/SPECS/cross-lsp-ibm-ebony.spec
+IBM/SPECS/lsp-ibm-ebony.spec
+IBM/SPECS/cross-lsp-ibm-440gp.spec
+IBM/SPECS/lsp-ibm-440gp.spec
+##################
+# end
+##################
+

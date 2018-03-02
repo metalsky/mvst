@@ -1,0 +1,10 @@
+Example Bitbake:
+
+14978 ?        Ss     0:00  \_ sshd: build [priv]
+14980 ?        S      0:00  |   \_ sshd: build@notty
+14981 ?        Ss     0:00  |       \_ python /home/build/cge_100704_1003119-exp/CVSREPOS/build_scripts/mvl6/kickbuild.py world -Dk cge_100704_1003119 1
+  663 ?        S      0:00  |           \_ sh -c { sudo chroot /builds/mvl6/chroot/1/centos4 /bin/su - build -c "source ~/.bashrc;bitbake world -Dk" > /tmp/1/x86-generic.log; } 2>&1
+  664 ?        S      0:00  |               \_ /bin/su - build -c source ~/.bashrc;bitbake world -Dk
+  673 ?        S      0:00  |                   \_ -bash -c source ~/.bashrc;bitbake world -Dk
+  693 ?        S      9:58  |                       \_ /opt/montavista/bin/python /opt/montavista/bin/bitbake world -Dk
+26166 ?        R      0:00  |                           \_ /opt/montavista/bin/python /opt/montavista/bin/bitbake world -Dk

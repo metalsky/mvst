@@ -1,0 +1,55 @@
+*** radisys-epc3311 ***
+Built w/ mvlcge210_epc3311 tag
+lsp rev = 2
+
+*** radisys-epc3311 ***
+Built w/ mvlcge210_epc3311 tag
+lsp rev = 3
+
+*** force-cpci3311***
+Built w/ mvlcge210_cpci735-cge tag
+lsp rev = 3
+
+*** radisys-epc3311 ***
+Built w/ mvlcge210_cb021003 tag
+lsp rev = 4
+
+*** intel-cpi1 ***
+Built w/ mvlcge210_cb021009 tag
+lsp rev = 5
+
+*** intel-cpi1 ***
+Built w/ mvlcge210_cpi1 tag
+lsp rev = 5
+
+*** ibm-x330 ***
+Built w/ mvlcge210_cb021009 tag
+lsp rev = 5
+
+*** radisys-epc3311 ***
+Built w/ mvlcge210_cb021009 tag
+lsp rev = 5
+
+*** force-cpci3311***
+Built w/ mvlcge210_cpci735 tag
+lsp rev = 6
+
+*** radisys-epc3311 ***
+Built w/ mvlcge210_epc3311 tag
+lsp rev = 7
+
+*** ibm-x335 ***
+Built w/ mvlcge210_cb021125 tag
+lsp rev = 8
+
+*** ibm-x335 ***
+Built w/ mvlcge210_cb030204 tag
+lsp rev = 9
+
+*** supermicro-6012p6 ***
+Built w/ mvlcge210_cb030204 tag
+lsp rev = 9
+
+*** intel-cpi1 ***
+Built w/ mvlcge210_cpi1 tag
+lsp rev = 9

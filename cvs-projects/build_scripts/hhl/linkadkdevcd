@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ "$#" != "3" ]; then
+  echo "Usage: $0 <eclipse build tag> <adk build tag> <product>"
+  exit 1
+fi
+
+eclipsetag="$1"
+adktag="$2"
+product="$3"
+
+cpfrom="/mvista/dev_area/foundation/"
+cpto="/mvista/dev_area/$product/"
+
+cd "$cpto"/adk/"$adktag"
+rm -rf common
+rm -f etc/config/volume/MVL-common*
+cp -a "$cpfrom"/"$eclipsetag"/common .
+cp -a "$cpfrom"/"$eclipsetag"/installer_rpms/install_area/common/* .
+cd "$cpto"/cdimages/adk/"$adktag"
+rm -f development_environment*.iso
+ln "$cpfrom"/cdimages/"$eclipsetag"/development_environment*.iso .
+
+

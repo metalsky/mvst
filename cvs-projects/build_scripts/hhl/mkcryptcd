@@ -1,0 +1,102 @@
+#!/bin/bash
+#set -x
+if [ "$#" != "6" ] ; then 
+	echo "Usage $0 <Password> <Base Dir> <PK directory> <volume label> <volume set> <release>"
+        echo "<volume label> for mvl 3.1 would be MVL3.1"
+        echo "<volume set> for mvl 3.1 would be mvl_31"
+	exit
+fi
+echo "Running mkcryptcd..."
+builddir="$(pwd)"
+echo "builddir = $builddir"
+Password=$1
+LOOPDEV="/dev/loop1"
+TMP=/tmp
+# Direcotry where the CD tree sits...
+# Directory to create a cd image from
+pkname=$3
+# Path to pkname
+CDTree=$2
+VOLUME=$4
+VOLSET=$5
+release="$6"
+echo "release = $release"
+
+# Path under pkname where the directory containing the ecrypted directory lies...
+EncryptedPath="RPMS"
+# The actual directory to be encrypted
+EncryptedDir="RPMS"
+# The Path to the directory to be encrypted
+FullEncryptedPath=$EncryptedDir
+# The directory where the encrypted image will be stored...
+#EncryptedImageDir=images
+EncryptedImageDir=install-components/previewkit
+
+cd $CDTree
+
+mkdir -p $EncryptedImageDir
+
+# Save direcotry to be encrypted
+mv $FullEncryptedPath "$FullEncryptedPath".tmp
+
+cd "$FullEncryptedPath".tmp
+
+# Get size of the directory to be encrypted
+EncryptedDirSize=`du -s | cut --field 1 --delimiter "."`
+
+# Determine what 110% of the directory size is....
+#EncryptedImageSize=`expr $EncryptedDirSize \* 6 \/ 5`
+#EncryptedImageSize=`expr $EncryptedDirSize \* 11 \/ 10`
+# 106 percent?
+#EncryptedImageSize=`expr $EncryptedDirSize \* 106 \/ 100`
+EncryptedImageSize=`expr $EncryptedDirSize \* 106 \/ 100 \/ 8 \* 8`
+
+echo "encrypted dir size = $EncryptedDirSize"
+echo "encrypted image size = $EncryptedImageSize"
+
+cd $CDTree
+
+# Create a blank file the same size as 106% of the directory to be encrypted
+# rounded down to the nearest 8k boundary
+rm -f $TMP/RPMS.image
+dd if=/dev/zero of=$TMP/RPMS.image bs=1k count=$EncryptedImageSize
+
+# Assosiate a loop device to the blank file...BLASTER is the password, 
+# 8 is the dev number of the loop device...e.g. $LOOPDEV
+# and the third argument is the blank file
+
+sudo $builddir/losetup.exp $Password $LOOPDEV $TMP/RPMS.image
+
+# Create and ext2 file system
+
+sudo mke2fs -m 0 $LOOPDEV
+
+mkdir $FullEncryptedPath
+
+# Mount the file system where it should go in the CDs file system
+sudo mount $LOOPDEV $FullEncryptedPath
+
+# Copy over the data
+sudo cp -a "$FullEncryptedPath".tmp/* $FullEncryptedPath/
+
+sudo umount $FullEncryptedPath
+
+sudo losetup $LOOPDEV -d
+mv $TMP/RPMS.image $CDTree/$EncryptedImageDir/
+
+sudo cp -a "$FullEncryptedPath".tmp/* $FullEncryptedPath/
+cd $FullEncryptedPath
+files="$(find)"
+#echo "files: $files"
+for f in $files; do
+  if [ -f $f ]; then
+    #echo "removing $f"
+    rm -f $f
+  fi
+done
+rm -rf "$FullEncryptedPath".tmp
+cd $CDTree/..
+# Create encrypted version
+echo iso command: mkisofs -quiet -r -J -no-split-symlink-components -no-split-symlink-fields -V $VOLUME -volset $VOLSET -volset-size 1 -volset-seqno 1 -nobak -o previewkit-"$release"_$pkname-encrypt.img $tmpexclude $CDTree
+mkisofs -quiet -r -J -no-split-symlink-components -no-split-symlink-fields -V "$VOLUME" -volset "$VOLSET" -volset-size 1 -volset-seqno 1 -nobak -o previewkit-"$release"_"$pkname"-encrypt.img -x build_stuff -x build -x "$FullEncryptedPath".tmp $CDTree
+

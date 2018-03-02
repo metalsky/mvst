@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<content server-time="2009-05-08T20:25:50.0Z">
+<result>success</result>
+<token>pL5PSuqoZ9YmaNOFJkgqybj1TrviKEAmVONWbmzX8cs=</token>
+<msds>
+
+	<msd id="freescale-8377rdb-2.6.27" description="freescale-8377rdb-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_090824_0902800/content/msds/freescale-8377rdb-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="xilinx-ml507-2.6.29" description="xilinx-ml507-2.6.29 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_090825_0902830/content/msds/xilinx-ml507-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="mips-malta-mp-2.6.28" description="mips-malta-mp-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_090825_0902831/content/msds/mips-malta-mp-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+
+</msds>
+<collections>
+
+	<collection type="kernel" ordering="1" id="freescale-8377rdb-2.6.27" description="kernel collection for freescale-8377rdb-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_090824_0902800/content/collections/freescale-8377rdb-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="xilinx-ml507-2.6.29" description="kernel collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_090825_0902830/content/collections/xilinx-ml507-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="mips-malta-mp-2.6.28" description="kernel collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_090825_0902831/content/collections/mips-malta-mp-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+
+	</collection>
+	<collection type="foundation" ordering="2" id="foundation" description="foundation collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_090825_0902831/content/collections/foundation/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+
+	</collection>
+	<collection type="core" ordering="3" id="core" description="core collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_090825_0902831/content/collections/core/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+
+	</collection>
+	<collection type="audio" ordering="4" id="audio" description="audio collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_090824_0902800/content/collections/audio/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+
+	</collection>
+	<collection type="uboot" ordering="5" id="uboot" description="uboot collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_090824_0902800/content/collections/uboot/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+
+	</collection>
+	<collection type="bluetooth" ordering="6" id="bluetooth" description="bluetooth collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_090824_0902800/content/collections/bluetooth/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+
+	</collection>
+
+</collections></content>

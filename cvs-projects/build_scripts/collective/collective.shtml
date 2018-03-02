@@ -1,0 +1,181 @@
+<!--#exec cmd="cat include/header.inc" -->
+
+
+<center><h1><b>Welcome to the Collective</b></h1>
+<!--<br clear=right> -->
+</center>
+<table width="85%">
+<tr align=left> <th><h2>Integration Platform</th> <th><h2>MVL 6 - <a href=logs/mvl6_summary.shtml>Summary</a></th> </tr>
+<tr align=left valign=top><h4>
+<th width="20%">
+<li><a href=/LogList.shtml?ipmvl6_>IP</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?arm-versatile-926-2.6.28_>ARM Versatile 926 2.6.28</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?arm-versatile-1176-2.6.28_>ARM Versatile 1176 2.6.28</a></th></tr>
+<tr align=left valign=top><h4>
+<th width="20%">&nbsp;</th>
+<th width="20%">
+<li><a href=/LogList.shtml?8349mds-2.6.27_>Freescale 8349mds 2.6.27</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?8377rdb-2.6.27_>Freescale 8377rdb 2.6.27</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?8548cds-2.6.27_>Freescale 8548cds 2.6.27</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?8572ds-2.6.27_>Freescale 8572ds 2.6.27</a></th></tr>
+<tr align=left valign=top><h4>
+<th width="20%">&nbsp;</th>
+<th width="20%">
+<li><a href=/LogList.shtml?mips-malta-2.6.28_>MIPS Malta 2.6.28</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?mips-malta-mp-2.6.28_>MIPS Malta-mp 2.6.28</a></th></tr>
+<tr align=left valign=top><h4>
+<th width="20%">&nbsp;</th>
+<th width="20%">
+<li><a href=/LogList.shtml?ti-omap3-beagle-2.6.29_>TI OMAP3 Beagle 2.6.29</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?ti-omap3-zoom2-2.6.29_>TI OMAP3 Zoom2 2.6.29</a></th></tr>
+<tr align=left valign=top><h4>
+<th width="20%">&nbsp;</th>
+<th width="20%">
+<li><a href=/LogList.shtml?x86-prototype-2.6.28_>x86 prototype 2.6.28</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?x86-target-2.6.28_>x86 target 2.6.28</a></th></tr>
+<tr align=left valign=top><h4>
+<th width="20%">&nbsp;</th>
+<th width="20%">
+<li><a href=/LogList.shtml?xilinx-ml507-2.6.29_>Xilinx ML507 2.6.29</a></th></tr>
+
+<table width="85%">
+<tr align=left>
+<th><h2>Foundation</th>
+<th><h2>Step One</th>
+<th><h2>5.X Editions</th>
+<th><h2>4.0 Editions</th>
+<th><h2>3.1 Editions</th>
+<tr>
+<tr align=left valign=top><h4>
+<th width="20%">
+<li><a href=/LogList.shtml?f2624_>Foundation 2.6.24</a>
+<li><a href=/LogList.shtml?fp2624_>Foundation (Pro) 2.6.24</a>
+<li><a href=/LogList.shtml?f5_>Foundation Five</a>
+<li><a href=/LogList.shtml?f51_>Foundation Five One</a>
+<li><a href=/LogList.shtml?fthree0>Foundation Three</a>
+<li><a href=/LogList.shtml?ftwo0>Foundation Two</a>
+<li><a href=/LogList.shtml?fb0>Foundation One</a>
+<li><a href=/LogList.shtml?fe64b0>Foundation One 64 bit</a>
+<li><a href=/LogList.shtml?f2624tools_>Foundation 2.6.24 Toolchain</a>
+<li><a href=/LogList.shtml?f5tools_>Foundation Five Toolchain</a>
+<li><a href=/LogList.shtml?fthreetools>Foundation Three Toolchain</a>
+<li><a href=/LogList.shtml?fdb0>Dev Foundation</a>
+<li><a href=/LogList.shtml?devusr_>Dev Userland</a>
+<li><a href=/LogList.shtml?m64>Mips64 Dev</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?s124omap3_>S1 OMAP 3430 2.6.24</a>
+<li><a href=/LogList.shtml?s124atomvm_>S1 Atom VideoMail 2.6.24</a>
+<li><a href=/LogList.shtml?s124atom_>S1 Atom 2.6.24</a>
+<li><a href=/LogList.shtml?s127p4080_>S1 p4080 2.6.27</a>
+<li><a href=/LogList.shtml?s129omap3_>S1 OMAP 3530 2.6.29</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?avalanche0>Avalanche</a>
+<li><a href=/LogList.shtml?avalancheasync0>Avalanche Async</a>
+<li><a href=/LogList.shtml?jackalope0>Pro 5.0.24</a>
+<li><a href=/LogList.shtml?jackalopeasync0>Pro 5.0.24 Async</a>
+<li><a href=/LogList.shtml?blackfoot0>Blackfoot</a>
+<li><a href=/LogList.shtml?blackfootasync0>Blackfoot Async</a>
+<li><a href=/LogList.shtml?cottonwood0>Cottonwood (CGE5.1)</a>
+<li><a href=/LogList.shtml?pebblecreek0>Pebblecreek</a>
+<li><a href=/LogList.shtml?pebblecreekasync0>Pebblecreek Async</a>
+<li><a href=/LogList.shtml?tahoma0>Tahoma</a>
+<li><a href=/LogList.shtml?tahomaasync0>Tahoma Async</a>
+<li><a href=/LogList.shtml?tahomae>Tahomaengrdrops</a>
+<li><a href=/LogList.shtml?blacktop0>Blacktop</a>
+<li><a href=/LogList.shtml?blacktopasync0>Blacktop Lsp</a>
+<li><a href=/LogList.shtml?blacktoparmv7_>Blacktop arm_v7</a>
+<li><a href=/LogList.shtml?blacktop3430_>Blacktop 3430</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?lamar0>Lamar</a>
+<li><a href=/LogList.shtml?lamarasync>Lamar Async</a>
+<li><a href=/LogList.shtml?makena0>Makena</a>
+<li><a href=/LogList.shtml?mobiasync0>Makena Async</a>
+<li><a href=/LogList.shtml?makenaasync0>Makena Async</a>
+<li><a href=/LogList.shtml?carbonriver0>Carbon River</a>
+<li><a href=/LogList.shtml?carbonriverasync0>Carbon River Async</a>
+<li><a href=/LogList.shtml?mtb0>Makena Test Build</a>
+<li><a href=/LogList.shtml?patagonia0>Patagonia</a>
+<li><a href=/LogList.shtml?patagoniaasync>Patagonia Async</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?dpb0>Druid Peak</a>
+<li><a href=/LogList.shtml?dpa0>Druid Peak em64t</a>
+<li><a href=/LogList.shtml?dpaamd640>Druid Peak amd64</a>
+<li><a href=/LogList.shtml?dpbadk>Druid Peak ADK</a>
+<li><a href=/LogList.shtml?pe0>Humboldt</a>
+<li><a href=/LogList.shtml?pea0>Humboldt Async</a>
+<li><a href=/LogList.shtml?pepk>Humboldt Previewkit</a>
+<li><a href=/LogList.shtml?peadk>Humboldt ADK</a>
+<li><a href=/LogList.shtml?pem64a>Humboldt mips64 Async</a>
+<li><a href=/LogList.shtml?kb0>Kapalua</a>
+<li><a href=/LogList.shtml?kbadk>Kapalua ADK</a>
+<li><a href=/LogList.shtml?kfe>Kapalua Eclipse</a>
+<li><a href=/LogList.shtml?ktfe>Kapalua Thumb</a></th>
+<tr align=left>
+<th><h2>3.0 Edition</th>
+<th><h2>2.1 Edition</th>
+<th><h2>Devrocket & Add-ons</th>
+</tr>
+<tr align=left valign=top>
+<th width="20%">
+<li><a href=/LogList.shtml?bdb>Bartholome</a>
+<li><a href=/LogList.shtml?ceb>Bulverde</a>
+<li><a href=/LogList.shtml?cee0>Hanalei</a>
+<li><a href=/LogList.shtml?cef1>Hanalei-f1 toolchain</a>
+<li><a href=/LogList.shtml?sb>Santiago</a>
+<li><a href=/LogList.shtml?xb>Xtensa</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?cb>Campbell</a>
+<li><a href=/LogList.shtml?shb>Sherman</a></th>
+<th width="20%">
+<li><a href=/LogList.shtml?drsix0>Devrocket 6.0</a>
+<li><a href=/LogList.shtml?drfivetwo0>Devrocket 5.2</a>
+<li><a href=/LogList.shtml?drfiveone0>Devrocket 5.1</a>
+<li><a href=/LogList.shtml?tsuki0>Devrocket 5.0</a>
+<li><a href=/LogList.shtml?mls_>License Server</a>
+<li><a href=/LogList.shtml?drdev0>Dev Devrocket</a>
+<li><a href=/LogList.shtml?drtwo0>Foundation Two-Devrocket</a>
+<li><a href=/LogList.shtml?edb0>Dev Eclipse</a>
+<li><a href=/LogList.shtml?fbe0>Foundation-eclipse</a>
+<li><a href=/LogList.shtml?mvg0>MVG for Humboldt</a>
+<li><a href=/LogList.shtml?bst>BST</a></th>
+</tr>
+</table>
+<h2>Released Product</h2>
+<h4><li><a href=/LogList.shtml?mvl[0-5]>Released Product (PE)</a>
+<li><a href=/LogList.shtml?mvlcge>Released Product (CGE)</a>
+<li><a href=/LogList.shtml?mvlcee>Released Product (CEE)</a>
+<li><a href=/LogList.shtml?tsuki_>Released Product (TSUKI)</a>
+<li><a href=/LogList.shtml?mobilinux>Released Product (Mobilinux)</a>
+<li><a href=/LogList.shtml?foundation>Released Product (Foundation)</a></h4>
+
+<h2>Your current options:</h2>
+<h3>Build log reading:</h3> 
+<h4>
+<li>Check the current <a href=/logs/CurrentBuild/build.shtml>build results</a></li>
+<li>Check the current <a href=/logs/CurrentBuild/stats.shtml>build stats</a></li>
+<li>Check <a href=/LogList.shtml>Build Logs</a></li>
+</h4><h3>
+Build Request:
+</h3><h4>
+<li>Submit a <a href=http://wiki.mvista.com/thebazaar/bin/view/Engineering/BuildRequests>Build Request</a></li>
+<!-- 
+<li>Submit a <a href=/BuildRequest.shtml>Build Request</a></li>
+<li>Submit an <a href=/BuildRequestAdv.shtml>Advanced Build Request</a></li>
+<li>View the <a href=/cgi-bin/ViewRequest>Build Queue</a></li> -->
+
+
+</h4>
+
+<br>
+<br>
+Jeremy would like to thank Johnny for the overall site design, since it is for the most part modeled after ferret..
+
+<!--#exec cmd="cat include/footer.inc" -->

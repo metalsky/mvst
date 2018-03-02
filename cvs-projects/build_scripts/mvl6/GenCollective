@@ -1,0 +1,190 @@
+#!/usr/bin/python
+from collectiveFunctions import *
+
+def ParseLog(HostFileLocation, NewLogDir,Stats):
+	BuildFailed=0
+        os.mkdir(NewLogDir)
+        if(os.path.isfile(HostFileLocation)):
+                HostFile = open(HostFileLocation).readlines()
+        else:
+                return
+        StatsFile = open(Stats, "w")
+        i=0
+        Lenth = len(HostFile)
+        NotBuiltPackages=0
+        NumPacks=0
+        while((i < Lenth) and (string.find(HostFile[i], ">: building") == -1)):
+                i=i+1
+        while ( i < Lenth ):
+                if(string.find(HostFile[i],">: building") != -1):
+                        Item = string.split(HostFile[i], " ")
+                        ItemFile = open(NewLogDir + "/" + Item[2], "w")
+                        ItemFile.write(HostFile[i])
+                        NumPacks=NumPacks + 1
+                        i = i + 1
+                        HostPackageNotBuilt = 0
+                elif(string.find(HostFile[i],"BUILD ERROR:") != -1):
+                        ItemFile.write(HostFile[i])
+                        i = i + 1
+                        NotBuiltPackages = NotBuiltPackages + 1
+                        HostPackageNotBuilt = 1
+                elif(string.find(HostFile[i],">: finished") != -1):
+                        ItemFile.write(HostFile[i])
+                        i = i + 1
+                        ItemFile.close()
+                        while(i < Lenth and (string.find(HostFile[i],">: building") == -1)):
+                                i = i + 1
+                        StatsFile.write("%s %d\n" % (Item[2], HostPackageNotBuilt))
+                else:
+                        ItemFile.write(HostFile[i])
+                        i = i + 1
+        StatsFile.write("----\n")
+        if(NumPacks):
+                StatsFile.write("%d %d %d %d %d" % (NumPacks,
+                        NotBuiltPackages,
+                        NumPacks - NotBuiltPackages,
+                        (NotBuiltPackages*100/NumPacks),
+                        ((NumPacks - NotBuiltPackages)*100/NumPacks)))
+        else:
+                StatsFile.write("%d %d %d %d %d" % (NumPacks,
+                        NotBuiltPackages,
+                        NumPacks - NotBuiltPackages,
+                        0,
+                        0))
+        StatsFile.close()
+
+def ParseIP(LogLocation, NewLogDir,Stats):
+	BuildFailed=0
+	if os.path.exists(LogLocation):
+		LogFile = open(LogLocation).readlines()
+	else:
+		print LogLocation + " doesn't exist"
+		return -1
+	Lenth = len(LogFile)
+	i = 0
+	NumberOfApps = 0
+	NumberOfBrokenApps = 0
+	StatFile = open(Stats, "w") 
+        
+	while((i < Lenth) and ("#===============> starting" not in LogFile[i])):
+		i=i+1
+	while(i < Lenth):
+		if "#===============> starting" in LogFile[i]:
+			App = LogFile[i].strip().split(" ")
+			
+			ItemFile = open(NewLogDir + "/" + App[2], "w")
+			ItemFile.write(LogFile[i])
+			NumberOfApps = NumberOfApps + 1
+			i = i + 1
+			AppNotBuilt = 1
+			NumberOfBrokenApps = NumberOfBrokenApps + 1
+		elif "#===============> ending" in LogFile[i]:
+			ItemFile.write(LogFile[i])
+			i = i + 1
+			ItemFile.close()
+			AppNotBuilt = 0
+			NumberOfBrokenApps = NumberOfBrokenApps - 1
+			while i < Lenth and "#===============> starting" not in LogFile[i]:
+				i = i + 1
+			StatFile.write("%s %d\n" % (App[2], AppNotBuilt))
+		else:
+			ItemFile.write(LogFile[i])
+			i = i + 1
+	StatFile.write("----\n")
+	if(NumberOfApps):
+		StatFile.write("%d %d %d %d %2d\n" %  (NumberOfApps,
+				NumberOfBrokenApps,
+				NumberOfApps - NumberOfBrokenApps,
+				((NumberOfBrokenApps*100/NumberOfApps)),
+				(NumberOfApps - NumberOfBrokenApps)*100/NumberOfApps))
+	else:
+		StatFile.write("%d %d %d %d %d\n" %  (NumberOfApps,
+				NumberOfBrokenApps,
+				NumberOfApps - NumberOfBrokenApps,
+				0,
+				0))
+	StatFile.close()
+	return 1
+
+def InitMain(TextFile, SHtmlFile, BHtmlFile, BuildId, BuildTag):
+	InitExcel(TextFile)
+	InitStatsHeader(SHtmlFile,BuildTag)
+	InitBuildHeader(BHtmlFile,BuildId,BuildTag,ChangeLog)
+	ParseLog(LogDir + "buildip-" + BuildId + ".log",
+		  DestDir + BuildTag + "/prep/",
+		  DestDir + BuildTag + "/prep/stats")
+	os.mkdir(DestDir + BuildTag + "/prep/html")
+	AddStage(Excel,Stats,Build,"prep")
+	StatFile=open(DestDir + BuildTag + "/prep/stats").readlines()
+	HtmlFile=open(DestDir + BuildTag + "/prep/html/prep.shtml", "w")
+	AddMain(Excel,Stats,Build,StatFile,"prep","prep",BuildTag)
+ 	GenItemHtml("/logs/" + BuildTag + "/prep/",
+			HtmlFile,
+			StatFile, 
+			"build prep", 
+			BuildTag)
+	ParseLog(LogDir + "ipsrc-" + BuildId + ".log",
+		  DestDir + BuildTag + "/source/",
+		  DestDir + BuildTag + "/source/stats")
+	os.mkdir(DestDir + BuildTag + "/source/html")
+	AddStage(Excel,Stats,Build,"source")
+	StatFile=open(DestDir + BuildTag + "/source/stats").readlines()
+	HtmlFile=open(DestDir + BuildTag + "/source/html/source.shtml", "w")
+	AddMain(Excel,Stats,Build,StatFile,"source","source",BuildTag)
+ 	GenItemHtml("/logs/" + BuildTag + "/source/",
+			HtmlFile,
+			StatFile, 
+			"source control", 
+			BuildTag)
+
+#Start of what would be main
+if len(sys.argv) == 1:
+	print "Usage: %s %s %s %s" % (sys.argv[0],'<buildtag>','<DestDir>','<ChangeLog>')
+	sys.exit(1)
+
+BuildTag = sys.argv[1]
+LogDir = "/mvista/dev_area/integration_platform/%s/logs/" % BuildTag
+DestDir = sys.argv[2]
+ChangeLog = sys.argv[3]
+BuildId = BuildTag.split("_")[2]
+
+DestDir = DestDir + "/"
+if not os.path.exists(DestDir):
+  os.system('mkdir -p %s' % DestDir)
+
+BuildLog = open(LogDir + 'ipbuild-%s.log' % BuildId).readlines()
+
+if (os.path.isdir(DestDir + BuildTag)):
+	os.system("rm -rf " + DestDir + BuildTag)
+os.mkdir(DestDir + BuildTag)
+if ChangeLog != "skipcl":
+  os.system('cp ' + ChangeLog + ' ' + DestDir + BuildTag)
+  ChangeLog = ChangeLog[string.rfind(ChangeLog,'/')+1:]
+Excel = open(DestDir + BuildTag + "/" + BuildTag + ".dat","w")
+Stats = open(DestDir + BuildTag + "/stats.shtml", "w")
+Build = open(DestDir + BuildTag + "/build.shtml", "w")
+
+InitMain(Excel,Stats,Build,BuildId,BuildTag)
+BuildFailed = 0
+os.mkdir(DestDir + BuildTag + "/build")
+os.mkdir(DestDir + BuildTag + "/build/apps")
+os.mkdir(DestDir + BuildTag + "/build/stats")
+os.mkdir(DestDir + BuildTag + "/build/html")
+if os.path.exists(LogDir + "ipbuild-" + BuildId + ".log"):
+	ParseIP(LogDir + "ipbuild-" + BuildId + ".log",
+		  DestDir + BuildTag + "/build/apps",
+		  DestDir + BuildTag + "/build/stats/apps")
+        AddStage(Excel,Stats,Build,"build")
+        StatFile=open(DestDir + BuildTag + "/build/stats/apps").readlines()
+        HtmlFile=open(DestDir + BuildTag + "/build/html/build.shtml", "w")
+        AddMain(Excel,Stats,Build,StatFile,"build","build",BuildTag)
+        GenItemHtml("/logs/" + BuildTag + "/build/apps/",
+                        HtmlFile,
+                        StatFile,
+                        "IP build",
+                        BuildTag)
+StageDone(Excel,Stats,Build)
+MainClose(Excel,Stats,Build)
+if(os.path.islink(DestDir + "/CurrentBuild")):
+	os.remove(DestDir + "/CurrentBuild")
+os.symlink(BuildTag, DestDir + "/CurrentBuild")

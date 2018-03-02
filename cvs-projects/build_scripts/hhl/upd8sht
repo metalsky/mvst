@@ -1,0 +1,23 @@
+#!/opt/montavista/host/bin/bash
+
+# $1- installdir
+# $2- product
+echo "installdir = $1"
+echo "product = $2"
+
+shtdir="$2"
+
+PATH=$1/host/bin:$PATH
+export PATH
+
+#rm -rf $1/devkit
+#rm -rf $1/config
+#rm -rf $1/rpmdb
+#cp -a $1/host/lib/rpm $1/rpmdb
+
+rpmbin="$1/host/bin/mvl-rpm-forward"
+
+#$rpmbin -qa | grep -v host-rpm | grep -v host-popt | xargs $rpmbin -e --nodeps
+$rpmbin -Uvh --ignoreos /mvista/dev_area/sht-$shtdir/host/solaris7/host-rpm*.mvl --force --nodeps
+$rpmbin -Uvh --ignoreos /mvista/dev_area/sht-$shtdir/host/solaris7/host-popt*.mvl --force --nodeps
+$rpmbin -Uvh --ignoreos /mvista/dev_area/sht-$shtdir/host-tools/solaris7/host-tool-*.mvl --force --nodeps

@@ -1,0 +1,20 @@
+/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions/symphony-ivi-2.6.34/.mvl-content/mirror-descriptor.xml
+/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions/symphony-ivi-2.6.34/solutions/mvista.com/symphony-ivi-2.6.34/symphony-ivi-2.6.34-1.0.0.xml
+/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions/symphony-ivi-cm/.mvl-content/mirror-descriptor.xml
+/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions/symphony-ivi-cm/solutions/mvista.com/symphony-ivi-cm/symphony-ivi-cm-1.0.0.xml
+
+
+
+
+$1 is the install path:
+
+find $1 -name mvl-license -exec ln -sf /bin/true {} \;
+bblicense=`find $1 -type f -name bblicense -print`
+if [ -f "${bblicense}" ]; then
+        cat <<-@EOF >${bblicense}
+                #!/bin/sh
+                echo valid
+                read
+        @EOF
+        chmod a+x ${bblicense}
+fi

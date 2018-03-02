@@ -1,0 +1,37 @@
+###############
+# arm_sa_be
+# arm_sa_le
+# arm_xscale_be
+# arm_xscale_be_uclibc
+# arm_xscale_le
+# arm_xscale_le_uclibc
+# arm_920t_le
+# arm_920t_be
+# arm_720t_le
+# arm_720t_be
+# arm_v4t_be
+# arm_v4t_be_uclibc
+# arm_v4t_le
+# arm_v4t_le_uclibc
+# arm_v5t_arm_le_uclibc
+# arm_v5t_be
+# arm_v5t_le
+# arm_v5t_le_uclibc
+# arm_v6_be
+# arm_v6_le
+# arm_v6_be_uclibc
+# arm_v6_le_uclibc
+# arm_v6_vfp_be
+# arm_v6_vfp_le
+# arm_v6_vfp_le_uclibc
+# arm_v7_vfp_le
+# arm_v7_vfp_le_uclibc
+# arm_iwmmxt_le
+# arm_iwmmxt_le_uclibc
+# arm_iwmmxt2_le
+# arm_iwmmxt2_le_uclibc
+###############
+ltrace
+###############
+# end
+###############

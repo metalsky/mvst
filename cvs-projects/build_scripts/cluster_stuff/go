@@ -1,0 +1,105 @@
+#!/bin/bash
+
+#archs="arm_720t_le arm_920t_le arm_sa_be arm_sa_le arm_xscale_le mips_fp_be mips_fp_le mips_lexra_fp_be mips_sony_fp_le ppc_405 ppc_74xx ppc_7xx ppc_82xx ppc_8xx sh_sh3_be sh_sh3_le sh_sh4_be sh_sh4_le x86_486 x86_586 x86_crusoe x86_pentium2 x86_pentium3"
+
+hn="$(hostname -s)"
+if [ "$hn" = "node-7" ]; then
+  archs="mips_fp_be arm_xscale_be"
+elif [ "$hn" = "node-8" ]; then
+  archs="ppc_74xx mips_lexra_fp_be"
+elif [ "$hn" = "node-9" ]; then
+  archs="ppc_82xx"
+elif [ "$hn" = "node-18" ]; then
+  archs="sh_sh3_be"
+elif [ "$hn" = "node-19" ]; then
+  archs="sh_sh4_be sh_sh4_le"
+elif [ "$hn" = "node-20" ]; then
+  archs="x86_486 x86_586"
+elif [ "$hn" = "node-22" ]; then
+  archs="x86_pentium3 arm_920t_le"
+elif [ "$hn" = "node-23" ]; then
+  archs="arm_sa_le arm_xscale_le"
+elif [ "$hn" = "node-24" ]; then
+  archs="mips_fp_le mips_sony_fp_be"
+elif [ "$hn" = "node-25" ]; then
+  archs="ppc_405 ppc_7xx"
+elif [ "$hn" = "node-26" ]; then
+  archs="arm_720t_le arm_sa_be"
+elif [ "$hn" = "node-21" ]; then
+  archs="mips_sb1_fp_be x86_crusoe"
+elif [ "$hn" = "node-27" ]; then
+  archs="mips_sony_fp_le"
+elif [ "$hn" = "node-28" ]; then
+  archs="ppc_8xx"
+elif [ "$hn" = "node-29" ]; then
+  archs="ppc_74xx"
+elif [ "$hn" = "node-30" ]; then
+  archs="sh_sh3_le"
+elif [ "$hn" = "node-31" ]; then
+  archs="x86_pentium2"
+fi
+
+apps="samba"
+type="target"
+
+for p in $apps; do
+  if [ -d "~/userland/$p/RPMS" ]; then
+    m -rf ~/userland/$p/RPMS 
+  fi
+  if [ -d "~/userland/$p/SRPMS" ]; then
+    rm -rf ~/userland/$p/SRPMS 
+  fi
+  mkdir -p /mvista/dev_area/logs/mvl2.1.0-updates/$p
+  for a in $archs; do
+     rm -rf /opt/hardhat/*
+     cp -a /var/lib/rpm /opt/hardhat/rpmdb
+     if [ "$a" = "mips_sony_fp_be" ]; then
+       cd /mvista/release_area/mvl2.1.0_sony_be/host/common/optional/
+     elif [ "$a" = "mips_sb1_fp_be" ]; then
+       cd /mvista/release_area/mvl2.1.0a/host/common/optional/
+     elif [ "$a" = "arm_xscale_be" ]; then
+       cd /mvista/release_area/mvl2.1.0_brh/host/common/optional/
+     else
+       cd /mvista/release_area/mvl2.1.0/host/common/optional/
+     fi
+     rpm --dbpath /opt/hardhat/rpmdb -i *.rpm
+     cd ..
+     rpm --dbpath /opt/hardhat/rpmdb -i *file* *ldd* *python* *setperm* *targetconf*
+     cd ../cluster
+     rpm --dbpath /opt/hardhat/rpmdb -i *.rpm
+     cd ../../$a/cross/common
+     ls | grep -v glib | xargs rpm --dbpath /opt/hardhat/rpmdb -i 
+     cd ../cluster
+     if [ "$p" = "gcc" ] && [ "$type" = "cross" ]; then
+       rpm --dbpath /opt/hardhat/rpmdb -i *binutils* *hardhatutils* *ksymoops* *ldd* *linux86*
+     else
+       ls | grep -v gdb | xargs rpm --dbpath /opt/hardhat/rpmdb -i *
+     fi
+     cd ../../target
+     if [ "$p" = "glibc" ]; then
+       rpm --dbpath /opt/hardhat/rpmdb -i --ignorearch *filesystem* *kernel-headers*
+     elif [ "$p" = "gcc" ]; then
+       rpm --dbpath /opt/hardhat/rpmdb -i --ignorearch *filesystem* *kernel-headers* *binutils* *glibc* *ncurses*
+     else
+       rpm --dbpath /opt/hardhat/rpmdb -i --ignorearch *filesystem* *kernel-headers* *binutils* *glibc* *ncurses* *gcc* *cpp* *g++* *libstdc++* *protoize* *flex* *libwrap* *zlib* *libpam* *libtool*
+     fi
+     cd ~/userland/$p
+     if [ "$type" = "cross" ]; then
+       if [ "$p" = "gcc" ]; then
+         ~/bin/mkappnoclean `pwd` mvl2.1.0 $a cross-"$p"2.95.3 /opt/hardhat/rpmdb ~/.mvlrpmrc > /mvista/dev_area/logs/mvl2.1.0-updates/$p/$a.log 2>&1
+       else
+         ~/bin/mkappnoclean `pwd` mvl2.1.0 $a cross-$p /opt/hardhat/rpmdb ~/.mvlrpmrc > /mvista/dev_area/logs/mvl2.1.0-updates/$p/$a.log 2>&1
+       fi
+       mkdir -p /mvista/dev_area/mvl2.1.0-updates/$p/$a/cross/cluster
+       mkdir -p /mvista/dev_area/mvl2.1.0-updates/$p/SRPMS
+       cp -f SRPMS/* /mvista/dev_area/mvl2.1.0-updates/$p/SRPMS
+       cp RPMS/i386/* /mvista/dev_area/mvl2.1.0-updates/$p/$a/cross/cluster
+     elif [ "$type" = "target" ]; then
+       ~/bin/mkappnoclean `pwd` mvl2.1.0 $a target-$p /opt/hardhat/rpmdb ~/.perpmrc > /mvista/dev_area/logs/mvl2.1.0-updates/$p/$a.log 2>&1
+       mkdir -p /mvista/dev_area/mvl2.1.0-updates/$p/$a/target
+       mkdir -p /mvista/dev_area/mvl2.1.0-updates/$p/SRPMS
+       cp -f SRPMS/* /mvista/dev_area/mvl2.1.0-updates/$p/SRPMS
+       cp RPMS/$a/* /mvista/dev_area/mvl2.1.0-updates/$p/$a/target
+     fi
+  done
+done

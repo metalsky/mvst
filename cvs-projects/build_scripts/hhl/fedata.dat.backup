@@ -1,0 +1,231 @@
+#!/usr/bin/python
+import os, string, time
+
+# This file contains data necessary for completing an fe build
+# using the buildhhl.py script. 
+#
+# This file gets executed as python commands, so if you want
+# to do something strange to set up variables, go ahead,
+# but do so at your own risk
+# 
+copydir         = '/mvista/dev_area/foundation'
+installdir	= '/opt/montavista'
+homepath	= os.getcwd() + '/../..'
+docsmodule      = 'skip'
+docsgp          = { }
+# the cvspaths dictionary is used to indicate the paths to the repositories in 
+# the build, as well as the branches they use
+cvspaths = {
+	'mvl-kernel-26':	[homepath + '/mvl-kernel-26',	"foundation_three_branch"],
+	'lsp':			[homepath + '/lsp',		"null"],
+	'mvlt':			[homepath + '/mvlt',		"null"],
+	'toolchain':		[homepath + '/toolchain',	"foundation_three_branch"],
+	'mvl-installer':	[homepath + '/mvl-installer',	"null"],
+	'userland':		[homepath + '/userland',	"null"],
+	'cygwin':		[homepath + '/cygwin',		"foundation_three_branch"],
+	#'cygwin':		[homepath + '/cygwin',		"null"],
+	}
+lspbuildpath	= '/var/tmp/BUILD'	# the cluster builds need a different build 
+					# directory for building lsps due to disk space
+					# also, all specs and sources are copied from
+					# the lsp repository to the lsp build directory
+					# set this equal to your _topdir value or leave it
+					# as is if you will be specifying --nolsps in the
+					# build command
+scripttest	= '0'
+runprep		= 1
+multihost	= 1
+runqa		= 1
+mkcd		= 1
+mkdvd		= 0
+commoncdinstall = 1
+hostcdinstall   = 1
+targetcdinstall = 1
+mkcdbom		= 0
+mkvert		= 1
+uploaddays 	= ()
+toolsonly	= 0
+lsps		= 1
+remoteonly	= 0
+email		= 1
+cdtype		= 'rel'
+testb		= 'notest'
+lsprev		= '1'
+lsptype		= 'std'
+cleanexp	= 1
+version		= '5.0'
+nocl		= 0
+scriptpath	= os.getcwd()
+btype		= 'Foundation Three'
+varstr		= 'Foundation_Edition'          # for devrocket
+appsfile	= scriptpath + '/commonapps.dat'
+libraryapps	= scriptpath + '/libraryapps.dat'
+lspdat		= scriptpath + '/lsp.dat'
+sht		= 1
+sht_only	= 0
+cht		= 1
+startingkernel  = "null"
+foundation	= "null"
+selfhosttarget	= 'x86_586'
+selfhostinstalldata	= {}
+edition		= 'foundation'
+mkretardlink	= 1
+linkname	= 'last_fthree'
+chroothosts	= ('centos3','suse90')
+targethost	= 'centos3'
+hosts		= ('solaris8','windows2000')
+abitargets	= (
+	'mips64_fp_be-o32',
+	'mips64_fp_be-n64',
+	'mips64_fp_le-o32',
+	'mips64_fp_le-n64',
+	'ppc_9xx-64',
+	'x86_amd64-32',
+	'x86_em64t-32',
+	)
+all_targets	= (
+	'x86_586',
+	'arm_iwmmxt_le',
+	'arm_iwmmxt_le_uclibc',
+	'arm_v5t_le',
+	'arm_v5t_le_uclibc',
+	'arm_v6_vfp_le',
+	'arm_v6_vfp_le_uclibc',
+	'arm_xscale_be',
+	'arm_xscale_be_uclibc',
+	'mips2_fp_be',
+	'mips2_fp_be_uclibc',
+	'mips2_fp_le',
+	'mips2_fp_le_uclibc',
+	'mips2_nfp_le',
+	'mips2_nfp_le_uclibc',
+	'mips64_fp_be',
+	'mips64_fp_be-o32',
+	'mips64_fp_be-n64',
+	'mips64_fp_le',
+	'mips64_fp_le-o32',
+	'mips64_fp_le-n64',
+	'ppc_405',
+	'ppc_440',
+	'ppc_440ep',
+	'ppc_74xx',
+	'ppc_7xx',
+	'ppc_83xx',
+	'ppc_85xx',
+	'ppc_8xx',
+	'ppc_9xx',
+	'ppc_9xx-64',
+	'x86_586_uclibc',
+	'x86_amd64',
+	'x86_amd64-32',
+	'x86_em64t',
+	'x86_em64t-32',
+	'x86_pentium3',
+	'x86_pentium4',
+	) 
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps	= { 'userland': ['gettext','libtool','bison','make','mvlutils','diff','m4',
+				'texinfo','minicom','dtc','mozilla-devel','patch','expat',
+				'python','sed','libxml2','apt-rpm','genevent','mkinitramfs'],
+		   'toolchain':	['elfutils',],
+		}
+brhhostapps	= { 'userland': ['apt-rpm','zsrec','mvlutils','cscope','cvs','lesstif','ddd','tftp-hpa',
+				'e2fsprogs','pkgconfig','quilt','netperf','dhcp','tsload',
+				'doxygen','nasm','mkimage','makedev','libpng',
+				'freetype','xorg-x11','glib','lttv','libIDL'],
+		    'mvlt':	['fstools',],
+		}
+brhnoarchapps	= { 'common':	['filesystem','gettext','mvlutils','autoconf','automake',
+				'db2html','apache-ant'],
+		    'host':	['filesystem','dejagnu','eclipse-templates','eclipse-edition'],}
+
+# here are the definitions for apps built in buildcore.py
+path		= cvspaths['userland'][0]
+toolpath	= cvspaths['toolchain'][0]
+crosseclipseinstall = 'eclipse-enabler-arch-' + edition
+#crosseclipseadkinstall = 'eclipse-enabler-arch-' + edition + '_adk'
+# crossapps = { string:            [path,type,directory,spec,rpm type,extra,[install]]
+crossapps	= { 
+	'a': [toolpath,'cross','glibc','glibc-utils','hostarch','',['glibc-utils',]],
+	'b': [path,'cross','libtool','libtool','noarch','',['libtool',]],
+	'c': [toolpath,'target','binutils','binutils','hostarch','',['binutils',]],
+	'd': [toolpath,'target','gcc','gcc','hostarch','',['gcc',]],
+	'e': [toolpath,'cross','prelink','prelink','hostarch','',['prelink','ldd']],
+	'f': [toolpath,'cross','gdb','gdb','hostarch','',['gdb',]],
+	'g': [path,'cross','linux86','linux86','hostarch','',['linux86',]],
+	'h': [path,'cross','mvlutils','mvlutils','hostarch','',['mvlutils',]],
+	'i': [path,'cross','ksymoops','ksymoops','hostarch','',['ksymoops',]],
+	'j': [path,'cross','glib','glib','hostarch','',['glib',]],
+	'k': [path,'cross','audiofile','libaudiofile','noarch','',['libaudiofile',]],
+	'l': [path,'cross','freetype','freetype','noarch','',['freetype',]],
+	'm': [path,'cross','libxml2','libxml2','noarch','',['libxml2',]],
+	'n': [path,'cross','apache','apache-dev','hostarch','',['apache-dev',]],
+	'o': [path,'cross','lilo','lilo','hostarch','',['lilo',]],
+	'p': [path,'cross','eclipse-templates','eclipse-arch','noarch','',[crosseclipseinstall,]],
+	'q': [path,'cross','etherboot','etherboot','noarch','',['etherboot',]],
+	'r': [path,'cross','syslinux','syslinux','noarch','',['pxelinux','isolinux']],
+	's': [path,'cross','ORBit','ORBit','hostarch','',['ORBit',]],
+	't': [path,'cross','libpcre','libpcre','noarch','',['libpcre',]]}
+
+# these are the apps built in buildremote.py
+mvltapps	= ()
+x86brcrossapps	= ('glibc-utils','linux86', 'gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+x86uclibcbrcrossapps = ('linux86', 'gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+uclibcbrcrossapps = ('gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+brcrossapps	= ('glibc-utils','gdb', 'ksymoops', 'mvlutils','apache-dev','glib','ORBit')
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps	= ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+		'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+		'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+		'pango-directfb','cairo-directfb')
+
+# these are the testing apps that go in <arch>/target/testing
+testapps	= ('ltp','staf','testsuite',)
+
+# moved from buildtargetapps.py
+targnoarch = ('mvlpk','mvl-installer')
+crossnoarch = ('filesystem','glib','libtool')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes	= ['nis','libposixtime','pax','libinet6','sctl','utempter','rxvt','xalan']
+
+# these are the xtensa apps to not build
+xtensaxcludes	= ('xorg-x11','cairo','pango','gtk2','libmng','icewm','matchbox','rxvt','xkbd')
+
+lspIsos		= {}
+lspouttakes	= {}
+
+outtakes	= (
+		'common-devrocket-base-source',
+		'common-devrocket-cdt-sdk',
+		'common-devrocket-cdt-source',
+		'common-devrocket-cdt-testing',
+		'common-devrocket-dev-kernel-source',
+		'common-devrocket-dev-platform-source',
+		'common-devrocket-dev-source',
+		'common-devrocket-jdt',
+		'common-devrocket-jdt-source',
+		'common-devrocket-pde',
+		'common-devrocket-pde-source',
+		'common-devrocket-platform-sdk',
+		'common-devrocket-platform-source',
+		'common-devrocket-sdk',
+		'common-devrocket-source',
+		'common-devrocket-tools-ltt-source',
+		'common-devrocket-tools-smt-source',
+		'common-devrocket-tools-source',
+		'common-devrocket-tools-target-source',
+		'common-devrocket-tools-terminal-source',
+		'common-devrocket-tools-trace-source',
+		'common-devrocket-updatesite', 
+		'common-jdk',
+		'common-mozilla-devel'
+		)
+devrocket_src_outtakes	=	(
+	"common-devrocket",
+	"common-jdk",
+	"common-jre",
+	"common-mozilla-devel"
+	)
+uclibc_outtakes	= {}

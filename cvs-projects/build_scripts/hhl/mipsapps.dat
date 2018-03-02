@@ -1,0 +1,26 @@
+###############
+# mips_fp_be
+# mips_fp_le
+# mips_nfp_be
+# mips_nfp_le
+# mips2_fp_be
+# mips2_fp_be_uclibc
+# mips2_fp_le
+# mips2_fp_le_uclibc
+# mips2_nfp_be
+# mips2_nfp_le
+# mips2_nfp_le_uclibc
+# mips2_fmath_be
+# mips2_fmath_le
+# mips64_fp_be
+# mips64_fp_be_uclibc
+# mips64_fp_le
+# mips64_nfp_be
+# mips64_nfp_le
+# mips64_octeon_be
+# mips64_octeon_v2_be
+###############
+null
+###############
+# end
+###############

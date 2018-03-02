@@ -1,0 +1,27 @@
+#!/bin/bash
+if [ -z "$QUERY_STRING" -a -z "$1" ]; then
+	BUILDS=`ls /export/dev_area/buildlogs/html/logs/ | sort -r | grep -v Current`
+else if [ -n "$QUERY_STRING" ]; then
+	BUILDS=`ls /export/dev_area/buildlogs/html/logs/ | sort -r | grep -v Current | grep $QUERY_STRING`
+else if [ -n "$1" ]; then
+	BUILDS=`ls /export/dev_area/buildlogs/html/logs/ | sort -r | grep -v Current | grep $1`
+fi
+fi
+fi
+echo "<Table BORDER COLS=3 WIDTH="40%" NOSAVE cellpading=4>"
+echo "<tr>"
+echo "<th align=center><font size=+3>Build Id</font></th>"
+echo "<th align=center><font size=+3>Results</font></th>"
+echo "<th align=center><font size=+3>Stats</font></th>"
+
+for each in $BUILDS; do
+
+cat <<  EOF
+<tr>
+<td align=center><font size=+2>$each</font></td>
+<td align=center><font size=+2><a href="/logs/$each/build.shtml">Build Results</a></font></td>
+<td align=center><font size=+2><a href="/logs/$each/stats.shtml">Build Stats</a></font></td>
+</tr>
+EOF
+done
+echo "</Table>"

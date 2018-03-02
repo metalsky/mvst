@@ -1,0 +1,102 @@
+copydir         = '/mvista/dev_area/mvl'
+docsmodule	= 'mvl'
+docsgp		= { 
+		        'docs/':                'docs/ ',
+                        'README':               'README '
+		  }
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+	'git-kernel':		[homepath+'/f2.6.24-s124atom','kernel/f2.6.24-s124atom','f2.6.24-s124atom','bugfixes/31996_v01','branch'],
+        #'mvlt':                 [homepath + '/mvlt',            "null"],
+        'mvl-installer':        [homepath + '/mvl-installer',   "se_50"],
+        #'userland':             [homepath + '/userland',        "special_edition_atom"],
+	#'toolchain':		[homepath + '/toolchain',	"foundation_five_branch"],
+	#'Documentation':	[homepath + '/Documentation',	"null"],
+        }
+mkcd		= 1
+mkdvd		= 0
+hostcdinstall	= 0
+targetcdinstall	= 1
+mkdoccd		= 0
+mktargetcd	= 1
+mksrccd		= 0
+mkcdbom		= 0
+mktar		= 0
+mkvert		= 0
+rebuildgcc	= 0
+version		= '5.0.24'
+btype		= 'Step One Atom 2.6.24 Async'
+varstr		= 'Special_Edition'	# for eclipse
+dvdname		= 'mvl-host'
+appsfile	= ''
+libraryapps	= ''
+lspdat		= scriptpath + '/s124atomlsp.dat'
+foundation	= '/mvista/dev_area/mvl/s124atom_090218_0900299'
+hosttoolpath	= '/mvista/dev_area/foundation/host-tools/last_f2624'
+selfhosttarget  = 'x86_586'
+selfhostinstalldata = { 
+		'x86_586':		['x86_586','x86-pc_target-x86_586'], 
+		'x86_pentium3':		['x86_586','x86-pc_target-x86_586'],
+		'x86_pentium4':		['x86_586','x86-pc_target-x86_586'],
+		}
+edition		= 'mvl'
+chroothosts	= ( 'centos3',)
+targethost	= 'centos3'
+hosts 		= ()
+all_targets	= ( 
+	        'x86_586',
+		)
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps	= { }
+brhhostapps	= { }
+brhnoarchapps	= { }
+# here are the definitions for apps built in buildcore.py
+#path = cvspaths['userland'][0]
+#toolpath = cvspaths['toolchain'][0]
+#crosseclipseinstall = 'eclipse-enabler-arch-' + edition
+#crosseclipseadkinstall = 'eclipse-enabler-arch-' + edition + '_adk'
+crossapps = { }
+# these are the apps built in buildremote.py
+brcrossapps	= ()
+
+# remove glibc & kernel-headers rpms in targetapp build since they were installed by buildcore.py
+removerpms = ('glibc','kernel-headers','uclibc','gcc','g++','libgcc1','libstdc++6','libgomp')
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+                'pango-directfb','cairo-directfb')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('netperf','lmbench','dejagnu','mvlpk-dev','mvlpk-base','preempt',
+                   'previewkit-dev','previewkit-base','previewkit-fsimages',
+                   'pxelinux-previewkit','ethereal','mvl-installer','mvl_install',
+		   'cross-lilo','common-elfutils','common-jdk','common-apache-ant',
+		   'lup','common-db2html','common-mozilla','installation-enum','ltp','staf',
+		   'install-uSDE','install-libuSDE','install-uSDEpolicies','install-uSDE-debuginfo',
+                   'cyclictest','bootstrap'
+		)
+uclibc_outtakes	= ()
+lspouttakes	= { }
+srcouttakes	= (
+		'cross-eclipse-enabler-lsp',
+		)
+src_link_exclusions = (
+                'lsp',
+                'eclipse-enabler','host-kernel',
+                'uSDE','libuSDE','host-cd-installer','host-mvlinstaller',
+		)
+host_link_exclusions = ('host-mvlinstaller',)
+cross_link_exclusions = ('eclipse',)
+target_link_exclusions = ('mvl-install',
+			)
+targopt_link_exclusions = ()
+#x11apps = ('gtk2','cairo','pango','xorg-x11','xkbd','rxvt','icewm','matchbox')
+x11uninstall = ( )
+x11remove = ()

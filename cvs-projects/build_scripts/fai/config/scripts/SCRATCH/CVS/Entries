@@ -1,0 +1,12 @@
+/02-add_grp_engr.sh/1.1/Fri Jun 29 15:54:13 2007//
+/03-add_nfs_mounts.sh/1.1/Fri Jun 29 15:54:13 2007//
+/04-setup_ldap_nss.sh/1.1/Fri Jun 29 15:54:13 2007//
+/05-auto_home.sh/1.2/Fri Jun 29 16:19:22 2007//
+/10-grab_ssh_host_keys.sh/1.1/Fri Jun 29 15:54:13 2007//
+/20-enable_sudo.sh/1.1/Fri Jun 29 15:54:13 2007//
+/21-setup_ccache.sh/1.1/Fri Jun 29 15:54:13 2007//
+/22-env_setup-install.sh/1.1/Fri Jun 29 15:54:13 2007//
+/23-chroot_script.sh/1.1/Fri Jun 29 15:54:13 2007//
+/24-ntp_setup.sh/1.1/Fri Jun 29 15:54:13 2007//
+/25-quiltrc.sh/1.1/Fri Jun 29 16:16:09 2007//
+D

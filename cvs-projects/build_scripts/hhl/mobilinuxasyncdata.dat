@@ -1,0 +1,71 @@
+copydir         = '/mvista/dev_area/mobilinux'
+docsmodule	= ''
+docsgp		= { }
+
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+	'git-kernel':		[homepath+'/f2.6.24','kernel/f2.6.24','f2.6.24','release','branch'],
+        'mvl-installer':        [homepath + '/mvl-installer',   "avalanche"],
+        }
+hostcdinstall	= 0
+mktargetcd	= 1
+mkvert		= 0
+version		= '5.0.24'
+btype		= 'Mobilinux 5.0.24 Async'
+varstr		= 'Mobilinux'	# for eclipse
+dvdname		= 'mobilinux-host'
+appsfile	= ''
+libraryapps	= scriptpath + '/mobilinuxasyncapps.dat'
+lspdat		= scriptpath + '/mobilinuxlsps.dat'
+foundation	= '/mvista/dev_area/mobilinux/avalanche090609_0901366'
+hosttoolpath	= '/mvista/dev_area/mobilinux/avalanche090609_0901366'
+releaseimgpath	= '/mvista/release_area/mobilinux/mobilinux5.0.x/moblinux5024/dvdimages'
+extrareleaseimgs = {}
+selfhosttarget	= 'x86_586'
+selfhostinstalldata = { 'x86_586':         'generic_x86-pc_target', }
+edition		= 'mobilinux'
+chroothosts	= ('centos3',)
+targethost	= 'centos3'
+hosts 		= ()
+all_targets	= [ 
+        	'arm_v7_vfp_le',
+        	'arm_v7_vfp_le_uclibc',
+        	'x86_586',
+        	'x86_586_uclibc',
+		]
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb',)
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+# these are apps from foundation to uninstall do to conflicts with rpms built in the mobilinux build
+mobilinuxUninstall	= ('gtk2','pango','cairo')
+
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('cvs','jfsutils','libattr','libdmapi','netperf','lmbench','bsglibc',
+                   'dejagnu','mvl-installer','mvl_install','generic_x86-hhl_install',
+                   'cross-lilo','common-db2html', 'common-jdk','common-apache-ant',
+                   'installation-enum','install-uSDE','install-libuSDE','install-uSDEpolicies',
+                   'install-uSDE-debuginfo','uSDE','libsSDE','uSDEpolicies','xfsprogs','xfsdump',
+		   'cyclictest','bootstrap'
+		)
+lspIsos		= {
+			'arm_v7_vfp_le':	['ti-omap3530_evm',],
+			'arm_v7_vfp_le_uclibc':	['ti-omap3530_evm',],
+			'x86_586':		['x86-pc_target-x86_586',],
+			'x86_586_uclibc':	['x86-pc_target-x86_586_uclibc',],
+		}
+lspouttakes	= {}
+srcouttakes	= ('cross-eclipse-enabler-arch',
+		'cross-eclipse-enabler-lsp',
+		'host-eclipse-enabler-edition-mobilinux',
+		'host-eclipse-templates','adk',
+		'libxml',
+		)
+target_link_exclusions = ('kernel-headers-product',)

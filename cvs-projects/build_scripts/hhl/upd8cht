@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+id="/opt/montavista"
+rm -rf $id/devkit
+rm -rf $id/config
+rm -rf $id/rpmdb
+
+rpmbin="$id/host/bin/mvl-rpm-forward"
+cd $id/host/lib
+tar xvf rpmdb.tar
+cd /home/build/dailybuild/cht/RPMS
+$rpmbin -Uvh --ignoreos *.mvl --force --nodeps

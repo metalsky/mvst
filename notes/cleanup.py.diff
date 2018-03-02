@@ -1,0 +1,89 @@
+Index: cleanup.py
+===================================================================
+RCS file: /cvsdev/build_scripts/utils/cleanup.py,v
+retrieving revision 1.5
+diff -u -r1.5 cleanup.py
+--- cleanup.py	5 Apr 2011 22:37:53 -0000	1.5
++++ cleanup.py	29 Apr 2011 22:46:41 -0000
+@@ -13,7 +13,7 @@
+ 
+ 
+ from resourceManager import *
+-import os, sys, threading, string
++import commands, os, sys, threading, string
+ 
+ 
+ def getdiskspace():
+@@ -23,9 +23,9 @@
+ 	sys.__stdout__.flush()
+ 
+ 	if node_type != 'solaris8':
+-		commands.getoutput('%s "df -h /"' %sshCmd)
++		print commands.getoutput('%s "df -h /"' %sshCmd)
+ 	else:
+-		commands.getoutput('%s "df /chroot"' %sshCmd)
++		print commands.getoutput('%s "df /chroot"' %sshCmd)
+ 
+ 	sys.__stdout__.flush()
+ 	print ""
+@@ -41,7 +41,7 @@
+ node = sys.argv[1]
+ sshCmd = "ssh -l root %s" %node
+ node32_chroots = ("centos3","centos4","mandrake91","redhat73","redhat80","redhat90","suse90")
+-node_64_chroots = ("centos3_64","centos4_64")
++node64_chroots = ("centos3_64","centos4_64")
+ builddirs = ("BUILD","RPMS","SRPMS","SOURCES","SPECS")
+ 
+ 
+@@ -67,8 +67,8 @@
+ 	
+ 	# determine if the node is a 64-bit node:
+ 	chroots = commands.getoutput("ssh %s ls /chroot" %node).split("\n")
+-		if 'centos3_64' and 'centos4_64' in chroots:
+-			64bit_node = true
++	if 'centos3_64' and 'centos4_64' in chroots:
++		is64bit = True
+ 
+ 	# legacy node chroot:
+ 	print "Cleaning legacy node chroot:"
+@@ -102,7 +102,7 @@
+ 	print ""
+ 
+ 	# 64-bit nodes:
+-	if 64bit_node:
++	if is64bit:
+ 		print "Cleaning 64-bit chroot environments:"
+ 		for chroot in node64_chroots:
+ 			print "\tCleaning /chroot/%s/home/build" %chroot
+@@ -117,23 +117,24 @@
+ 		print ""
+ 	
+ 	# mvl6 chroots:
+-	if 64bit_node:
++	if is64bit:
++		print "Cleaning the additional 64-bit chroot environments:"
+ 		mvl6ChrootRoot = "/builds/mvl6/chroot"
+ 		mvl6ChrootType = ["centos4", "centos4_64"]
+ 		mvl6Chroots = commands.getoutput("ssh %s ls %s" %(node, mvl6ChrootRoot)).split("\n")
+ 
+ 		for mvl6Chroot in mvl6Chroots:
+ 			for chrootType in mvl6ChrootType:
+-				print "Cleaning %s %s/%s/%s/opt/montavista" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
++				print "\tCleaning %s %s/%s/%s/opt/montavista" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
+ 				commands.getoutput("%s rm -rf %s/%s/%s/opt/montavista/*" %(sshCmd, mvl6ChrootRoot, mvl6Chroot, chrootType))
+-				print "Cleaning %s %s/%s/%s/var/tmp" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
++				print "\tCleaning %s %s/%s/%s/var/tmp" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
+ 				commands.getoutput("%s rm -rf %s/%s/%s/var/tmp/*" %(sshCmd, mvl6ChrootRoot, mvl6Chroot, chrootType))
+-				print "Cleaning %s %s/%s/%s/tmp" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
++				print "\tCleaning %s %s/%s/%s/tmp" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
+ 				commands.getoutput("%s rm -rf %s/%s/%s/tmp/*" %(sshCmd, mvl6ChrootRoot, mvl6Chroot, chrootType))
+-				print "Cleaning %s %s/%s/%s/home/build" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
++				print "\tCleaning %s %s/%s/%s/home/build" %(node, mvl6ChrootRoot, mvl6ChrootRoot, chrootType)
+ 				commands.getoutput("%s rm -rf %s/%s/%s/home/build/*" %(sshCmd, mvl6ChrootRoot, mvl6Chroot, chrootType))
+-				print "Deleting logs in /tmp/%s" %mvl6Chroot
+-				commands.getoutput("%s rm -rf /tmp/%s/*" %mvl6Chroot)
++				print "\tDeleting logs in /tmp/%s" %mvl6Chroot
++				commands.getoutput("%s rm -rf /tmp/%s/*" %(sshCmd, mvl6Chroot))
+ 				print ""
+ 
+ 	# check node back into the resource manager:

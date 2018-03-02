@@ -1,0 +1,37 @@
+dev_area:
+
+overlord:/mvista/dev_area# time for d in `find . -maxdepth 1 -type d ! -path '.' ! -path '..' ! -path '.snapshot' -print`; do du -sh $d; done
+
+
+635G    ./pro
+42M     ./sht-asyncfe
+763G    ./bosch
+738M    ./test_content
+26G     ./mvl
+54M     ./asterisk
+65G     ./backups
+16K     ./joe
+18G     ./buildtars
+104K    ./cee
+386G    ./cge
+230M    ./cht-fe
+748G    ./foundation
+5.8G    ./tsuki
+85G     ./mobilinux
+132M    ./sht-fe
+132M    ./sht-fe64
+72K     ./sht-optional
+141M    ./sht-xtensa
+692K    ./RELEASED_by_buildtag
+167G    ./devrocket
+364M    ./test
+101M    ./ixtest
+379G    ./integration_platform
+3.4T    ./mvl6
+76K     ./cvs_changelog_scripts
+du: `./.snapshot': No such file or directory
+
+real    531m46.334s
+user    1m26.141s
+sys     17m18.741s
+

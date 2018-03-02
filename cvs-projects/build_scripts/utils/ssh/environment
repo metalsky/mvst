@@ -1,0 +1,5 @@
+# This environment file _should_ be used on cygwin only
+# If it gets use on any other system, then it will have
+# to be adjusted accordingly.
+PATH=/home/build/bin:/usr/bin:/bin:/usr/sbin:/sbin
+PYTHONPATH=/home/build/build_scripts/rpmlint/rpmlint-0.9.1-mv/:/home/build/bin/resourceManager/:/home/build/bin/common:/home/build/bin/utils

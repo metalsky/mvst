@@ -1,0 +1,9 @@
+build@overlord:~$ ps afxww | grep blacktop
+ 9837 build    S  |           \_ grep blacktop
+29407 build    S  \_ /usr/bin/python /home/build/bin/launch.py --product mobilinux --build_script_branch blacktop_branch --prefix blacktop --email bhoos@mvista.com,jlewis@mvista.com
+29699 build    S  |   \_ /usr/bin/python ./buildhhl.py mobilinux blacktop100325_1001510 1001510 blacktop_branch blacktop100324_1001470 bhoos@mvista.com,jlewis@mvista.com
+ 7975 build    S  |       \_ sh -c ./make_ipk.py /mvista/dev_area/mobilinux/blacktop100325_1001510 blacktop100325_1001510 arm_v6_vfp_le > /mvista/dev_area/mobilinux/blacktop100325_1001510/logs/ipk-1001510.log 2>&1
+ 7976 build    S  |           \_ /usr/bin/python ./make_ipk.py /mvista/dev_area/mobilinux/blacktop100325_1001510 blacktop100325_1001510 arm_v6_vfp_le
+ 6265 build    S  \_ /usr/bin/python /home/build/bin/launch.py --product mobilinux --build_script_branch blacktop_branch --prefix blacktop --email bhoos@mvista.com,jlewis@mvista.com
+ 6685 build    S  |   \_ /usr/bin/python ./buildhhl.py mobilinux blacktop100325_1001511 1001511 blacktop_branch blacktop100325_1001510 bhoos@mvista.com,jlewis@mvista.com
+ 8424 build    S  |       \_ ssh node-6 cd /home/build/blacktop100325_1001511-exp/CVSREPOS/build_scripts/hhl; ./buildtargetapps.py /home/build/blacktop100325_1001511-exp/CVSREPOS/build_scripts/hhl/blacktop100325_1001511.dat arm_v6_vfp_le centos3 /home/build/blacktop100325_1001511-exp/CVSREPOS/build_scripts/hhl/mobilinuxapps.dat null 1 >> /mvista/dev_area/mobilinux/blacktop100325_1001511/logs/apps-arm_v6_vfp_le-1001511.log 2>&1

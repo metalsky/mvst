@@ -1,0 +1,483 @@
+#!/usr/bin/bash 
+
+# This script takes the following arguments:
+# $1- copytohost
+# $2- cpdir (the dev_area where rpms are copied from/to)
+# $3- arch (the target architecture to build)
+# $4- buildid (the buildid in rpm filename)
+# $5- installdir
+# $6- product
+# $7- mvltpath
+# $8- edition
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 <host machine to copy from/to> <cpdir> <arch> <buildid> <install dir> <product> <mvltpath> <edition> <gcclicense>"
+  exit 1
+fi
+
+mstart () {
+  echo "<$0>: building $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+}
+
+mstop () {
+  echo "<$0>: finished $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+}
+
+mvscp() {
+  echo "<$0>: copying $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+  let count=0
+  while ! scp $1 $2; do
+    if [ $count = 10 ]; then
+      echo "<$0>: tried 10 copies all of which failed...skipping this copy"
+      break
+    fi
+    echo "<$0>: copy failed, trying again in 5 seconds..."
+    sleep 5
+    let count=count+1
+  done
+}
+
+# to install src rpms rpminsttd(rpm)
+rpminsttd () {
+  $1 $2 -Uvh --ignoreos --define "_topdir $builddir"
+  ret=$?
+  return $ret
+}
+rpminst () {
+  if test -n "$3"; then
+    $1 $2 -Uvh --ignoreos $3
+    ret=$?
+  else
+    $1 $2 -Uvh --ignoreos
+    ret=$?
+  fi
+  return $ret
+}
+rpminsttarg () {
+  $1 $2 --target=$3-linux --nodeps -Uvh --ignoreos
+  ret=$?
+  return $ret
+}
+# to build rpms rpmbld(spec)
+rpmbld () {
+  if test -n "$4"; then
+    echo "4 args to rpmbld()"
+    $1 -bb \
+      --clean \
+      --define "_topdir $builddir" \
+      --define "_mvl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" \
+      --define "_mvl_host_os_build windows2000" \
+      --define "_mvl_multilib $4" \
+      --$3=$arch-linux $2
+    ret=$?
+  else
+    $1 -bb \
+      --clean \
+      --define "_topdir $builddir" \
+      --define "_mvl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" \
+      --define "_mvl_host_os_build windows2000" \
+      --$3=$arch-linux $2
+    ret=$?
+  fi
+  rm -rf $builddir/BUILD/*
+  return $ret
+}
+# to build rpms rpmbld(spec)
+rpmgccbld () {
+  if test -n "$4"; then
+    echo "4 args to rpmbld()"
+    $1 -bb \
+      --clean \
+      --define "_topdir $builddir" \
+      --define "_mvl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" \
+      --define "_mvl_host_os_build windows2000" \
+      --define "_mvl_gcc_license $gcclicense" \
+      --define "_mvl_multilib $4" \
+      --$3=$arch-linux $2
+    ret=$?
+  else
+    $1 -bb \
+      --clean \
+      --define "_topdir $builddir" \
+      --define "_mvl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" \
+      --define "_mvl_host_os_build windows2000" \
+      --define "_mvl_gcc_license $gcclicense" \
+      --$3=$arch-linux $2
+    ret=$?
+  fi
+  rm -rf $builddir/BUILD/*
+  return $ret
+}
+rpmnabld () {
+  $1 -bb \
+      --clean \
+      --define "_topdir $builddir" \
+      --define "_mvl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" $2
+  ret=$?
+  rm -rf $builddir/BUILD/*
+  return $ret
+}
+mstart buildcygwin-setup
+builddir="/home/build/dailybuild"
+cd $builddir
+host="$1"
+echo "host to copy to/from: $host"
+cpdir=$2
+echo "copy path: $cpdir"
+spec="$builddir/SPECS"
+rpm="$builddir/RPMS"
+arch="$3"
+echo "arch: $arch"
+buildid="$4"
+echo "buildid: $buildid"
+installdir="$5"
+echo "installdir: $installdir"
+product="$6"
+echo "product: $product"
+rpmbin="/bin/rpm"
+echo "rpmbin = $rpmbin"
+rpmbuild="$rpmbin"build
+echo "rpmbuild = $rpmbuild"
+mvltpath="$7"
+echo "mvltpath = $mvltpath"
+edition="$8"
+echo "edition = $edition"
+gcclicense="$9"
+echo "gcclicense = $gcclicense"
+
+echo "resource: $HOSTNAME"
+
+commonrpmbin="/opt/montavista/common/bin/mvl-common-rpm"
+commonrpmbuild="/opt/montavista/common/bin/mvl-common-rpmbuild"
+editionrpmbin="/opt/montavista/$edition/bin/mvl-edition-rpm"
+editionrpmbuild="/opt/montavista/$edition/bin/mvl-edition-rpmbuild"
+
+echo "HOME = $HOME"
+export HOME=/home/build
+echo "after export, HOME = $HOME"
+#. ~build/bin/vsvars32.sh
+
+echo "Starting at $(date)"
+
+# set path
+export PATH=/bin:/sbin:/usr/sbin:/opt/montavista/common/bin
+
+mvltapps=""
+
+if [ "$product" = "dev" ] || [ "$product" = "fe" ]; then
+  xsrcrpms="cross-binutils*.src.rpm cross-gcc*.src.rpm cross-gdb*.src.rpm cross-ksymoops*.src.rpm cross-apache-dev*.src.rpm cross-linux86*.src.rpm cross-mvlutils*.src.rpm cross-glib*.src.rpm cross-ORBit*.src.rpm cross-prelink*.src.rpm cross-glibc-util*.src.rpm"
+elif [ "$product" = "pro" ] || [ "$product" = "cge" ] || [ "$product" = "mobilinux" ]; then
+  xsrcrpms="cross-apt-rpm-config*.src.rpm"
+elif [ "$product" = "scripttest" ]; then
+  xsrcrpms="cross-glib*.src.rpm"
+else
+  xsrcrpms=""
+fi
+
+# check if there's anything to build
+if [ "$mvltapps" = "" ] && [ "$xsrcrpms" = "" ]; then
+  echo "Nothing to build, ending build."
+  echo "Ending at $(date)"
+  mstop buildcygwin-setup
+  exit 0
+fi
+
+# uninstall any CDK rpms
+if [ "$installdir" != "" ] && [ -d "$installdir" ]; then
+  rm -rf $installdir/*
+  #rm -rf $installdir/devkit
+  #rm -rf $installdir/config
+  #rm -rf $installdir/common
+  #rm -rf $installdir/$edition
+  # update rpmdbatabase
+  #cd $installdir/host/lib
+  #tar xvf rpmdb.tar
+fi
+cd $builddir
+
+mvscp $host:$cpdir/host/common/common-*.mvl $rpm
+mvscp $host:$cpdir/host/common/*filesystem*.mvl $rpm
+mvscp $host:$cpdir/host/common/*eclipse*.mvl $rpm
+mvscp $host:$cpdir/host/windows2000/*.mvl $rpm
+rm -f $rpm/*postinstall*
+
+# copy the required src.rpms
+if [ "$mvltpath" != "null" ] && [ "$mvltapps" != "" ]; then
+  for ma in $mvltapps; do
+    xsrcrpms="$xsrcrpms cross-$ma*.src.rpm"
+  done
+  echo "xsrcrpms = $xsrcrpms"
+fi
+for x in $xsrcrpms; do
+  mvscp $host:$cpdir/SRPMS/$x SRPMS
+done
+# install src rpms
+xlist=""
+for x in $xsrcrpms; do
+  xlist="$xlist $(echo SRPMS/$x)"
+done
+for x in $xlist; do
+  if ! rpminsttd $rpmbin "$x"; then
+    echo "RPM ERROR: $x src rpm did not install"
+  fi
+done
+# delete SRPMS/* to free up disk space
+rm -rf $builddir/SRPMS/*
+# install common/host rpms
+cd $rpm
+pushd /
+rpm2cpio $rpm/common-rpm-4* | cpio -iud
+rpm2cpio $rpm/common-rpm-b* | cpio -iud
+rpm2cpio $rpm/common-rpm-d* | cpio -iud
+rpm2cpio $rpm/host-rpm* | cpio -iud
+popd
+for x in $(ls common-rpm*.mvl); do
+  echo "installing $x with --justdb..."
+  if ! rpminst $commonrpmbin "$x" --justdb; then
+    echo "RPM ERROR: $x did not install"
+  fi
+done
+echo "installing host-rpm with --justdb..."
+if ! rpminst $editionrpmbin "host-rpm*" --justdb; then
+  echo "RPM ERROR: host-rpm did not install"
+fi
+for x in $(ls common*.mvl | grep -v rpm | grep -v apache-ant | grep -v expat | grep -v elfutils); do
+  #echo "$x..."
+  if ! rpminst $commonrpmbin "$x"; then
+    echo "RPM ERROR: $x did not install"
+  fi
+done
+if ! rpminst $commonrpmbin "common-apt-rpm*"; then
+  echo "RPM ERROR: common-apt-rpm did not install"
+fi
+if ! rpminst $commonrpmbin "common-expat*"; then
+  echo "RPM ERROR: common-expat did not install"
+fi
+if ! rpminst $commonrpmbin "common-elfutils*"; then
+  echo "RPM ERROR: common-elfutils did not install"
+fi
+if ! rpminst $commonrpmbin "host-tool-binutils*"; then
+  echo "RPM ERROR: host-tool-binutils did not install"
+fi
+for x in $(ls host*.mvl | grep -v rpm | grep -v comerr | grep -v e2fslibs); do
+  #echo "$x..."
+  if ! rpminst $editionrpmbin "$x"; then
+    echo "RPM ERROR: $x did not install"
+  fi
+done
+specialrpms="apt-rpm comerr e2fslibs"
+for x in $specialrpms; do
+  if ! rpminst $editionrpmbin "host-$x*"; then
+    echo "RPM ERROR: host-$x did not install"
+  fi
+done
+
+cd $builddir
+# copy noarch packages
+if [ "$(echo $arch | grep uclibc)" != "" ]; then
+  rpms="kernel-headers* filesystem* uclibc*"
+elif [ "$product" = "dev" ]; then
+  rpms="kernel-headers* filesystem* glibc-bootstrap*"
+else
+  rpms="kernel-headers* filesystem* glibc*"
+fi
+for x in $rpms; do
+  mvscp $host:$cpdir/$arch/target/$x.mvl $rpm
+done
+mvscp $host:$cpdir/$arch/cross/common/*.mvl $rpm
+#echo "Installing the following from $rpm:"
+cd $rpm
+if ! rpminst $editionrpmbin "cross-*"; then
+  echo "RPM ERROR: cross/common rpms did not install"
+fi
+if ! rpminsttarg "$editionrpmbin --nodeps" "$rpms" $arch; then
+  echo "RPM ERROR: target rpms did not install"
+fi
+mstop buildcygwin-setup
+if [ "$product" = "dev" ] || [ "$product" = "fe" ]; then
+  mstart cross-binutils
+  if rpmbld $editionrpmbuild $spec/cross-binutils.spec cross; then
+    if rpminst $editionrpmbin "$rpm/i386/cross-*-binutils-*.mvl"; then
+      echo "BUILT: cross-binutils for $arch built"
+    else
+      echo "BUILD ERROR: cross-binutils for $arch built but did not install"
+    fi
+  else
+    echo "BUILD ERROR: cross-binutils for $arch did not build"
+  fi
+  mstop cross-binutils
+
+  mstart  cross-gcc
+  if [ "$gcclicense" = "true" ]; then
+    echo "copying /bin/true.exe to /opt/montavista/common/bin/mvl-license.exe..."
+    cp /bin/true.exe /opt/montavista/common/bin/mvl-license.exe
+  fi
+  if rpmgccbld $editionrpmbuild $spec/cross-gcc.spec cross; then
+    if rpminst $editionrpmbin "$rpm/i386/cross-*-gcc*.mvl $rpm/i386/cross-*-g++*.mvl"; then
+      echo "BUILT: cross-gcc for $arch built"
+    else
+      echo "BUILD ERROR: cross-gcc for $arch built but did not install"
+    fi
+  else
+    echo "BUILD ERROR: cross-gcc for $arch did not build"
+  fi
+  mstop cross-gcc
+
+  cd $builddir
+
+  # now build cross-glibc-utils for non-uclibc targets
+  if [ "$(echo $arch | grep uclibc)" = "" ]; then
+    mstart cross-glibc-utils
+    if rpmbld $editionrpmbuild $spec/cross-glibc-utils.spec cross; then
+      if rpminst $editionrpmbin "$rpm/i386/cross-*-glibc-utils-*.mvl"; then
+        echo "BUILT: cross-glibc-utils for $arch built"
+      else
+        echo "BUILD ERROR: cross-glibc-utils for $arch built but did not install."
+      fi
+    else
+      echo "BUILD ERROR: cross-glibc-utils for $arch did not build."
+    fi
+    mstop cross-glibc-utils
+  fi
+
+  # now build cross-gdb
+  mstart cross-gdb
+  if rpmbld $editionrpmbuild $spec/cross-gdb.spec cross; then
+    echo "BUILT: cross-gdb for $arch built"
+  else
+    echo "BUILD ERROR: cross-gdb for $arch did not build."
+  fi
+  mstop cross-gdb
+
+  # now build cross-ksymoops
+  mstart cross-ksymoops
+  if rpmbld $editionrpmbuild $spec/cross-ksymoops.spec cross; then
+    echo "BUILT: cross-ksymoops for $arch built"
+  else
+    echo "BUILD ERROR: cross-ksymoops for $arch did not build."
+  fi
+  mstop cross-ksymoops
+
+  # now build cross-apache-dev
+  mstart cross-apache-dev
+  if rpmbld $editionrpmbuild $spec/cross-apache-dev.spec cross; then
+    echo "BUILT: cross-apache-dev for $arch built"
+  else
+    echo "BUILD ERROR: cross-apache-dev for $arch did not build."
+  fi
+  mstop cross-apache-dev
+
+  # now build cross-glib
+  mstart cross-glib
+  if rpmbld $editionrpmbuild $spec/cross-glib.spec cross; then
+    if rpminst $editionrpmbin "$rpm/i386/cross-*-glib-*.mvl"; then
+      echo "BUILT: cross-glib for $arch built"
+    else
+      echo "BUILD ERROR: cross-glib for $arch built but did not install."
+    fi
+  else
+    echo "BUILD ERROR: cross-glib for $arch did not build."
+  fi
+  mstop cross-glib
+
+  # now build cross-ORBit
+  mstart cross-ORBit
+  if rpmbld $editionrpmbuild $spec/cross-ORBit.spec cross; then
+    echo "BUILT: cross-ORBit for $arch built"
+  else
+    echo "BUILD ERROR: cross-ORBit for $arch did not build."
+  fi
+  mstop cross-ORBit
+
+  # build cross-linux86 if needed
+  if [ "$(echo $arch | grep x86)" ]; then
+    mstart cross-linux86
+    if rpmbld $editionrpmbuild $spec/cross-linux86.spec cross; then
+        echo "BUILT: cross-linux86 for $arch built"
+    else
+      echo "BUILD ERROR: cross-linux86 for $arch did not build"
+    fi
+    mstop cross-linux86
+  fi
+elif [ "$product" = "pro" ] || [ "$product" = "cge" ] || [ "$product" = "mobilinux" ]; then
+  # build cross-apt-rpm-config
+  mstart cross-apt-rpm-config
+  if rpmbld $editionrpmbuild $spec/cross-apt-rpm-config.spec cross; then
+      echo "BUILT: cross-apt-rpm-config for $arch built"
+  else
+    echo "BUILD ERROR: cross-apt-rpm-config for $arch did not build"
+  fi
+  mstop cross-apt-rpm-config
+elif [ "$product" = "scripttest" ]; then
+  # build cross-glib
+  mstart cross-glib
+  if rpmbld $editionrpmbuild $spec/cross-glib.spec cross; then
+      echo "BUILT: cross-glib for $arch built"
+  else
+    echo "BUILD ERROR: cross-glib for $arch did not build"
+  fi
+  mstop cross-glib
+fi
+
+if [ "$product" = "dev" ] || [ "$product" = "fe" ]; then
+  # build cross-mvlutils
+  hhu="mvlutils"
+  mstart cross-$hhu
+  if rpmbld $editionrpmbuild $spec/cross-$hhu.spec cross; then
+    echo "BUILT: cross-$hhu for $arch built"
+  else
+    echo "BUILD ERROR: cross-$hhu for $arch did not build"
+  fi
+  mstop cross-$hhu
+
+  # cross-prelink
+  if [ -e "$spec/cross-prelink.spec" ]; then
+    mstart cross-prelink
+    if rpmbld $editionrpmbuild $spec/cross-prelink.spec cross; then
+      echo "BUILT: cross-prelink for $arch built"
+    else
+      echo "BUILD ERROR: cross-prelink for $arch did not build"
+    fi
+    mstop cross-prelink
+  fi
+fi
+# build cross mvlt apps
+if [ "$mvltpath" != "null" ] && [ "$mvltapps" != "skip" ]; then
+  for ma in $mvltapps; do
+    mstart cross-$ma
+    if rpmbld $editionrpmbuild $spec/cross-$ma.spec cross; then
+      echo "BUILT: cross-$ma for $arch built"
+    else
+      echo "BUILD ERROR: cross-$ma for $arch did not build"
+    fi
+    mstop cross-$ma
+  done
+fi
+
+# next, copy all rpms that were built to the dev_area
+for cpfile in $(ls $rpm/i386/cross*testsuite*.mvl); do
+  mvscp $cpfile $host:$cpdir/"$arch"/cross/windows2000/testing
+done
+rm -f $rpm/i386/*cross*testsuite*.mvl
+for cpfile in $(ls $rpm/i386/cross*.mvl); do
+  mvscp $cpfile $host:$cpdir/"$arch"/cross/windows2000
+done
+
+#Clean up 
+cd /home/build/dailybuild
+rm -rf BUILD/* RPMS/* SRPMS/* SOURCES/* SPECS/*
+cd $installdir
+rm -rf devkit config common host $edition
+rm -rf /var/tmp/*
+
+echo "Ending at $(date)"

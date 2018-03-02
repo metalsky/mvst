@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ "$#" != "8" ]; then
+  echo "Usage $0 <builddir> <build_id> <app name> <dbpath> <rcfile> <base version> <hhl version> <kernel rev digit>"
+  exit
+fi
+
+builddir="$1"
+buildid="$2"
+app="$3"
+dbpath="$4"
+rcfile="$5"
+bv="$6"
+hv="$7"
+krd="$8"
+
+if [ -d "$builddir/SRPMS" ]; then
+  rm -rf "$builddir/SRPMS"
+fi
+mkdir $builddir/SRPMS
+if [ -d "$builddir/RPMS" ]; then
+  rm -rf "$builddir/RPMS"
+fi
+mkdir $builddir/RPMS
+
+rpm -ba --define "_topdir $builddir" \
+    --define "_hhl_build_id $buildid" \
+    --define "vendor MontaVista Software, Inc." \
+    --define "packager <source@mvista.com>" \
+    --define "_hhl_kernel_base_version $bv" \
+    --define "_hhl_kernel_hhl_version $hv" \
+    --define "_hhl_kernel_rev_digit $krd" \
+    --dbpath $dbpath \
+    --rcfile $rcfile \
+    $builddir/SPECS/hhl-*$app.spec
+

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+rm -rf /opt/mvlcge/*
+cp -a /var/lib/rpm /opt/mvlcge/rpmdb

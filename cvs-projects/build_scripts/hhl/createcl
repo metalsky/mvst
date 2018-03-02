@@ -1,0 +1,168 @@
+#!/bin/bash
+#
+# ./createcl
+#
+# This shell script will help generate the changelogs 
+# 
+if [ "$#" != "4" ]; then
+  echo "USAGE: ./createcl <date file> <product> <build_id> <scripttest>"
+  echo "where <date file> is a file created by buildhhl.py that"
+  echo "contains the previous build date"
+  exit
+fi
+#*************************************************************
+#
+# functions
+#
+#*************************************************************
+function cvs2cl
+{
+  if [ "$1" = "true" ] || [ "$1" = "false" ]; then
+    echo $3: $CLDIR/cvs2cl.pl --tags -S -F $2 -b --header changelog.h -l -d"'>$PREV_BLD'"
+  else
+    echo $3: $CLDIR/cvs2cl.pl --tags -S -F $2 -b --header changelog.h -l -d"'>$PREV_BLD'"
+    $CLDIR/cvs2cl.pl --tags -S -F $2 -b --header changelog.h -l -d"'>$PREV_BLD'"
+  fi
+}
+#*************************************************************
+# 
+# main
+#
+#*************************************************************      
+PRODUCT="$2"
+BUILD_ID="$3"
+SCRIPTTEST="$4"
+CLDIR="$(pwd)"
+BSBRANCH="trunk"
+CBRANCH="$PRODUCT"
+KBRANCH="$PRODUCT"
+LBRANCH="$PRODUCT"
+RBRANCH="$PRODUCT"
+TBRANCH="$PRODUCT"
+UBRANCH="$PRODUCT"
+
+CONFIGURATOR="configurator"
+HHLRPMCONFIG="hhl-rpmconfig"
+LSP="lsp"
+TOOLCHAIN="toolchain"
+USERLAND="userland"
+MVLT="mvlt"
+
+if [ "$PRODUCT" = "fe" ]; then
+  KERNEL="mvl-kernel"
+  CBRANCH="foundation_one_branch"
+  KBRANCH="trunk"
+  LBRANCH="trunk"
+  RBRANCH="foundation_one_branch"
+  TBRANCH="foundation_one_branch"
+  UBRANCH="foundation_one_branch"
+  MBRANCH="foundation_one_branch"
+elif [ "$PRODUCT" = "afe" ]; then
+  KERNEL="mvl-kernel"
+  CBRANCH="foundation_one_branch"
+  KBRANCH="trunk"
+  LBRANCH="trunk"
+  RBRANCH="foundation_one_branch"
+  TBRANCH="foundation_one_async_branch"
+  UBRANCH="foundation_one_branch"
+  MBRANCH="foundation_one_branch"
+elif [ "$PRODUCT" = "pro" ]; then
+  KERNEL="mvl-kernel"
+  CONFIGURATOR="skip"
+  TOOLCHAIN="skip"
+  HHLRPMCONFIG="skip"
+  KBRANCH="humboldt"
+  LBRANCH="trunk"
+  UBRANCH="humboldt"
+  MBRANCH="humboldt"
+elif [ "$PRODUCT" = "dpb" ]; then
+  KERNEL="mvl-kernel"
+  USERLAND="userland_dp"
+  LSP="lsp_dp"
+  CONFIGURATOR="skip"
+  HHLRPMCONFIG="skip"
+  MVLT="skip"
+  KBRANCH="druid_peak"
+  LBRANCH="druidpeak"
+  TBRANCH="foundation_one_branch"
+  UBRANCH="druid_peak"
+else
+  KERNEL="mvl-kernel"
+fi
+
+PREV_BLD="$(sed 1q < $1)"
+CRNT_BLD="$(sed -n 2,2p < $1)"
+
+CLDATE="$PREV_BLD-$CRNT_BLD"
+echo "CLDATE = $CLDATE"
+echo "CLDIR = $CLDIR"
+
+cd $CLDIR/bs
+rm -f ChangeLog
+touch ChangeLog
+cvs2cl $SCRIPTTEST $BSBRANCH build_scripts
+
+cd $CLDIR/$KERNEL
+rm ChangeLog
+touch ChangeLog
+cvs2cl $SCRIPTTEST $KBRANCH $KERNEL
+
+if [ "$CONFIGURATOR" != "skip" ]; then
+  cd $CLDIR/$CONFIGURATOR
+  rm ChangeLog
+  touch ChangeLog
+  cvs2cl $SCRIPTTEST $CBRANCH $CONFIGURATOR
+fi
+
+cd $CLDIR/$LSP
+rm ChangeLog
+touch ChangeLog
+cvs2cl $SCRIPTTEST $LBRANCH $LSP
+
+cd $CLDIR/$USERLAND
+rm ChangeLog
+touch ChangeLog
+cvs2cl $SCRIPTTEST $UBRANCH $USERLAND
+
+if [ "$TOOLCHAIN" != "skip" ]; then
+  cd $CLDIR/$TOOLCHAIN
+  rm ChangeLog
+  touch ChangeLog
+  cvs2cl $SCRIPTTEST $TBRANCH $TOOLCHAIN
+fi
+
+if [ "$HHLRPMCONFIG" != "skip" ]; then
+  cd $CLDIR/$HHLRPMCONFIG
+  rm ChangeLog
+  touch ChangeLog
+  cvs2cl $SCRIPTTEST $RBRANCH $HHLRPMCONFIG
+fi
+
+if [ "$MVLT" != "skip" ]; then
+  cd $CLDIR/$MVLT
+  rm ChangeLog
+  touch ChangeLog
+  cvs2cl $SCRIPTTEST $MBRANCH $MVLT
+fi
+
+#******************************************************
+# Now we will create the total changelog
+#
+#
+#*****************************************************
+cd $CLDIR/CHANGELOGS
+CL="$PRODUCT-$CLDATE-ChangeLog"
+
+more ../$KERNEL/ChangeLog            >  $CL
+more ../$LSP/ChangeLog               >> $CL
+more ../$USERLAND/ChangeLog          >> $CL
+if [ "$TOOLCHAIN" != "skip" ]; then
+  more ../$TOOLCHAIN/ChangeLog         >> $CL
+fi
+if [ "$CONFIGURATOR" != "skip" ]; then
+  more ../$CONFIGURATOR/ChangeLog      >> $CL
+fi
+if [ "$MVLT" != "skip" ]; then
+  more ../$MVLT/ChangeLog              >> $CL
+fi
+more ../bs/ChangeLog                 >> $CL

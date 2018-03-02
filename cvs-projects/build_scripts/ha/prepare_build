@@ -1,0 +1,117 @@
+#!/bin/sh
+#
+# prepare_build
+#
+# Copyright (C) 2001 MontaVista Software, Inc.
+# Steven Dake (sdake@mvista.com)
+#
+# Prepares the build environment for the High Availability Framework 2.0
+#
+# This script takes sources from CVS and places them on the local disk in the
+# correct locations.  Finally the software tags the software in the CVS tree.
+
+# $1 is tag
+# $2 is cluster(for build on cluster) or null(for user build)
+# $3 is release(for cluster build)
+# $4 is _hhl_kernel_base_version(for cluster build)
+# $5 is _hhl_kernel_hhl_version(for cluster build)
+
+export CVSROOT=":ext:build@nexus.az.mvista.com:/cvs"
+export CVS_RSH="rsh"
+
+# Exit on child failures
+set -e
+
+if [ z$1 = "z" ]; then
+	echo "usage:"
+	echo "prepare_build [TAG]"
+	echo "    TAG can be a character string with no spaces specifying the CVS"
+	echo "        tag to use when preparing the build environment."
+	echo ""
+	echo "    TAG can also be --notag which will not tag this release."
+	exit
+fi
+
+# Check out source code
+echo "BUILD: Checking out all source code for HA Framework ..."
+cvs co lsps
+cvs co apps
+cvs co ha_dev_2_4
+cvs co hsctool
+cvs co had
+cvs co ipmi
+cvs co common
+cvs co install
+cvs co hadocs
+
+# Tag all CVS projects
+if [ z$1 != "z--notag" ]; then
+	echo "BUILD: Tagging all CVS projects ..."
+	cd ha_dev_2_4
+	cvs tag -R $1 *
+	cd ../hsctool
+	cvs tag -R $1 *
+	cd ../had
+	cvs tag -R $1 *
+	cd ../ipmi
+	cvs tag -R $1 *
+	cd ../common
+	cvs tag -R $1 *
+	cd ../install
+	cvs tag -R $1 *
+	cd ../hadocs
+        cvs tag -R $1 *
+        cd ..
+fi
+
+# Create tarballs for CVS projects
+echo "BUILD: Removing CVS support from source code subdirectories ..."
+find ipmi -name CVS | xargs rm -rf 
+find hsctool -name CVS | xargs rm -rf 
+find had -name CVS | xargs rm -rf 
+find ha_dev_2_4 -name CVS | xargs rm -rf 
+
+
+# Create tarballs for CVS projects
+echo "BUILD: Creating tarballs for CVS projects ..."
+tar -czvf ipmi.tar.gz ipmi
+tar -czvf hsctool-1.00.tar.gz hsctool ha_dev_2_4/include/linux
+tar -czvf had-1.00.tar.gz had ha_dev_2_4/include/linux
+mv ha_dev_2_4 linux
+if [ "$2" = "cluster" ]; then
+	tar -czvf hhl-kernel-$4_$5-$3.tar.gz linux
+else
+	tar -czvf hhl-kernel-2.4.2_hhl20_ha-custum.0.tar.gz linux
+fi
+
+# Copy applications packages into apps CVS directory
+echo "BUILD: Copying packages into apps CVS directory ..."
+cp hsctool-1.00.tar.gz apps/hsctool/SOURCES
+cp had-1.00.tar.gz apps/had/SOURCES
+cp ipmi.tar.gz apps/libipmi/SOURCES
+cp ipmi.tar.gz apps/ipmisamples/SOURCES
+cp hhl-kernel-*.tar.gz common/SOURCES
+
+# Check application packages into CVS
+echo "BUILD: Checking packages into CVS ..."
+cd apps/hsctool/SOURCES
+cvs ci -m"Application tarball updated from CVS project." hsctool-1.00.tar.gz
+cd ../../had/SOURCES
+cvs ci -m"Application tarball updated from CVS project." had-1.00.tar.gz
+cd ../../libipmi/SOURCES
+cvs ci -m"Application tarball updated from CVS project." ipmi.tar.gz
+cd ../../ipmisamples/SOURCES
+cvs ci -m"Application tarball updated from CVS project." ipmi.tar.gz
+cd ../../..
+
+# Tag apps and lsps
+if [ z$1 != "z--notag" ]; then
+	echo "BUILD: Tagging build environment (lsps and apps directory) ..."
+	cd apps
+	cvs tag -R $1 *
+	cd ../lsps
+	cvs tag -R $1 *
+	cd ..
+fi
+
+echo "BUILD: Build environment prepared successfully ..."

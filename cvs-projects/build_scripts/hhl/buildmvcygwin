@@ -1,0 +1,180 @@
+#!/bin/bash
+
+# this script builds the MV Cygwin tools & installer
+# it uses the cygwin.dat file as a list of apps to build
+# It starts by tagging the cygwin repository for each app in the list
+# then exports the repository based on the tag
+# then it copies (scp) the exported repository to the cygwin build machine
+# then it refreshes the existing rpm database
+# then for each app, it builds the app, via an ssh command
+# and installs the built rpm (using -Uvh and --force if necessary)
+# once all apps are built, it copies the src and binary rpms
+# to /mvista/dev_area/sht-fe/host-tools/windows2000
+# as well as /mvista/dev_area/foundation/<buildtag>/host-tools/windows2000
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 <homepath> <buildtag> <buildid> <cyghost> <cygbranch> <skip|noskip cvs> <cygport> <collectivelogdir> <scripttest>"
+  exit 1
+fi
+
+mstart () {
+  echo "<$0>: building $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+  if test -n "$2"; then
+    echo "<$0>: building $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..." >> $2
+  fi
+}
+                                                                                                              
+mstop () {
+  echo "<$0>: finished $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+  if test -n "$2"; then
+    echo "<$0>: finished $1 at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..." >> $2
+  fi
+}
+
+echolog () {
+  if test -n "$2"; then
+    echo "$1" | tee -a $2
+  else
+    echo "$1"
+  fi
+}
+                                                                                                              
+getdiskspace () {
+  echo "Disk Usage:"
+  df /
+}
+
+# this script takes the following arguments
+#
+# 1- homepath
+# 2- buildtag
+# 3- buildid
+# 4- cygwin build machine
+# 5- cygwin branch
+# 6- runcvs (skip|noskip)
+# 7- cygport
+# 8- colelctivelogdir
+# 9- scripttest
+
+systemCmd() {
+  # $1 = command
+  # $2 = scripttest
+  # $3 = log (optional)
+  if [ "$2" = "1" ] || [ "$2" = "2" ]; then
+    echo "command: $1"
+  fi
+  if [ "$2" = "0" ] || [ "$2" = "2" ]; then
+    if test -n "$3"; then
+      $1 | tee -a $3
+    else
+      $1
+    fi
+  fi
+}
+
+homepath="$1"
+buildtag="$2"
+buildid="$3"
+cyghost="$4"
+cygbranch="$5"
+runcvs="$6"
+cygport="$7"
+collectivelogdir="$8/hosttool/cygwin"
+scripttest="$9"
+homedir="/home/build/dailybuild"
+cvsopts="cvs -Q -d :ext:cvs.sh.mvista.com:/cvsdev"
+
+echo "<$0>: starting buildmvcygwin at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+$collectivelog="$collectivelogdir/buildmvcygwin-setup"
+mstart buildmvcygwin-setup $collectivelog
+# first, tag & export from cvs
+builddir="$(pwd)"
+echolog "builddir = $builddir" $collectivelog
+echolog "resource: $cyghost" $collectivelog
+# prep cyghost (rpm database, build directories)
+systemCmd "ssh -p $cygport $cyghost cd $homedir; rm -rf BUILD RPMS SRPMS SOURCES SPECS setup" $scripttest $collectivelog
+systemCmd "ssh -p $cygport $cyghost cd $homedir; mkdir -p BUILD RPMS SRPMS" $scripttest $collectivelog
+systemCmd "ssh -p $cygport $cyghost cd /opt/montavista; rm -rf devkit; rm -rf config; rm -rf common" $scripttest $collectivelog
+#ssh -p $cygport $cyghost "cd /opt/montavista/host/lib; tar xvf rpmdb.tar"
+cd $homepath
+mstop buildmvcygwin-setup $collectivelog
+
+if [ "$runcvs" = "noskip" ]; then
+  collectivelog="$collectivelogdir/cygwin-cvs"
+  mstart cygwin-cvs $collectivelog
+  for app in $(cat $builddir/cygwin.dat); do
+    echolog "Applying buildtag ($buildtag) to $app module of cygwin repository..." $collectivelog
+    if [ "$cygbranch" != "null" ]; then
+      systemCmd "$cvsopts/cygwin rtag -F -r $cygbranch $buildtag $app" $scripttest $collectivelog
+    else
+      systemCmd "$cvsopts/cygwin rtag -F $buildtag $app" $scripttest $collectivelog
+    fi
+  done
+
+  # now export from tag
+  echolog "Exporting cygwin repository from $buildtag tag..." $collectivelog
+  systemCmd "$cvsopts/cygwin export -r $buildtag -d cygwin ." $scripttest $collectivelog
+  mstop cygwin-cvs $collectivelog
+fi
+if [ -d cygwin ]; then
+  cd cygwin
+fi
+
+# for each app, scp the app SOURCES & SPECS directories to the cyghost
+for app in $(cat $builddir/cygwin.dat); do
+  collectivelog="$collectivelogdir/$app"
+  mstart $app $collectivelog
+  if [ -e $app/SPECS/$app.spec ] || [ "$scripttest" = "1" ]; then
+    if [ "$app" != "setup" ]; then 
+      systemCmd "ssh -p $cygport $cyghost cd $homedir; rm -rf BUILD SOURCES SPECS; mkdir -p BUILD SOURCES SPECS" $scripttest $collectivelog
+      systemCmd "scp -P $cygport $app/SOURCES/* $cyghost:/home/build/dailybuild/SOURCES" $scripttest $collectivelog
+      systemCmd "scp -P $cygport $app/SPECS/* $cyghost:/home/build/dailybuild/SPECS" $scripttest $collectivelog
+      systemCmd "ssh -p $cygport $cyghost export HOME=/home/build; cd /home/build/dailybuild; rpmbuild -ba --define \"_topdir /home/build/dailybuild\" --define \"_mvl_build_id $buildid\" --define \"vendor MontaVista Software, Inc.\" --define \"packager <source@mvista.com>\" SPECS/$app.spec 2>&1" $scripttest | tee tmp.log
+      cat tmp.log >> $collectivelog
+      if [ "$(cat tmp.log | grep Wrote)" ]; then
+        echolog "BUILT: $app built" $collectivelog
+        rm -f tmp.log
+        #ssh -p $cygport $cyghost "export HOME=/home/build; cd /home/build/dailybuild; rpm -Uvh RPMS/i386/*$app* --ignoreos --nodeps --force"
+      else
+        echolog "BUILD ERROR: $app did not build" $collectivelog
+      fi
+    fi
+  elif [ "$app" = "setup" ]; then
+    systemCmd "scp -P $cygport -r $app $cyghost:/home/build/dailybuild" $scripttest $collectivelog
+    systemCmd "scp -P $cygport -r $builddir/buildcygsetup $cyghost:/home/build/dailybuild/setup" $scripttest $collectivelog
+    systemCmd "ssh -p $cygport $cyghost export HOME=/home/build; cd /home/build/dailybuild/setup; ./buildcygsetup --build=$buildid 2>&1" $scripttest | tee tmp.log
+    cat tmp.log >> $collectivelog
+    if [ "$(cat tmp.log | grep Wrote)" ]; then
+      echolog "BUILT: $app built" $collectivelog
+      rm -f tmp.log
+    else
+      echolog "BUILD ERROR: $app did not build" $collectivelog
+    fi
+  else
+    echolog "BUILD ERROR: $app did not build...no spec file" $collectivelog
+  fi
+  mstop $app $collectivelog
+done
+
+# copy the rpms just built
+systemCmd "mkdir -p /mvista/dev_area/foundation/host-tools/$buildtag/build/installer_rpms/install_area/host/install-components/host/windows2000/bin" $scripttest 
+systemCmd "mkdir -p /mvista/dev_area/foundation/host-tools/$buildtag/build/host-tools/windows2000/SRPMS" $scripttest 
+systemCmd "mkdir -p /mvista/dev_area/foundation/host-tools/$buildtag/build/host-tools/windows2000/RPMS" $scripttest
+
+systemCmd "scp -P $cygport $cyghost:/home/build/dailybuild/RPMS/i386/* /mvista/dev_area/foundation/host-tools/$buildtag/build/host-tools/windows2000/RPMS" $scripttest
+systemCmd "scp -P $cygport $cyghost:/home/build/dailybuild/SRPMS/* /mvista/dev_area/foundation/host-tools/$buildtag/build/host-tools/windows2000/SRPMS" $scripttest
+systemCmd "scp -P $cygport $cyghost:/home/build/dailybuild/setup/media/autorun.inf /mvista/dev_area/foundation/host-tools/$buildtag/build" $scripttest
+systemCmd "scp -P $cygport $cyghost:/home/build/dailybuild/setup/media/mvista.ico /mvista/dev_area/foundation/host-tools/$buildtag/build" $scripttest
+systemCmd "scp -P $cygport $cyghost:/home/build/dailybuild/setup/media/setuprpm /mvista/dev_area/foundation/host-tools/$buildtag/build/host-tools/windows2000" $scripttest
+systemCmd "scp -P $cygport $cyghost:/home/build/dailybuild/setup/media/setup.exe /mvista/dev_area/foundation/host-tools/$buildtag/build/host-tools/windows2000" $scripttest
+systemCmd "scp -P $cygport $cyghost:/home/build/dailybuild/setup/media/webinstall-start /mvista/dev_area/foundation/host-tools/$buildtag/build/host-tools/windows2000" $scripttest
+
+systemCmd "ssh -p $cygport $cyghost cd /home/build/dailybuild; rm -rf BUILD/* RPMS/* SRPMS/* SOURCES/* SPECS/*" $scripttest
+systemCmd "ssh -p $cygport $cyghost cd $installdir; rm -rf devkit config common host $edition" $scripttest
+systemCmd "ssh -p $cygport $cyghost rm -rf /var/tmp/*" $scripttest
+systemCmd "ssh -p $cygport $cyghost rm -rf $8/*" $scripttest
+
+
+systemCmd "touch /mvista/dev_area/foundation/$buildtag/build/host/done/mvcygwin" $scripttest
+echo "<$0>: finished buildmvcygwin at $(date '+%H:%M:%S %Z %Y/%m/%d') [$(date '+%s')]..."
+

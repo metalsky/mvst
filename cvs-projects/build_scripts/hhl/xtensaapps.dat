@@ -1,0 +1,9 @@
+###############
+# xtensa_linux_be
+# xtensa_linux_le
+# xtensa_linux_test
+###############
+ltrace
+###############
+# end
+###############

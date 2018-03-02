@@ -1,0 +1,45 @@
+#!/bin/bash
+
+if [ "$#" != "7" ]; then
+  echo "Usage $0 <builddir> <build_id> <arch> <app name> <dbpath> <rcfile> <rpmbin>"
+  exit
+fi
+
+builddir="$1"
+buildid="$2"
+arch="$3"
+app="$4"
+dbpath="$5"
+rcfile="$6"
+rpmbin="$7"
+
+if ! [ -d "$builddir/SRPMS" ]; then
+  mkdir $builddir/SRPMS
+fi
+if ! [ -d "$builddir/RPMS" ]; then
+  mkdir $builddir/RPMS
+fi
+
+if [ "$rpmbin" != "rpm" ]; then
+  "$rpmbin"build -ba --define "_topdir $builddir" \
+      --define "_hhl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" \
+      --target=$arch-hardhat-linux $builddir/SPECS/hhl-*$app.spec --nodeps
+  if [ "$app" == "isv-compat" ]; then
+    "$rpmbin"build -ba --define "_topdir $builddir" \
+     --define "_hhl_build_id $buildid" \
+     --define "vendor MontaVista Software, Inc." \
+     --define "packager <source@mvista.com>" \
+     --target=$arch-hardhat-linux $builddir/SPECS/hhl-*.spec --nodeps
+  fi
+else
+  rpm -ba --define "_topdir $builddir" \
+      --define "_hhl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" \
+      --dbpath $dbpath \
+      --rcfile $rcfile \
+      --target=$arch-hardhat-linux $builddir/SPECS/hhl-*$app.spec
+fi
+

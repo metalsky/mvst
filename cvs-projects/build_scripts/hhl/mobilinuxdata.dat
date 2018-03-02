@@ -1,0 +1,106 @@
+copydir         = '/mvista/dev_area/mobilinux'
+docsmodule	= 'mobilinux'
+docsgp		= { 
+                        'docs/':                'docs/ ',
+                        'README':               'README ',
+		}
+
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+	'git-kernel':		[homepath+'/f2.6.24','kernel/f2.6.24','f2.6.24','dev','branch'],
+        'mvlt':                 [homepath + '/mvlt',            "null"],
+        'mvl-installer':        [homepath + '/mvl-installer',   "avalanche"],
+        'userland':             [homepath + '/userland',        "mobilinux_dev"],
+	'Documentation':	[homepath + '/Documentation',	"null"],
+        }
+mkretardlink    = 1
+linkname        = 'last_avalanche'
+mkdvd		= 1
+hostcdinstall	= 1
+targetcdinstall = 1
+mkdoccd		= 1
+mktargetcd	= 1
+mksrccd		= 1
+mkcdbom		= 1
+mktar		= 1
+version		= '5.0.24'
+btype		= 'Mobilinux 5.0.24'
+varstr		= 'Mobilinux'	# for eclipse
+dvdname		= 'mobilinux-host'
+appsfile	= ''
+libraryapps	= scriptpath + '/mobilinuxapps.dat'
+lspdat		= scriptpath + '/mobilinuxlsps.dat'
+foundation	= '/mvista/dev_area/foundation/last_f2624'
+hosttoolpath	= '/mvista/dev_area/foundation/host-tools/last_f2624'
+selfhosttarget	= 'x86_586'
+selfhostinstalldata = { 'x86_586':         'generic_x86-pc_target', }
+edition		= 'mobilinux'
+chroothosts	= ('centos3','suse90','centos3_64')
+targethost	= 'centos3'
+hosts 		= ('windows2000',)
+all_targets	= [ 
+        	'arm_v7_vfp_le',
+        	'arm_v7_vfp_le_uclibc',
+        	'x86_586',
+        	'x86_586_uclibc',
+		]
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps     = { 'userland':     ['apt-rpm-config','genevent'], }
+brhhostapps       = { 'mvlt':     ['nfs-user-server',], 
+		      'userland':     ['apt-rpm-config','elfmbind','glib','lttv'], }
+brhnoarchapps   = { 'host':     ['eclipse-templates','eclipse-edition','kernel-html',
+                                 'docs-cd-installer'],}
+# here are the definitions for apps built in buildcore.py
+path = cvspaths['userland'][0]
+crosseclipseinstall = 'eclipse-enabler-arch-' + edition
+#crosseclipseadkinstall = 'eclipse-enabler-arch-' + edition + '_adk'
+crossapps = {'a': [path,'cross','eclipse-templates','eclipse-arch','noarch','',[crosseclipseinstall,]],
+             'b': [path,'cross','apt-rpm-config','apt-rpm-config','hostarch','',['apt-rpm-config',]],
+            #'c': [path,'cross','eclipse-templates','eclipse-arch-adk','noarch','',[crosseclipseadkinstall,]],
+            }
+# these are the apps built in buildremote.py
+brcrossapps     = ('apt-rpm-config',)
+
+# remove glibc & kernel-headers rpms in targetapp build since they were installed by buildcore.py
+removerpms = ('glibc','kernel-headers','uclibc')
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb',)
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+# these are apps from foundation to uninstall do to conflicts with rpms built in the mobilinux build
+mobilinuxUninstall	= ('gtk2','pango','cairo')
+
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('cvs','jfsutils','libattr','libdmapi','netperf','lmbench','bsglibc',
+                   'dejagnu','mvl-installer','mvl_install','generic_x86-hhl_install',
+                   'cross-lilo','common-db2html', 'common-jdk','common-apache-ant',
+                   'installation-enum','install-uSDE','install-libuSDE','install-uSDEpolicies',
+                   'install-uSDE-debuginfo','uSDE','libsSDE','uSDEpolicies','xfsprogs','xfsdump',
+		   'cyclictest','bootstrap'
+		)
+lspouttakes	= {}
+srcouttakes	= ('cross-eclipse-enabler-arch',
+		'cross-eclipse-enabler-lsp',
+		'host-eclipse-enabler-edition-mobilinux',
+		'host-eclipse-templates','adk',
+		'libxml',
+		)
+# foundation src rpm removals
+src_link_exclusions = ('common-apt-rpm-config','apt-rpm-config','base-files','ramdisk',
+               	'eclipse-edition','eclipse-templates','lsp',
+               	'eclipse-enabler','host-kernel','host-rpm','rpm-edition','host-postinstall',
+               	'host-cd-installer','host-mvlinstaller','host-glib','netbase',
+		'uSDE','libuSDE')
+# foundation host ropm removals
+host_link_exclusions = ('host-mvlinstaller','host-rpm','host-postinstall','host-glib',)
+cross_link_exclusions = ('eclipse','ramdisk')
+target_link_exclusions = ('base-files','rpm-edition','netbase','montavista-lsb3','mvl-install')
+targopt_link_exclusions = ('uSDE','libuSDE')
+x11apps = ('gtk2','cairo','pango','xorg-x11','xkbd','rxvt','icewm','matchbox')

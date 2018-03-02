@@ -1,0 +1,140 @@
+# ~/.bashrc: executed by bash(1) for non-login shells.
+# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
+# for examples
+
+export TERM=xterm-color
+export PYTHONPATH=/home/build/build_scripts/rpmlint/rpmlint-0.9.1-mv/:/home/build/bin/resourceManager/:/home/build/bin/common:/home/build/bin/utils:/home/build/bin/utils/retention
+# removed glue from the license server list... list wasn't working anyway:
+export LM_LICENSE_FILE=27000@overlord
+export CVSROOT=:ext:build@cvs.sh.mvista.com:/mnt/cvs
+export PATH==/usr/local/bin:/usr/bin:/bin:/usr/games:/home/build/bin/utils:/home/build/bin:/sbin:
+export CVS_RSH=ssh
+
+# check the window size after each command and, if necessary,
+# update the values of LINES and COLUMNS.
+shopt -s checkwinsize
+
+# build aliases:
+alias ls='ls --color'
+alias aptp='cd /mvista/dev_area/apt-tool-layout/repositories/5.0/'
+alias bbf='vi /home/build/.bashrc'
+alias bbs='source /home/build/.bashrc'
+alias brm='/home/build/bin/resourceManager/resourceManager.py'
+alias bs='pushd /home/build/build_scripts/hhl/'
+alias bstdir='pushd /mvista/dev_area/bst/'
+alias ceedir='pushd /mvista/dev_area/cee/'
+alias ceelogs='pushd /mvista/dev_area/cee/logs/'
+alias cgeadk='pushd /mvista/dev_area/cge/adk/'
+alias cgeas='pushd /mvista/dev_area/cge/async/'
+alias cgebas='pushd /home/build/fone_cge-async/hhl/'
+alias cgebs='pushd /home/build/cgebuild_scripts/'
+alias cgecds='pushd /mvista/dev_area/cge/cdimages'
+alias cgedir='pushd /mvista/dev_area/cge/'
+alias cgelogs='pushd /mvista/dev_area/cge/logs/'
+alias aptrepo='pushd /mvista/apt-tool-layout/products/'
+alias cgep='cd /mvista/dev_area/cge/mvlcge401-updates/patches/'
+alias cgeul='pushd /home/build/cge-userland/'
+alias chroot3env='sudo chroot /chroot/redhat73 /bin/su - build -c "/bin/bash"'
+alias chroot8env='sudo chroot /chroot/redhat80 /bin/su - build -c "/bin/bash"'
+alias chroot9env='sudo chroot /chroot/redhat90 /bin/su - build -c "/bin/bash"'
+alias chrootcent='sudo chroot /chroot/centos3 /bin/su - build -c "/bin/bash"'
+alias fedir='pushd /mvista/dev_area/foundation/'
+alias ftp-ap='ssh -X ftpadmin@vision.mvista.com'
+alias goto='pushd /mnt/tmp'
+alias h='history '
+alias la='ls -la'
+alias logs='cd /mvista/dev_area/logs/'
+alias lta='ls -lth'
+alias mailme='mail annette.roll@mvista.com  '
+alias mailmestuff='mail annette.roll@mvista.com < '
+alias mbldir='pushd /mvista/dev_area/mobilinux/'
+alias mbllogs='pushd /mvista/dev_area/mobilinux/logs'
+alias mountcd='sudo mount -v -r -t iso9660 -o loop '
+alias mv='mv -i'
+alias mvgdir='pushd /mvista/dev_area/mvg/'
+alias mvglogs='pushd /mvista/dev_area/mvg/logs/'
+alias mvlrpm='/opt/montavista/host/bin/mvl-rpm'
+alias mvlrpme='/opt/montavista/host/bin/mvl-rpm-forward -e '
+alias mvlrpmihv='/opt/montavista/host/bin/mvl-rpm-forward -ihv '
+alias mvlrpmqa='/opt/montavista/host/bin/mvl-rpm-forward -qa '
+alias mvlrpmqlp='/opt/montavista/host/bin/mvl-rpm-forward -qlp '
+alias prodir='pushd /mvista/dev_area/pro'
+alias prop='cd /mvista/dev_area/pro/mvl400-updates/patches/401-402'
+alias ps='ps -eo pid,user,state,args'
+alias rcgecds='pushd /mvista/release_area/cge/cdimages'
+alias rcgedir='pushd /mvista/release_area/cge/'
+alias rcgelogs='pushd /mvista/release_area/cge/logs/'
+alias rm='rm -i'
+alias umountcd='sudo umount /mnt/tmp'
+alias vi='vi -u ~/vimrc'
+alias warch='ls  /opt/montavista/devkit/'
+alias wcvs='echo $CVSROOT'
+alias bs='cd ~/build_scripts/utils'
+alias bw='cd /var/www/buildweb/site/MyContext'
+
+# nk
+# useful environment settings:
+# gets rid of funky chars in man pages:
+alias man='/usr/bin/man -E ascii'
+# make backspace actually work in screen:
+alias screen='export TERM=screen; /usr/bin/screen'
+
+
+
+
+
+
+
+# make less more friendly for non-text input files, see lesspipe(1)
+[ -x /usr/bin/lesspipe ] && eval "$(lesspipe)"
+
+# set variable identifying the chroot you work in (used in the prompt below)
+if [ -z "$debian_chroot" ] && [ -r /etc/debian_chroot ]; then
+    debian_chroot=$(cat /etc/debian_chroot)
+fi
+
+# set a fancy prompt (non-color, unless we know we "want" color)
+case "$TERM" in
+xterm-color)
+    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+    ;;
+*)
+    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+    ;;
+esac
+
+# Comment in the above and uncomment this below for a color prompt
+#PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+# If this is an xterm set the title to user@host:dir
+case "$TERM" in
+xterm*|rxvt*)
+    PROMPT_COMMAND='echo -ne "\033]0;${USER}@${HOSTNAME}: ${PWD/$HOME/~}\007"'
+    ;;
+*)
+    ;;
+esac
+
+
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+fi
+
+
+# nk
+# additions:
+
+# gets rid of funky chars in man pages:
+alias man='/usr/bin/man -E ascii'
+
+# make backspace actually work with Debian's version of screen:
+alias screen='export TERM=screen; /usr/bin/screen'
+
+# make shell history more useful:
+export HISTSIZE=10240
+export HISTCONTROL=ignoreboth
+export HISTTIMEFORMAT="%F @ %T: "
+export PROMPT_COMMAND="history -a; history -r; $PROMPT_COMMAND"

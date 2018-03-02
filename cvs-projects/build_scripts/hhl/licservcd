@@ -1,0 +1,6 @@
+#!/bin/bash
+
+buildid="$1"
+
+mkisofs -quiet -r -J -joliet-long -L -no-split-symlink-components -no-split-symlink-fields -V license_server -o license_server-adk-$buildid.iso /mvista/dev_area/licensing/media
+

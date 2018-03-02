@@ -1,0 +1,107 @@
+#!/usr/bin/python
+
+import sys, os, string
+
+if len(sys.argv) == 1:
+  print 'usage: %s %s %s %s %s %s' % (sys.argv[0],'<app>','<apptype>','<bug>','<test|copy>','<product>')
+  sys.exit(1)
+
+dirs = 	{
+	'mvlcge3.1-x86':			['x86_pentium2','x86_pentium3','x86_pentium4'],
+	'mvlcge3.1-ppc':			['ppc_440','ppc_7xx'],
+	}
+product = sys.argv[5]
+cd = os.getcwd()
+if product == 'mvl21':
+  cpfrom = '/mvista/dev_area/mvl2.1.0-updates'
+  dirs = 	{
+	'mvl2.1-arm':				['arm_720t_le','arm_920t_le'],
+	'mvl2.1-mips':				['mips_fp_be','mips_fp_le','mips_lexra_fp_be'],
+	'mvl2.1-ppc':				['ppc_405','ppc_74xx','ppc_7xx','ppc_82xx','ppc_8xx'],
+	'mvl2.1-sh':				['sh_sh3_be','sh_sh3_le','sh_sh4_be','sh_sh4_le'],
+	'mvl2.1-strngarm':			['arm_sa_be','arm_sa_le','arm_xscale_le'],
+	'mvl2.1-x86':				['x86_486','x86_586','x86_crusoe','x86_pentium2','x86_pentium3'],
+	'mvl2.1-sony':				['mips_sony_fp_le','mips_sony_fp_be']
+         }
+elif product == 'mvlcge21':
+  cpfrom = '/mvista/dev_area/mvlcge2.1.0-updates'
+  dirs = 	{
+	'mvlcge2.1.0':				['x86_pentium2','x86_pentium3','x86_pentium4']
+     		}
+elif product == 'mvl30':
+  cpfrom = '/mvista/dev_area/mvl3.0.0-updates'
+  dirs = 	{
+	'mvl3.0-arm':				['arm_720t_le','arm_920t_le'],
+	'mvl3.0-mips':				['mips_fp_be','mips_fp_le','mips_nfp_le'],
+	'mvl3.0-ppc':				['ppc_405','ppc_74xx','ppc_7xx','ppc_82xx','ppc_8xx'],
+	'mvl3.0-sh':				['sh_sh3_be','sh_sh3_le','sh_sh4_be','sh_sh4_le'],
+	'mvl3.0-strngarm':			['arm_sa_be','arm_sa_le','arm_xscale_be','arm_xscale_le'],
+	'mvl3.0-x86':				['x86_486','x86_586','x86_crusoe','x86_pentium2','x86_pentium3'],
+	'mvl3.0-xtensa':			['xtensa_linux_be','xtensa_linux_le']
+		}
+elif product == 'mvlcge30':
+  cpfrom = '/mvista/dev_area/mvlcge3.0.0-updates'
+  dirs = 	{
+	'mvlcge3.0.0':				['x86_pentium2','x86_pentium3','x86_pentium4']
+		}
+elif product == 'mvlcee30-omap':
+  cpfrom = '/mvista/dev_area/mvlcee300_omap161x_innovator-updates'
+  dirs = 	{
+	'mvlcee3.0-ti-omap161x_innovator':	['arm_v4t_le',]
+	}
+elif product == 'mvlcee30-innovator':
+  cpfrom = '/mvista/dev_area/mvlcee300_innovator-updates'
+  dirs = 	{
+	'mvlcee3.0-ti-innovator':		['arm_v4t_le']
+		}
+elif product == 'mvlcee30-405lp':
+  cpfrom = '/mvista/dev_area/mvlcee300_405lp_ref-updates'
+  dirs = 	{
+	'mvlcee3.0-ibm-405lp_ref':		['ppc_405',]
+  		}
+elif product == 'mvlcee30-mainstone':
+  cpfrom = '/mvista/dev_area/mvlcee300_mainstone-updates'
+  dirs = 	{
+	'mvlcee3.0-intel-mainstone':		['arm_iwmmxt_le',]
+		}
+elif product == 'mvl31':
+  cpfrom = '/mvista/dev_area/pro/mvl310-updates'
+  dirs = 	{
+	'mvl3.1-arm':				['arm_720t_le','arm_v4t_le'],
+	'mvl3.1-mips':				['mips_fp_be','mips_fp_le','mips_nfp_le'],
+	'mvl3.1-ppc':				['ppc_405','ppc_74xx','ppc_7xx','ppc_82xx','ppc_8xx','ppc_440'],
+	'mvl3.1-sh':				['sh_sh3_be','sh_sh3_le','sh_sh4_be','sh_sh4_le'],
+	'mvl3.1-strngarm':			['arm_sa_le','arm_xscale_be','arm_xscale_le'],
+	'mvl3.1-x86':				['x86_486','x86_586','x86_crusoe','x86_pentium2','x86_pentium3','x86_pentium4']
+		}
+elif product == 'mvlcge31':
+  cpfrom = '/mvista/dev_area/cge/mvlcge310-updates'
+  dirs = 	{
+	'mvlcge3.1-x86':			['x86_pentium2','x86_pentium3','x86_pentium4'],
+	'mvlcge3.1-ppc':			['ppc_440','ppc_7xx']
+		}
+app = sys.argv[1]
+apptype = sys.argv[2]
+bug = sys.argv[3]
+runtype = sys.argv[4]
+dirname = ''
+os.chdir(cpfrom + '%s-%s/SRPMS' % (app,bug))
+rpmname = os.popen('ls *%s*' % (apptype)).readlines()
+for d in rpmname:
+  dirname = string.replace(string.replace(string.strip(d),'hhl-'+apptype+'-',''),'.src.rpm','')
+os.chdir(cd)
+for dir in dirs.keys():
+  if runtype == 'test':
+    print 'making %s in %s/updates...' % (dirname,dir)
+    print 'copying %s/%s-%s/SRPMS to %s/updates/%s...' % (cpfrom,app,bug,dir,dirname)
+    for subd in dirs[dir]:
+      print 'copying %s/%s-%s/%s to %s/updates/%s...' % (cpfrom,app,bug,subd,dir,dirname)
+  elif runtype == 'copy':
+    os.chdir('/mvista/ftp/arch/%s/updates' % (dir))
+    os.system('mkdir -p %s' % (dirname))
+    os.chdir(dirname)
+    os.system('cp -a %s/%s-%s/SRPMS .' % (cpfrom,app,bug))
+    for subd in dirs[dir]:
+      os.system('cp -a %s/%s-%s/%s .' % (cpfrom,app,bug,subd))
+    os.chdir(cd)
+

@@ -1,0 +1,45 @@
+This file shows the async lsps for MVLCGE 3.1
+Enter the lsp name, the lsp revision and volume number
+
+*******artesyn-katana-750*****
+DATE:040224
+TAG:dpa040224
+LSPREV:2
+VOLREV:2
+BUILDID:0400222
+DEFECT(S):1-37G69
+************************
+*******artesyn-katana-750*****
+DATE:040316
+TAG:dpa040316_0400352
+LSPREV:2
+VOLREV:2
+BUILDID:0400352
+DEFECT(S):1-37G69
+************************
+*******artesyn-katana-750*****
+DATE:040317
+TAG:dpa040317_0400354
+LSPREV:2
+VOLREV:2
+BUILDID:0400354
+DEFECT(S):1-37G69
+NOTE:This was released on 040323. Tags were moved to include updates to two kernel files and one lsp file.
+The changelogs for version 3 will be different
+************************
+*******Force force-cpci745*****build failed, bug 6090
+DATE:040325
+TAG:dpa040325_0400404
+LSPREV:3
+VOLREV:3
+BUILDID:0400404
+DEFECT(S):
+************************
+*******Force force-cpci745*****
+DATE:040326
+TAG:dpa040325_0400413
+LSPREV:3
+VOLREV:3
+BUILDID:0400413
+DEFECT(S):6090
+************************

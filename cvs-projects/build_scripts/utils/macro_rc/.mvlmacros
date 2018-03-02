@@ -1,0 +1,3 @@
+%_build_name_fmt %%{ARCH}/%%{NAME}-%%{VERSION}-%%{RELEASE}.%%{ARCH}.mvl
+%_builddir      /var/tmp/BUILD
+

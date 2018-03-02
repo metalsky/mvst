@@ -1,0 +1,16 @@
+Split-Collection Drops:
+
+build@overlord:/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315$ tar --owner=bin --group=bin -cf /home/build/nkapoor/engr_drop/symphony-ivi-2.6.34_110524_1102315.tar --exclude=.git --exclude=svn content.html content/installer
+build@overlord:/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315$ cd solutions/
+build@overlord:/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions$ ls
+symphony-ivi-2.6.34  symphony-ivi-2.6.34-split  symphony-ivi-cm  symphony-ivi-cm-split
+build@overlord:/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions$ ls symphony-ivi-2.6.34
+collections  site.xml  solutions
+build@overlord:/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions$ ls
+symphony-ivi-2.6.34  symphony-ivi-2.6.34-split  symphony-ivi-cm  symphony-ivi-cm-split
+build@overlord:/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions$ tar --append --file=/home/build/nkapoor/engr_drop/symphony-ivi-2.6.34_110524_1102315.tar symphony-ivi-2.6.34
+build@overlord:/mvista/dev_area/bosch/symphony-ivi-2.6.34_110524_1102315/solutions$ tar --append --file=/home/build/nkapoor/engr_drop/symphony-ivi-2.6.34_110524_1102315.tar symphony-ivi-cm
+
+
+Remember to create a directory using the buildtag as the name and do this all within there!
+nk@box:~/engr_drop/bosch-new/symphony-ivi-2.6.34_110524_1102315-orig$ time tar --owner=bin --group=bin -czf /disk/local/nk/engr_drop/bosch-new/symphony-ivi-2.6.34_110524_1102315.tar.gz symphony-ivi-2.6.34_110524_1102315

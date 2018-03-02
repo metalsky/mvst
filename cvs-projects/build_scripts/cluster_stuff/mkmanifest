@@ -1,0 +1,17 @@
+#/bin/sh
+
+echo '<updates>'
+echo '<patches type ="mvl-rpm">'
+find . -name *.rpm -printf ' <file>'\\n'
+<path>'%p'</path>
+  <size>'%s'</size>'\\n' </file>'\\n
+find . -name *.mvl -printf ' <file>'\\n'
+<path>'%p'</path>
+  <size>'%s'</size>'\\n' </file>'\\n
+echo ' </patches>'
+echo '<patches type ="kernel-patch">'
+find . -name *.patch -printf ' <file>'\\n'
+<path>'%p'</path>
+  <size>'%s'</size>'\\n' </file>'\\n
+echo ' </patches>'
+echo '</updates>'

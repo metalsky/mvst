@@ -1,0 +1,16 @@
+##############
+# ppc_440
+# ppc_74xx
+# ppc_7xx
+# ppc_9xx
+# ppc_85xx
+# mips64_fp_be 
+# x86_pentium3
+# x86_pentium4
+# x86_em64t
+# x86_amd64
+######################
+lsps-cd-installer
+##################
+#  end
+##################

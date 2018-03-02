@@ -1,0 +1,331 @@
+#!/bin/bash
+#
+
+VERSION=4.0
+EDITION=Professional
+CROSS_ROOT=/opt/montavista/devkit/x86/586
+INSTROOT=$CROSS_ROOT/target
+LSPNAME=
+SERIAL_SPECIFIED=
+KERNELNAME=generic_x86-mvl_install
+KERNELVERSION=2.4.20_dev
+KERNELRELEASE="*.*"
+KERNEL_ISOLINUX_NAME=vmlinuz_x86_mvl_inst
+# What the kernel wants to see for a serial port spec
+SERIAL_KERNEL="0,9600n8"
+# What isolinux wants to see for a serial port spec
+SERIAL_SYSLINUX="0 9600"
+
+ME=`basename $0`
+
+function usage() {
+    echo "Usage: $ME   --help"
+    echo "       $ME   [ --installroot <installroot> ]"
+    echo "             [ --crossroot <crossroot> ]"
+    echo "             [ --serial { $SERIAL_KERNEL | <serial-console> } |"
+    echo "               --noserial ]"
+    echo "             [ --version $VERSION | <product-version> ]"
+    echo "             [ --kernelversion $KERNELVERSION | <kernel-version> ]"
+    echo "             [ --kernelrelease $KERNELRELEASE | <kernel-release> ]"
+    echo "             [ --edition Professional | CarrierGrade | 440mx ]"
+    echo "             [ --lsp <mvl-install-lsp-rpm> ]"
+    echo "             [ $KERNELNAME | <kernel-name> ]"
+}
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+
+    --help | -h)
+	usage
+	exit 0
+	;;
+
+    --installroot | --prefix | -i)
+	shift
+	INSTROOT=$1
+	;;
+
+    --crossroot)
+	shift
+	CROSS_ROOT=$1
+	;;
+
+    --serial)
+	shift
+	SERIAL_SPECIFIED=1
+	SERIAL_KERNEL=$1
+	#Format serial port option for syslinux
+	#Change , to space
+	SERIAL_SYSLINUX=`echo $SERIAL_KERNEL | tr "," " "`
+	#Strip off trailing n8 if the user put it there.  Syslinux assumes n8.
+	SERIAL_SYSLINUX=${SERIAL_SYSLINUX%%[A-z]*}
+	;;
+
+    --noserial)
+	SERIAL_SPECIFIED=1
+	SERIAL_KERNEL=
+	SERIAL_SYSLINUX=
+	;;
+
+    --edition | -e | --product | -p)
+	shift
+	EDITION=$1
+	;;
+
+    --version)
+	shift
+	VERSION=$1
+	;;
+
+    --kernelversion)
+	shift
+	KERNELVERSION=$1
+	;;
+
+    --kernelrelease)
+	shift
+	KERNELRELEASE=$1
+	;;
+
+    --lspname | --lsp)
+	shift
+	LSPNAME=$1
+	;;
+
+    -*)
+	echo "Unrecognized option $1"
+	usage
+	exit 1
+	;;
+
+    *)
+	if [ $# -gt 1 ]
+	then
+	    usage
+	    exit 1
+	fi
+	KERNELNAME=$1
+	;;
+
+    esac
+
+    shift
+done
+
+if [ -n "$LSPNAME" ]
+then
+    # Install the RPMs so we can get the kernels
+    if rpm -q ${LSPNAME%%-*.x86_586.rpm}
+    then
+	rpm -e ${LSPNAME%%-*.x86_586.rpm}
+    fi
+    rpm -i --prefix $INSTROOT --ignorearch --force $LSPNAME
+fi
+
+# Isolinux can only read the iso9660 name of the kernel, so copy the
+# kernel down the the /boot/isolinux directory on the CD with only the
+# short form of the name.  The isolinux docs say the max level-2 name length
+# is 31 bytes, but testing shows the limit to be 30 bytes.  So, copy the
+# provided kernel name to a fixed, legal length name in the isolinux dir,
+# and be done with it.
+mkdir -p $INSTROOT/boot/isolinux
+cp $INSTROOT/boot/vmlinuz-$KERNELNAME-$KERNELVERSION-$KERNELRELEASE $INSTROOT/boot/isolinux/$KERNEL_ISOLINUX_NAME
+# Put isolinux.bin there too
+cp -p $CROSS_ROOT/images/isolinux.bin $INSTROOT/boot/isolinux
+# isolinux.bin must be writable by mkisofs, because we use -boot-info-table
+chmod 644 $INSTROOT/boot/isolinux/isolinux.bin
+
+# Figure out our name, and setup 
+case "$EDITION" in
+
+440mx | 440MX | intel-440mx-devel-kit)
+    SAYTEXT="MontaVista Linux $VERSION Intel 440MX Development Kit Installer"
+    VGACMD="aic7xxx=no_probe"
+    SERIALCMD="aic7xxx=no_probe console=ttyS${SERIAL_KERNEL%,*}"
+    ;;
+
+CEE | cee | Consumer | consumer | Mobilinux | mobilinux)
+    SAYTEXT="MontaVista Mobilinux $VERSION Installer"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL_KERNEL}"
+    ;;
+
+CGE | cge | CarrierGrade | carriergrade)
+    if [ -z "$SERIAL_SPECIFIED" ]
+    then
+      # If --serial is not specified, then default CGE to 115200
+      # What the kernel wants to see for a serial port spec
+      SERIAL_KERNEL="0,115200n8"
+      # What isolinux wants to see for a serial port spec
+      SERIAL_SYSLINUX="0 115200"
+    fi
+    SAYTEXT="MontaVista Linux $VERSION Carrier Grade Edition Installer"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL_KERNEL}"
+    ;;
+
+Prof | Professional | prof | Pro | pro | professional)
+    SAYTEXT="MontaVista Linux $VERSION Professional Edition Installer"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL_KERNEL}"
+    ;;
+
+Foundation | foundation)
+    SAYTEXT="MontaVista Linux $VERSION Foundation Installer"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL_KERNEL}"
+    ;;
+
+*)
+    $ECHO Unknown edition name \"$EDITION\".
+    SAYTEXT="MontaVista Linux $VERSION Unknown Edition Installer"
+    VGACMD=""
+    SERIALCMD="console=ttyS${SERIAL_KERNEL}"
+    ;;
+    
+esac
+
+if [ -n "$SERIAL_KERNEL" ]
+then
+    cat >$INSTROOT/boot/isolinux/bootmsg.txt <<EOF
+
+Select install image and console
+
+Options are: hda-vga     hdb-vga     hdc-vga     hdd-vga
+             sr0-vga     sr1-vga     sr2-vga     sr3-vga
+             hda-serial  hdb-serial  hdc-serial  hdd-serial
+             sr0-serial  sr1-serial  sr2-serial  sr3-serial
+
+Drive specifier refers to location of the installation CD, not a hard drive.
+hd* refers to IDE CD-ROM drives.
+sr* refers to SCSI/USB CD-ROM drives.
+
+The default is hdc-vga.
+
+EOF
+    cat >$INSTROOT/boot/isolinux/isolinux.cfg <<EOF
+serial ${SERIAL_SYSLINUX}
+say $SAYTEXT
+display bootmsg.txt
+prompt 1
+timeout 200
+default hdc-vga
+label hda-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hda ip=off ro ide=nodma $VGACMD
+label hdb-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdb ip=off ro ide=nodma $VGACMD
+label hdc-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdc ip=off ro ide=nodma $VGACMD
+label hdd-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdd ip=off ro ide=nodma $VGACMD
+
+label sr0-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr0 rootdelay=10 ip=off ro ide=nodma $VGACMD
+label sr1-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr1 rootdelay=10 ip=off ro ide=nodma $VGACMD
+
+label hda-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hda ip=off ro ide=nodma $SERIALCMD
+label hdb-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdb ip=off ro ide=nodma $SERIALCMD
+label hdc-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdc ip=off ro ide=nodma $SERIALCMD
+label hdd-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdd ip=off ro ide=nodma $SERIALCMD
+
+label sr0-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr0 rootdelay=10 ip=off ro ide=nodma $SERIALCMD
+label sr1-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr1 rootdelay=10 ip=off ro ide=nodma $SERIALCMD
+
+label sr2-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr2 rootdelay=10 ip=off ro ide=nodma $VGACMD
+label sr3-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr3 rootdelay=10 ip=off ro ide=nodma $VGACMD
+
+label nfs-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/nfs ip=bootp ro ide=nodma $VGACMD
+
+label sr2-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr2 rootdelay=10 ip=off ro ide=nodma $SERIALCMD
+label sr3-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr3 rootdelay=10 ip=off ro ide=nodma $SERIALCMD
+
+label nfs-serial
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/nfs ip=bootp ro ide=nodma $SERIALCMD
+EOF
+else
+    cat >$INSTROOT/boot/isolinux/bootmsg.txt <<EOF
+
+Select install image and console
+
+Options are: hda-vga     hdb-vga     hdc-vga     hdd-vga
+             sr0-vga     sr1-vga     sr2-vga     sr3-vga
+
+Drive specifier refers to location of the installation CD, not a hard drive.
+hd* refers to IDE CD-ROM drives.
+sr* refers to SCSI/USB CD-ROM drives.
+
+The default is hdc-vga.
+
+EOF
+    cat >$INSTROOT/boot/isolinux/isolinux.cfg <<EOF
+say $SAYTEXT
+display bootmsg.txt
+prompt 1
+timeout 200
+default hdc-vga
+label hda-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hda ip=off ro ide=nodma $VGACMD
+label hdb-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdb ip=off ro ide=nodma $VGACMD
+label hdc-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdc ip=off ro ide=nodma $VGACMD
+label hdd-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/hdd ip=off ro ide=nodma $VGACMD
+
+label sr0-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr0 rootdelay=10 ip=off ro ide=nodma $VGACMD
+label sr1-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr1 rootdelay=10 ip=off ro ide=nodma $VGACMD
+
+label sr2-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr2 rootdelay=10 ip=off ro ide=nodma $VGACMD
+label sr3-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/sr3 rootdelay=10 ip=off ro ide=nodma $VGACMD
+
+label nfs-vga
+  kernel $KERNEL_ISOLINUX_NAME
+  append root=/dev/nfs ip=bootp ro ide=nodma $VGACMD
+EOF
+fi
+
+exit 0
+

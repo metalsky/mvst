@@ -1,0 +1,40 @@
+#!/usr/bin/python
+
+lsps = {
+	'x86_pentium3':			[
+					['x86','x86-pc_target-x86_pentium3'],
+					],
+	'x86_pentium4':			[
+					['x86','x86-pc_target-x86_pentium4'],
+					],
+	'ppc_7xx':			[
+					['Artesyn','artesyn-katana'],
+					],
+	'ppc_9xx':			[
+					['IBM','ibm-970fx'],
+					['IBM','ibm-970mp'],
+					['Motorola','motorola-atca_6101'],
+					['PASemi','pasemi-electra'],
+					],
+	'ppc_440':			[
+					['AMCC','amcc-440spe_eval'],
+					['AMCC','amcc-440gx_eval'],
+					],
+	'ppc_74xx':			[
+					['Motorola','motorola-atca_f101'],
+					['Freescale','freescale-mpc8641d_hpcn'],
+					['Emerson','emerson-katanaqp'],
+					],
+	'ppc_85xx':			[
+					['Motorola','motorola-atca_c110'],
+					['Freescale','freescale-8540ads'],
+					['Freescale','freescale-8560ads'],
+					['Freescale','freescale-8548cds'],
+					]
+	'x86_em64t':			[
+					['x86','x86-pc_target-x86_em64t'],
+					],
+	'x86_amd64 ':			[
+					['x86','x86-pc_target-x86_amd64'],
+					],
+	}

@@ -1,0 +1,53 @@
+#!/bin/bash
+
+# this script will clean an node of /opt/montavista and
+# install a given foundation build, minus a given app, so
+# the app can be rebuilt
+
+# Arguments:
+# 1- oldtag
+# 2- app
+# 3- arch
+# 4- type
+# 5- host
+
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 <oldtag> <app> <arch> <type> <host>"
+  exit 1
+fi
+
+oldtag="$1"
+echo "oldtag = $oldtag"
+app="$2"
+arch="$3"
+type="$4"
+host="$5"
+builddir="$(pwd)"
+if [ -e /mvista/release_area/foundation/$oldtag ]; then
+  echo "using release_area"
+  path="/mvista/release_area/foundation/$oldtag"
+elif [ -e /mvista/dev_area/foundation/$oldtag ]; then
+  echo "using dev_area"
+  path="/mvista/dev_area/foundation/$oldtag"
+elif [ -e /home/build/host ]; then
+  path="/home/build"
+fi
+rm -rf /opt/montavista/*
+cd /
+for r in host-rpm-4 host-rpm-build host-rpm-dev host-popt; do
+  rpm2cpio $path/host/$host/$r* | cpio -id
+done
+if [ "$type" = "target" ]; then
+  dirs="host/common/optional host/common host/$host $arch/cross/common $arch/cross/$host $arch/target"
+elif [ "$type" = "host" ]; then
+  dirs="host/common/optional host/common host/$host"
+fi
+for d in $dirs; do
+  cd $path/$d
+  if [ "$app" = "glibc" ]; then
+    /opt/montavista/host/bin/mvl-rpm-forward -ivh --ignoreos --nodeps --ignorearch *.mvl
+  else
+    ls *.mvl | grep -v $app | xargs /opt/montavista/host/bin/mvl-rpm-forward -ivh --ignoreos --nodeps --ignorearch
+  fi
+done
+

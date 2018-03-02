@@ -1,0 +1,18 @@
+###############
+# arm_xscale_le
+# arm_v4t_le
+# arm_v6_vfp_le
+# arm_v6_vfp_le_uclibc
+# arm_iwmmxt_le
+# arm_iwmmxt_le_uclibc
+# arm_v5t_le
+# arm_v5t_le_uclibc
+# mips_fp_le
+# sh_sh3_le
+# x86_586
+# x86_586_uclibc
+###############
+mvlttools-edition
+###############
+# end
+###############

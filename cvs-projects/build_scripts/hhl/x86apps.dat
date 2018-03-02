@@ -1,0 +1,42 @@
+###############
+# x86_486
+# x86_crusoe
+# x86_pentium
+# x86_pentium2
+# x86_pentium4
+###############
+lsb-3.0.0
+linux86
+lilo
+ltrace
+sctl
+###############
+# x86_pentium3
+# x86_586
+###############
+lsb-3.0.0
+linux86
+lilo
+ltrace
+sctl
+uSDE-installer
+installation-enum-hooks
+###############
+# x86_586_uclibc
+###############
+linux86
+ltrace
+sctl
+###############
+# x86_amd64
+# x86_em64t
+###############
+lsb-3.0.0
+linux86
+lilo
+ltrace
+uSDE-installer
+installation-enum-hooks
+###############
+# end
+###############

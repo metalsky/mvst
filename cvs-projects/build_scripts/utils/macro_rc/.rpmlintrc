@@ -1,0 +1,32 @@
+from Config import *
+
+setOption("Vendor", "MontaVista Software, Inc.")
+setOption("Distribution", "Hard Hat Linux Embedded x86 Cross Development Kit")
+setOption("ReleaseExtension", None)
+setOption("UseVersionInChangelog", 0)
+setOption("dbHost", "perseus.mvista.com")
+#setOption("dbHost", "cduffy.mvista.com")
+setOption("debug", 1)
+
+#addHook("DBHook")
+
+CDKCheck = 1
+
+addCheckDir("/home/build/build_scripts/rpmlint/rpmlint-0.9.1-mv")
+
+if CDKCheck == 1:
+	addFilter("package-uses-old-naming") ## TODO: remove false alarm
+	addFilter("shared-lib-without-dependency-information")
+	addFilter("non-standard-group") ## TODO: add debian package groups
+	addFilter("E: hhl-(cross|host)-\S*(lsp|pcmcia)\S* file-not-under-(host|cross)-prefix /opt/hardhat/devkit/(lsp|kernel)")
+	addFilter("statically-linked-binary.*vmlinu(?:x|z)")
+	addFilter("filesystem file-not-under-cross-prefix")
+	resetChecks()
+	addCheck("TagsCheck")
+	addCheck("HHLFilesCheck")
+	addCheck("HHLCheck")
+	addCheck("HHLBinariesCheck")
+	addCheck("SourceCheck")
+else:
+	setOption("dbName", "nonCDK")
+	addFilter("dir-or-file-in-opt")

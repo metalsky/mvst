@@ -1,0 +1,12 @@
+
+
+How to update/build:
+Add the current build into SPECS/mvl-repo-tools.spec
+run the common rpmbuild from a recent MV install
+copy the rpm from the %_rpmdir to RPMS
+cd DEBS
+run `fakeroot alien ../RPMS/<rpm>`
+then install your new deb:
+dpkg -i <deb>
+
+Lastly add the new files you created and cehck them in

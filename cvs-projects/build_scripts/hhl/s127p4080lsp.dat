@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+lsps = {
+	'ppc_e500mc':                [
+                                        ['Freescale','freescale-p4080sim'],
+                                        ],
+	}

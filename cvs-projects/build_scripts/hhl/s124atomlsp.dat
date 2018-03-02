@@ -1,0 +1,7 @@
+#!/usr/bin/python
+
+lsps = {
+	'x86_586':                [
+                                        ['Intel','intel-atom-x86_586'],
+                                        ],
+	}

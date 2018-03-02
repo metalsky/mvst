@@ -1,0 +1,211 @@
+#!/bin/bash
+
+# Builds the Cygwin installer and files needed for a media image
+# doru.carastan@mvista.com
+ifErrorExit () {
+  if [ $1 -ne 0 ] ; then
+    echo "$me: $2"
+    exit 1
+  fi
+}
+
+CWD=`pwd`
+MEDIA_DIR="$CWD/media"         # Default media value
+INSTDIR="$CWD/inst"
+PACKAGED_FILES_DIR=`mktemp`
+KEEP_PKG_DIR=
+BUILD=1
+RPM="rpm"
+RPMINSTALL="${RPM}"
+#--------------------------------------------------------------------
+# Extract the Cygwin shadow runtime core needed to run rpm.
+# fthree using head of cygwin repo
+#RPMS="cygwin base-files bash cpio coreutils bzip2 libiconv gettext beecrypt zlib rpm-4"
+# fthree using foundation_three_branch of cygwin repo
+RPMS="cygwin base-files bash cpio fileutils sh-utils bzip2 libiconv gettext beecrypt zlib rpm-4"
+
+DIRS="bin lib etc tmp \
+    usr/bin usr/lib var/tmp var/run var/log"
+
+BIN_FILES="bash \
+    cp cpio \
+    echo env \
+    id \
+    ls \
+    mkdir mkgroup mkpasswd mount \
+    pwd \
+    rm \
+    sh \
+    touch \
+    umount uname"
+
+# fthree using head of cygwin repo
+#DLL_FILES="cygmv mvbz2-1 mvintl-2 mvintl-3 mviconv-2 mvbeecrypt-6 mvz"
+# fthree using foundation_three_branch of cygwin repo
+DLL_FILES="cygmv mvbz2-1 mvintl-2 mviconv-2 mvbeecrypt-6 mvz"
+
+#--------------------------------------------------------------------
+
+# Preliminary cleanup
+rm -f setup.log
+
+me=`basename $0`
+
+while test "$#" != 0; do
+  case "$1" in
+    --dest=*) MEDIA_DIR=`echo $1 | cut -d= -f2`
+        ;;
+    --build=*) BUILD=`echo $1 | cut -d= -f2`
+        ;;
+    -h|-?|--help) echo "$me: builds the win32 MV Cygwin installer"
+            echo "Syntax: $0 [--dest=dir] [--build=_mvl_build_id]"
+            echo "  --dest   directory where to create the setup media. Default: 'media'"
+            echo "  --build  build number. Default: 1"
+            exit
+        ;;
+    -*) echo "$me: unsupported command line flag '$1'.\
+ Run '$0 --help' for help."
+        exit ;;
+  esac
+  shift
+done
+
+if [ x"$MEDIA_DIR" = x ]; then
+  echo "Please specify where to build the media using --dest=dir option."
+  exit 1
+fi
+
+if [ "$MEDIA_DIR" = "/" -o "$MEDIA_DIR" = "`pwd`" ]; then
+    echo "Can't use $MEDIA_DIR as a media directory. Brake applied hard!"
+    exit 1
+fi
+
+# Locate the script. 'type -p' is the reason why this is a BASH script.
+SCRIPT_DIR=`type -p $0`
+SCRIPT_DIR=`dirname $SCRIPT_DIR`
+case "$SCRIPT_DIR" in
+  .) SCRIPT_DIR=`pwd` ;;
+  /*) ;;
+  *) SCRIPT_DIR=`pwd`/$SCRIPT_DIR ;;
+esac
+
+echo "$me: Script started from '$SCRIPT_DIR'"
+
+if [ ! -r "$SCRIPT_DIR/setup.nsi" ]; then
+  echo "$me: script must be placed in the same dir with setup.nsi"
+  exit 1
+fi
+
+echo "$me: Building MV Cygwin media components in $MEDIA_DIR ..."
+
+rm -rf "$MEDIA_DIR" "$PACKAGED_FILES_DIR" "$INSTDIR"
+mkdir -p "$MEDIA_DIR" "$PACKAGED_FILES_DIR"/bin
+
+echo "$me: Installing build into $INSTDIR"
+cd ../RPMS/i386
+ifErrorExit $? "ERROR: no ../RPMS/i386 directory"
+for rpmfile in $RPMS; do
+  ${RPMINSTALL} -ivh --root ${INSTDIR} --nodeps --noscripts ${rpmfile}*.mvl
+  ifErrorExit $? "ERROR: Unable to install rpm ${rpmfile}"
+done
+cd "$SCRIPT_DIR"
+
+for d in $DIRS; do
+  mkdir -p "$PACKAGED_FILES_DIR/$d"
+done
+
+echo "$me: Extracting '/bin/*.exe'"
+cp "$INSTDIR/usr/bin/rpm2cpio.exe" "$PACKAGED_FILES_DIR/bin"
+ifErrorExit $? "ERROR: rpm2cpio does not exist"
+for f in $BIN_FILES; do
+  cp -a "$INSTDIR/bin/$f.exe" "$PACKAGED_FILES_DIR/bin"
+  ifErrorExit $? "ERROR: Binary file $f does not exist.  aborting"
+done
+strip "$PACKAGED_FILES_DIR"/bin/*.exe
+ifErrorExit $? "ERROR: Unable to strip binaries"
+
+echo "$me: Extracting '/bin/*.dll'"
+for f in $DLL_FILES; do
+  cp -a "$INSTDIR/bin/$f.dll" "$PACKAGED_FILES_DIR/bin"
+  ifErrorExit $? "ERROR: Dynamic library $f does not exist"
+  if [ "$f" != "cygmv" ] ; then
+    strip "$PACKAGED_FILES_DIR"/bin/${f}.dll
+    ifErrorExit $? "ERROR: Unable to strip dynamic libraries"
+  fi
+done
+
+cp -a "$INSTDIR/etc/defaults/etc/profile" "$PACKAGED_FILES_DIR/etc"
+ifErrorExit $? "ERROR: Unable to copy default profile"
+
+# Create mtab file to avoid rpm complains
+test -e "$PACKAGED_FILES_DIR/etc/mtab" || touch "$PACKAGED_FILES_DIR/etc/mtab"
+
+# Add the custom BASH shell startup script
+cp "$SCRIPT_DIR/mvista.ico" "$PACKAGED_FILES_DIR"
+cp "$SCRIPT_DIR/cygwin.cmd" "$PACKAGED_FILES_DIR"
+
+# Generate the CD autorun.inf file
+echo ";
+; CD image generated on $(date '+%c')
+;
+[AutoRun]
+icon=MVISTA.ICO
+open=host-tools\windows2000\SETUP.EXE
+shell=Install
+shell\Install\command=host-tools\windows2000\SETUP.EXE
+shell\Install=&Install" > "$MEDIA_DIR/autorun.inf"
+# If a readme.txt file is available register it in the context menu
+if [ -f README.TXT ]; then
+  echo "shell\Readme\command=README.TXT
+shell\Readme=View &Readme" >> "$MEDIA_DIR/autorun.inf"
+fi
+unix2dos "$MEDIA_DIR/autorun.inf"
+
+# Add on the media files
+cp "$SCRIPT_DIR/webinstall-start" "$MEDIA_DIR"
+cp "$SCRIPT_DIR/setuprpm"   "$MEDIA_DIR"
+cp "$SCRIPT_DIR/mvista.ico" "$MEDIA_DIR"
+
+echo "$me: Building win32 setup executable..."
+VERSION=`cat $SCRIPT_DIR/CVS/Entries | grep setup.nsi | cut -d/ -f3` || (
+  echo "$me: enable to retrieve CVS version for $SCRIPT_DIR/setup.nsi";
+  exit 1
+)
+RELEASE="`date '+%y%m%d'`$BUILD"
+mkdir -p "$MEDIA_DIR"
+
+echo "$me: Retrieving rpm file size"
+sum="0`${RPM} -qp --queryformat "[ + %{FILESIZES}]" $CWD/../RPMS/i386/*.mvl | sed -e 's/(none)//'`"
+RPMPKGSIZE=`echo "($sum)/2^10" | bc`
+RPMPKGSIZE_MB=`echo "scale=2; ($sum)/2^20" | bc`
+echo "$me: Total rpm file size = $RPMPKGSIZE_MB MB"
+
+echo "$me: building setup.exe"
+`cygpath -W`/../Program\ Files/NSIS/makensis.exe /V4 \
+  /DMEDIA_DIR=`cygpath -w $MEDIA_DIR` \
+  /DVERSION=$VERSION-$RELEASE \
+  /DRPMPKGSIZE=$RPMPKGSIZE \
+  /DPACKAGED_FILES_DIR=`cygpath -w $PACKAGED_FILES_DIR` \
+  `cygpath -w "$SCRIPT_DIR/setup.nsi"` | tee setup.log
+if [ $? != 0 ]; then
+  echo "$me: NSIS installer build failed [$?]"
+  exit 2
+fi
+
+echo "$me: Setting file permissions"
+find "$MEDIA_DIR" -type f -exec chmod -w {} \;
+chmod -x "$MEDIA_DIR"/*.ico
+
+if [ -e ./media/setup.exe ]; then
+  echo "$me: Wrote setup.exe"
+fi
+
+# Cleanup
+if [ x"$KEEP_PKG_DIR" = x ]; then
+  rm -rf "$PACKAGED_FILES_DIR"
+else
+  echo "$me: the core runtime files have been left in '$PACKAGED_FILES_DIR'"
+fi
+
+echo "$me: MV Cygwin media build done!"
+

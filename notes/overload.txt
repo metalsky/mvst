@@ -1,0 +1,105 @@
+To:	Nevin Kapoor
+Subject:	overload
+
+Procedure:
+1.	Basic Debian 5.0.3 (Lenny) installation using only CD #1.
+2.	Proceeded without network as the Broadcom firmware required isn’t included.
+3.	Post install, I downloaded the Broadcom firmware package from the non-free repository, copied it 
+to a floppy which I mounted on overload and then installed it:
+a.	http://ftp.us.debian.org/debian/pool/non-free/f/firmware-nonfree/firmware-
+bnx2_0.22_all.deb
+
+4.	I then changed the hostname from “localhost” to “overload” with “/bin/hostname overload” and then 
+“/etc/init.d/hostname.sh start” to permanently set it in “/etc/hostname”
+5.	Next, I configured eth0 appropriately in /etc/network/interfaces.
+6.	I had to manually add the following internet-based package repositories to /etc/apt/sources.list. I 
+think this is because I did a minimal install from only CD 1:
+
+deb http://ftp.us.debian.org/debian/ lenny main contrib non-free
+deb-src http://ftp.us.debian.org/debian/ lenny main contrib non-free
+
+7.	I then purged the apt-cache (apt-get clean), refreshed it (apt-get-update) and then installed the 
+openssh-server package. For some reason, openssh-server requires all sorts of x11 packages 
+which seems silly.
+8.	I rebooted the system to test the networking configuration and to be sure that the openssh daemon 
+started properly upon a system reboot.
+9.	Installed ntpdate and ntp packages… modified /etc/ntp.conf to point to “pool.ntp.org” for the time.
+10.	Install and configure bind9
+11.	Install and configure apache2… beware of Debian’s silly /etc/apache2/conf.d/virtual.conf… delete it.
+12.	Configure appropriate vhosts: overload, fai and etc.
+13.	Configure NFS w/proper exports. Confirm.
+14.	Baz
+15.	Installed FAI
+a.	apt-get install fai-quickstart fai-server
+b.	rsync’ed /srv/fai  from overlord to overload
+1.	#overload rsync –avz /srv/fai/ /srv/fai/
+2.	#overload rsync -avz overlord:/srv/tftp /srv/
+3.	Add proper “nameserver” entry in both $NFS_ROOT/tmp/etc/resolv.conf files.
+c.	Modified /etc/fai/fai.conf
+d.	Modified /etc/fai/make-fai-nfsroot.conf
+e.	Also modified /etc/exports appropriately
+f.	Review both the fai-setup and make-fai-nfsroot scripts for the appropriate SSH 
+configuration
+g.	REMEMBER THAT ROOT’S PUB KEY NEEDS TO GO INTO BUILDS authorized_keys FILE!!
+h.	ENSURE THAT ALL FILES IN $NFS_ROOT/root/.ssh ARE ACTUALLY OWNED BY ROOT OR 
+THIS WILL FUCK YOU!!
+i.	Modify /srv/fai/$NFS_ROOT/etc/fai/fai.conf appropriately
+j.	Modify /srf/fai/$NFS_ROOT/etc/apt/sources.list appropriately as well… 
+http://fai.borg.mvista.com!
+16.	Rsync’ed /home/setup and /home/build
+17.	Don’t forget to re-configure at least root’s and build’s crontab on the new system!
+18.	You will need to install the “pyro” package before even thinking about testing the resource 
+manager.
+19.	Copied overlord:/etc/init.d/rmLauncher to overload:/etc/init.d
+20.	Installed “mysql-server” meta-package on overload.
+21.	Hudson requires Java, so install Sun’s JDK and JRE first. The Hudson .deb package will install 
+OpenJDK otherwise.
+22.	Downloaded Hudson .deb package from http://hudson-ci.org/debian/
+a.	wget -O - http://hudson-ci.org/debian/hudson-ci.org.key | sudo apt-key add –
+b.	echo "deb http://hudson-ci.org/debian binary/" >> /etc/apt/sources.list
+c.	apt-get update
+d.	apt-get upgrade
+
+23.	Hudson’s app server listens by default on port 8080 and I wanted to pretty that up a bit so I don’t 
+have to enter http://overload:8080 to log in so:
+a.	Modify /etc/default/hudson:
+
+HUDSON_ARGS="--webroot=/var/run/hudson/war --httpPort=4000 --
+prefix=/hudson"
+
+b.	apt-get install libapache2-mod-proxy-html
+c.	a2enmod proxy
+d.	a2enmod proxy_http
+e.	Enable proxying in /etc/apache2/mods-enabled/proxy.conf:
+
+ProxyRequests On
+<Proxy *>
+	AddDefaultCharset off
+	Order deny,allow
+	Deny from all
+	Allow from 10.23.5 10.0.10
+			</Proxy>
+
+f.	Then in the appropriate vhost declaration:
+       ProxyPass /hudson http://localhost:4000/hudson
+       ProxyPassReverse /hudson http://localhost:4000/hudson
+       <Location /hudson>
+       Order Allow,deny
+       Allow from 10.23.5 10.0.10
+       </Location>
+
+g.	Restart Apache and Hudson:
+
+/etc/init.d/apache2 force-reload
+/etc/init.d/Hudson/restart
+
+24.	Flexnet licensing
+25.	Generate licenses for overload
+26.	Install and configure the resource manager
+27.	Install and configure “dsh”
+
+[Thu Jan 21 16:28:11 2010] [error] [client 10.0.10.37] File does not exist: /var/www/favicon.ico
+
+	SetEnvIf Request_URI "favicon.ico" discard
+	CustomLog /var/log/httpd/blah.log combined env=!discard
+

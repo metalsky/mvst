@@ -1,0 +1,52 @@
+#!/bin/sh
+
+# $1 is the tag passed to prepare_build
+# $2 is cluster (for cluster build) or null (for user build)
+# $3 is the build_id (for cluster)
+# $4 is kbv (for cluster)
+# $5 is khv (for cluster)
+
+echo "Starting build at $(date)..."
+
+if [ -d /var/tmp/ha_build ]; then
+  rm -rf /var/tmp/ha_build
+fi
+mkdir /var/tmp/ha_build
+
+cp prepare_build /var/tmp/ha_build
+cp execute_build /var/tmp/ha_build
+
+cd /var/tmp/ha_build
+./prepare_build $1 $2 $3 $4 $5
+
+# install toolchains
+targs="ppc_74xx ppc_7xx ppc_82xx ppc_8xx x86_586 x86_pentium x86_pentium2 x86_pentium3"
+
+rm -rf /opt/hardhat/*
+cp -a /var/lib/rpm /opt/hardhat/rpmdb
+cd /mvista/dev_area/hhl2.0-ppc/common
+rpm -ivh *rpmconfig* *PlatformTest* *filesystem* *ldd* *pcmcia-cs* *python-* *setperm* *targetconf*
+for x in $targs; do
+  cd /mvista/dev_area/hhl2.0-ppc/$x/tools
+  rpm -Uvh hhl-cross-$x*.rpm
+  if [ "$x" = "ppc_74xx" ]; then
+    rpm -Uvh hhl-cross-ppc-*.rpm
+  elif [ "$x" = "x86_586" ]; then
+    rpm -Uvh hhl-cross-x86-*.rpm
+  fi
+  cd /mvista/dev_area/hhl2.0-ppc/$x/tools/cluster
+  rpm -Uvh hhl-cross-*.rpm
+  cd /mvista/dev_area/hhl2.0-ppc/$x/apps
+  rpm -Uvh --ignorearch *filesystem* *glibc* *binutils* *gcc* *cpp* *g++* *libstdc++* *protoize* *kernel-headers*
+done
+cd /var/tmp/ha_build
+./execute_build $2 $3 $4 $5
+
+if ! [ -d "/mvista/dev_area/ha/$1" ]; then
+  mkdir /mvista/dev_area/ha/$1
+  cp -a /var/tmp/ha_build/build /mvista/dev_area/ha/$1
+  # remove this next line when mkisofs is on cluster
+  ssh root@rodan2 "cd /export/dev_area/ha/$1 && mkisofs -quiet -r -J -V haf20 -o build/cdrom.iso build/cdrom" > /mvista/dev_area/ha/logs/cdimage.log 2>&1
+fi
+
+echo "Build finished at $(date)..."

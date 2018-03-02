@@ -1,0 +1,66 @@
+copydir         = '/mvista/dev_area/foundation'
+cvspaths = {
+	'mvl-kernel-26':	[homepath + '/mvl-kernel-26',	"null"],
+	'toolchain':		[homepath + '/toolchain',	"null"],
+	'userland':		[homepath + '/userland',	"null"],
+	}
+scripttest	= 1
+stopbuild	= 1
+runqa		= 0
+mkcd		= 0
+mkvert		= 0
+email		= 0
+cleanexp	= 0
+version		= '5.0'
+nocl		= 1
+btype		= 'Script Test'
+varstr		= 'Scripttest_Edition'          # for devrocket
+appsfile	= ''
+libraryapps	= scriptpath + '/scripttestapps.dat'
+lspdat		= ''
+foundation	= "/mvista/dev_area/foundation/last_fthree"
+selfhosttarget	= 'x86_586'
+edition		= 'foundation'
+chroothosts	= ('centos3', 'suse90')
+targethost	= 'centos3'
+all_targets     = (
+        'x86_586',
+        'arm_iwmmxt_le',
+        'mips2_fp_be',
+        'mips64_fp_be',
+        'mips64_fp_be-o32',
+        'mips64_fp_be-n64',
+        'ppc_9xx',
+        'ppc_9xx-64',
+        'x86_586_uclibc',
+	) 
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps	= { 'userland': ['diff',],
+		}
+brhhostapps	= { 'userland': ['glib',],
+		}
+brhnoarchapps	= { }
+
+# here are the definitions for apps built in buildcore.py
+path = cvspaths['userland'][0]
+# crossapps = { string:            [path,type,directory,spec,rpm type,extra,[install]]
+crossapps = { 
+        'a': [path,'cross','glib','glib','hostarch','',['glib',]],
+	}
+
+# these are the apps built in buildremote.py
+mvltapps = ()
+x86brcrossapps	= ('glib',)
+brcrossapps	= ('glib',)
+
+# moved from buildtargetapps.py
+targnoarch = ()
+crossnoarch = ('glib',)
+
+outtakes	= ('netperf','lmbench','dejagnu','mvlpk-dev','mvlpk-base','preempt',
+                   'previewkit-dev','previewkit-base','previewkit-fsimages',
+                   'pxelinux-previewkit','ethereal','mvl-installer','mvl_install',
+                   'cross-lilo','common-elfutils','common-jdk','common-apache-ant',
+                   'lup','common-db2html','common-mozilla','installation-enum','ltp','staf',
+                   'install-uSDE','install-libuSDE','install-uSDEpolicies','install-uSDE-debuginfo'
+		)

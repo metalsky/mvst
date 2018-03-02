@@ -1,0 +1,161 @@
+MontaVista Software, Inc.
+MontaVista Linux 5.0 Technical Preview
+
+December 2006  
+
++----------+
+| Contents |
++----------+
+
+1.0 Introduction
+2.0 Features and Support 
+3.0 Requirements
+4.0 Installing
+5.0 Booting Technical Preview 
+6.0 Known Issues
+7.0 Contact
+8.0 Copyright
+
++------------------+
+| 1.0 Introduction |
++------------------+
+
+MontaVista Linux 5.0 Technical Preview ("Technical Preview")
+provides the current kernel for all MontaVista Linux 5.0
+Editions. 
+
+Technical Preview is packaged as a pre-installed environment
+to allow for review and evaluation of the upcoming product
+release. It contains only a subset of the packages that will
+be available in the product editions.
+
+Technical Preview is configured to boot in a VMware Player
+under either a Linux host or a Windows host environment. The 
+basic configuration includes IDE disk support and the E1000
+networking driver.
+
++--------------------------+
+| 2.0 Features and Support |
++--------------------------+
+
+Technical Preview provides a 2.6.18 Linux kernel
+based on the 586 MontaVista Linux 5.0 toolchain
+for X86/IA-32 architectures.
+
+This kernel configuration is a generic and not
+specific to any target board. The disk and Ethernet
+drivers are part of the kernel.
+
+Note: Technical Preview is considered a preview and
+therefore does not receive technical support from MontaVista
+Software, Inc.
+
++--------------------------+
+| 3.0 Requirements         |
++--------------------------+
+
+Before you can use technical preview, a VMware product such as
+VMware Player must be installed on your system.
+
+The VMware Player is available at the VMware site:
+
+http://www.vmware.com
+
+The following players have been tested with Technical Preview:
+
+	* VMware Player 1.0.1 Windows
+	* VMware Player 1.0.2 Linux
+	* VMware Player 1.0.3 Linux
+	* VMware Player 1.0.3 Windows
+
+Technical Preview should also work on the equivalent versions of other
+VMware products.
+
++----------------+
+| 4.0 Installing |
++----------------+
+
+After you install the player, decompress the 
+TechPreview.zip file. Place the contents in a directory
+and remember the location. You will need to locate them 
+when you start VMware Player.
+
+Note: Verify that networking is enabled in VMWare Player before you
+begin booting Technical Preview.
+
++-------------------------------+
+| 5.0 Booting Technical Preview |
++-------------------------------+
+
+To boot the Technical Preview kernel on your target, complete
+the following steps:
+
+1. Start the VMware Player. It will prompt you to select a file.
+
+2. Browse to the TechPreview.vmx file and open it. Technical 
+   Preview will launch.
+
+3. At the initial prompt, login as root and do not enter a
+   password.
+
++------------------+
+| 6.0 Known Issues |
++------------------+
+
+The following issues have been found in Technical Preview:
+
+1. The kernel may hesitate for several seconds as it boots, after 
+   displaying the following message:  
+
+   "Checking if this processor honours the WP bit even in supervisor mode"
+
+   This is a known issue for the VMware Player when working with 2.6.18
+   kernels.
+
+2. Some of the configuration utilities (i.e. initdconfig for example)
+   only work to add or remove the configuration but do not support
+   the --list function.
+
+3. SSH key generation may not work correctly. 
+
++------------------+
+| 7.0 Contact      |
++------------------+
+
+MontaVista Software, Inc. can be contacted using the following: 
+
+Main:   +1 408-572-8000
+fax:    +1 408-572-8005
+email:  sales@mvista.com
+Web:    http://www.mvista.com
+
+MontaVista Software Incorporated
+2929 Patrick Henry Drive
+Santa Clara, CA 95054
+
++------------------+
+| 8.0 Copyright    |
++------------------+
+
+Copyright(C) 2006 MontaVista Software, Inc.
+
+The contents of the Technical Preview ZIP file are the property
+of MontaVista Software, Inc. ("MontaVista") and others. Please
+see the individual copyright notices in each of the source packages
+for distribution terms. The distribution of the tools, copyrighted
+by MontaVista, are as noted in the file LICENSE.
+
+MontaVista Software, Inc. makes no representations or warranties
+with respect to MontaVista(R) Linux(R) or to the contents or use
+of this README, and specifically disclaims any express or implied
+warranties of merchantability, fitness for any particular purpose
+or non-infringement.
+
+MontaVista is a registered trademark of MontaVista Software, Inc., 
+MontaVista Software is a trademark of MontaVista Software, Inc. 
+Linux is a registered trademark of Linus Torvalds. The registered 
+trademark Linux is used pursuant to a sublicense from the Linux 
+Mark Institute, the exclusive licensee of Linus Torvalds owner
+of the mark on a world-wide basis. All other names mentioned 
+herein are trademarks, registered trademarks, and service marks 
+of their respective owners.

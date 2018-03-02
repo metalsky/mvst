@@ -1,0 +1,11 @@
+/chroot
+/local
+/mnt
+/proc
+/lost+found
+/sys
+/mvista
+/srv
+/media
+/opt
+/sys

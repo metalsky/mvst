@@ -1,0 +1,36 @@
+#!/bin/bash
+
+if [ "$#" != "7" ]; then
+  echo "Usage $0 <builddir> <build_id> <app name> <arch> <dbpath> <rcfile> <alternate rpm dir>"
+  exit
+fi
+
+builddir="$1"
+buildid="$2"
+app="$3"
+arch="$4"
+dbpath="$5"
+rcfile="$6"
+rpmd="$7"
+
+if [ -d "$builddir/SRPMS" ]; then
+  rm -rf "$builddir/SRPMS"
+fi
+mkdir $builddir/SRPMS
+if [ -d "$builddir/RPMS" ]; then
+  rm -rf "$builddir/RPMS"
+fi
+mkdir $builddir/RPMS
+
+rpm -ba --define "_topdir $builddir" \
+    --define "_hhl_build_id $buildid" \
+    --define "vendor MontaVista Software, Inc." \
+    --define "packager <source@mvista.com>" \
+    --dbpath $dbpath \
+    --rcfile $rcfile \
+    --define "_builddir $rpmd/BUILD" \
+    --define "_srcrpmdir $rpmd/SRPMS" \
+    --define "_rpmdir $rpmd/RPMS" \
+    --target "$arch"-hardhat-linux \
+    $builddir/SPECS/hhl-*$app.spec
+

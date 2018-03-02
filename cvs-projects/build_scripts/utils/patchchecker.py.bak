@@ -1,0 +1,52 @@
+#!/usr/bin/python
+import sys, os, string, re
+#******************************
+# check that the patch numbers are in order
+# August 30, 2006
+# Annette Roll (help from Mike Harris)
+##########################################
+
+# function to determine missing patches
+def getMissingPatches():
+  # for each patch, check the curent patch value with the next next higher patch value
+  # if the next patch value isn't 1 greater than the current patch value, print the 
+  # current patch value + 1 through the next higher patch value - 1
+  count = 0
+  while count < num_patches - 1:
+    current_patch = string.atoi(string.strip(s_patches[count]))
+    next_patch = string.atoi(string.strip(s_patches[count + 1]))
+    if current_patch + 1 != next_patch:
+      patch_diff = next_patch - current_patch - 1
+      while patch_diff > 0:
+        current_patch += 1
+        print "Missing patch " + str(current_patch)
+        patch_diff -= 1
+    count += 1
+
+if len(sys.argv) != 2:
+  print "usage: %s %s" % (sys.argv[0],"<patch path>")
+  sys.exit(1)
+
+patchpath = sys.argv[1]
+os.chdir(patchpath)
+
+# create list of patch numbers from directory containing patch files
+s_patches = os.popen("ls *patch | awk -F - {'print $2'}").readlines()
+
+# sort the list so the min value is first
+s_patches.sort()
+
+# get total nmber of patches
+num_patches = len(s_patches)
+
+# if the min value + num_patches -1 is not the same as the last patch value
+# we know the patch order is wrong:
+
+if string.atoi(s_patches[0]) + (num_patches - 1) != string.atoi(s_patches[num_patches - 1]):
+  print "\npatches out of sequence, determining missing patches..."
+  getMissingPatches()
+else:
+  print "\npatches in sequnce, no missing patches"
+  print "first patch value is %s" % string.strip(s_patches[0])
+  print "last patch value is %s" % string.strip(s_patches[num_patches - 1])
+  print "number of patches is %s" % num_patches

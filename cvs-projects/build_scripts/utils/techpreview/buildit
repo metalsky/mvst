@@ -1,0 +1,181 @@
+#! /bin/bash
+
+##################################################
+#
+# This script generates a VMWare virtual disk
+# from a set of packages in the $pkg_dir.
+# Since this is intented to create a bootable
+# disk, it will extract and perform package
+# installation, make a raw filesystem image
+# and create a bootable partition table.
+#
+##################################################
+
+##################################################
+#
+# This section contains variables to change for
+# the place it is being used.
+#
+top_dir=/opt/montavista/foundation/devkit/x86/586
+bin_dir=$top_dir/bin
+pkg_dir=$top_dir/packages
+cross_rpmdb_path=$top_dir/cross_db
+target_path=$top_dir/target
+target_rpmdb_path=$target_path/var/lib/rpm
+temp_dir=/home/build/tmp
+temp_file=$temp_dir/image.ext3
+info_file=$temp_dir/infofile
+mnt_dir=/var/tmp/mount_point
+free_space=262144
+#
+##################################################
+
+export PATH=/opt/montavista/foundation/bin:$bin_dir:$PATH
+
+##################################################
+#
+# Below this point the script should be clean
+#
+##################################################
+
+[ -d $temp_dir ] || mkdir -p $temp_dir
+#[ -d $cross_rpmdb_path ] || mkdir -p $cross_rpmdb_path
+#[ -d $target_rpmdb_path ] || mkdir -p $target_rpmdb_path
+
+#echo "=== Clearing the cross database"
+#rm -rf $cross_rpmdb_path/* 2> /dev/null
+
+
+#echo "=== Creating install in $target_path"
+
+#rm -rf $target_path/* 2> /dev/null
+
+#mvl-edition-rpm-forward -hiv --dbpath $cross_rpmdb_path --prefix "$target_path" --ignorearch $pkg_dir/*.mvl
+
+#[ $? -ne 0 ] && exit $?
+
+### delete this line for final script
+#mvl-edition-rpm-forward -hiv --force --dbpath $cross_rpmdb_path --prefix "$target_path" --ignorearch $pkg_dir/initscripts*.mvl
+
+#echo "=== Now creating target DB in $target_rpmdb_path"
+
+#[ -d $target_rpmdb_path ] || mkdir -b $target_rpmdb_path
+
+#mvl-edition-rpm-forward --install --dbpath $target_rpmdb_path --justdb --prefix / --ignorearch $pkg_dir/*.mvl
+
+#[ $? -ne 0 ] && exit $?
+
+
+echo "=== Adding Device Nodes"
+
+sudo mknod $target_path/dev/tty c 5 0
+sudo mknod $target_path/dev/console c 5 1
+sudo mknod $target_path/dev/ptmx c 5 2
+sudo mknod $target_path/dev/null c 1 3
+sudo mknod $target_path/dev/initctl p
+sudo mkdir $target_path/dev/pts
+sudo mkdir $target_path/dev/shm
+
+echo "=== Naming Message \"Technical Preview\""
+
+a=`pwd`
+cd $target_path/etc
+for i in issue issue.net motd mvl-release
+do
+	sed -e 's/Foundation Edition/Technical Preview/' $i > $i.new
+	mv $i.new $i
+done
+
+echo "TechPreview" > hostname
+echo $PATH
+586-initdconfig --add hostname.sh
+cd $a
+
+echo "=== Generating Filesystem Image"
+
+size=`du -s -B 512 $target_path | cut -f1`
+size=`expr $size + $free_space`
+
+count=`expr 256 \* 512`
+
+while [ $size -gt $count ]
+do
+	count=`expr $count \* 2`
+done
+
+#
+# now adjust for geometry of an IDE disk and overhead
+# this assumes assumes 63 sectors/track 16 heads/cylinder
+# and the partition starts 63 sectors in.
+#
+size=`expr $count / 1008`
+size=`expr $size \* 1008`
+count=`expr $size - 63`
+
+echo "---> filesystem size is `expr $count \* 512`"
+
+dd if=/dev/zero of=$temp_file bs=512 count=$count
+
+[ $? -ne 0 ] && exit $?
+
+mke2fs -F -j $temp_file
+
+echo "=== Populating Filesystem Image"
+
+[ -d $mnt_dir ] || mkdir -p $mnt_dir
+
+err=$? 
+if [ $err -ne 0 ]
+then
+	echo "Unable to provide Mount point"
+	exit $err
+fi
+
+sudo mount -o loop $temp_file $mnt_dir
+err=$? 
+if [ $err -ne 0 ]
+then
+	echo "Unable to mount $temp_file"
+	exit $err
+fi
+
+sudo cp -av $target_path/* $mnt_dir/
+
+echo "=== Setting boot Settings"
+
+sudo cp lilo* $mnt_dir/etc/
+
+sudo [ -f build_map ] || cc -o build_map build_map.c
+
+sudo ./build_map $mnt_dir/boot/map $mnt_dir/boot/vmlinuz-x86-pc_target-x86_586 \
+$info_file
+err=$? 
+
+sudo umount $mnt_dir
+sudo rmdir $mnt_dir
+
+if [ $err -ne 0 ]
+then
+	echo "Unable to build map file"
+	exit $err
+fi
+
+
+echo "=== Building VM Disk image"
+
+[ -f create_vmdk ] || cc -o create_vmdk create_vmdk.c
+
+sudo ./create_vmdk -o TechPreview.vmdk -i $info_file $temp_file
+err=$? 
+if [ $err -ne 0 ]
+then
+	echo "Unable to build vmdk file"
+	exit $err
+fi
+
+
+echo "=== Packaging... "
+
+sudo zip TechPreview.zip README LICENSE TechPreview.v*
+rm -f $temp_dir
+exit $?

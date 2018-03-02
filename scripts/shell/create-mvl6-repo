@@ -1,0 +1,70 @@
+#!/bin/sh
+
+MVL6=/var/cache/git/mvl6
+TEMPLATEREPO=foundation.git
+
+usage()
+{
+	echo "Usage: $0 <new-repo-name>..." 1>&2
+	echo
+	echo "	Creates the named repos in ${MVL6}/"
+	exit 1
+}
+
+[ $# -eq 0 ] && usage
+
+set -e
+
+for name in "$@"
+do
+	case "$name" in
+	*/*)
+		GITDIR=$name
+		;;
+	*)
+		GITDIR="$MVL6/$name"
+		;;
+	esac
+
+	case "$name" in
+	*.git)
+		;;
+	*)
+		GITDIR="$name.git"
+		;;
+	esac
+
+	if test -d "$GITDIR"; then
+		echo "$GITDIR already exists, skipping." 1>&2
+		continue
+	fi
+
+	echo mkdir -p "$GITDIR"
+
+	mkdir -p "$GITDIR"
+
+	echo cd "$GITDIR"
+	cd "$GITDIR"
+
+	echo git --bare init --shared=group
+	git --bare init --shared=group
+
+	find . -type d -print0 | xargs -0 chmod g+ws
+
+	echo cp "$MVL6/$TEMPLATEREPO/config" "$GITDIR"
+	cp "$MVL6/$TEMPLATEREPO/config" "$GITDIR"
+
+	case "$name" in
+	*-sources)
+		;;
+	*)
+		echo rm -f "hooks/*"
+		rm -f hooks/*
+		echo cp -a "$MVL6/$TEMPLATEREPO/hooks/*" hooks/
+		cp -a $MVL6/$TEMPLATEREPO/hooks/* hooks/
+		;;
+	esac
+
+	echo "$GITDIR" done
+	echo
+done

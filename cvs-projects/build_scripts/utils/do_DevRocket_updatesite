@@ -1,0 +1,46 @@
+#!/bin/sh
+
+PATH=$PATH:/usr/java/j2sdk1.4.2_11/bin
+UPDATESITE_TOP=/mvista/ftp/updates/DevRocket/5.2
+
+# Get single argument - the DevRocket build directory in /mvista/dev_area (most likely)
+
+if [ "$1" = "" ]; then
+	echo usage: $0 [directory_to_tsukibuildtag]
+	exit 1
+fi
+
+REL=$1
+
+echo REL=$REL
+echo UPDATESITE_TOP=$UPDATESITE_TOP
+
+if [ ! -d $REL ]; then
+	echo $0: Error: $REL does not exist
+	exit 1
+fi
+
+if [ ! -d $UPDATESITE_TOP ]; then
+	echo $0: Error: $UPDATESITE_TOP does not exist
+	echo "   For the first time making this updatesite, just do this:"
+	echo "      mkdir -p $UPDATESITE_TOP"
+	exit 1
+fi
+
+# Test to see we can write in destination directory
+echo "hi" > $UPDATESITE_TOP/testfile
+readback="$(cat $UPDATESITE_TOP/testfile)"
+rm $UPDATESITE_TOP/testfile
+
+if [ "$readback" != "hi" ]; then
+	echo "$0: Error: cant seem to write to $UPDATESITE_TOP.  Did you forget to klog?"
+	exit 1
+fi
+
+set -x
+ant -f $REL/build/scripts/mv-build.xml deployUpdateSite \
+	-Dsrc.updatedir=$REL/build/results/p2/updateSite \
+	-Dsrc.scriptdir=$REL/build/scripts/internal_scripts \
+	-Ddeploy.updatedir=$UPDATESITE_TOP \
+	-Ddeploy.scriptdir=$UPDATESITE_TOP/scripts
+

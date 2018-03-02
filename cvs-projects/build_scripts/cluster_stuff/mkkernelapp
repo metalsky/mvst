@@ -1,0 +1,48 @@
+#!/bin/bash
+
+if [ "$#" != "10" ]; then
+echo "Usage $0 <builddir> <build_id> <hhl_kernel_base_version> <hhl_kernel_hhl_version> <arch> <app> <lsp rev> <dbpath> <rcfile> <rpmbin>"
+  exit 1
+fi
+
+builddir="$1"
+buildid="$2"
+kbv="$3"
+khv="$4"
+arch="$5"
+app="$6"
+lsprev="$7"
+dbpath="$8"
+rcfile="$9"
+rpmbin="${10}"
+
+if [ -d "$builddir/SRPMS" ]; then
+  rm -rf "$builddir/SRPMS"
+fi
+mkdir $builddir/SRPMS
+if [ -d "$builddir/RPMS" ]; then
+  rm -rf "$builddir/RPMS"
+fi
+mkdir $builddir/RPMS
+if [ "$rpmbin" != "rpm" ]; then
+  "$rpmbin"build -ba --define "_topdir $builddir" \
+     --define "_hhl_build_id $buildid" \
+     --define "_hhl_kernel_base_version $kbv" \
+     --define "_hhl_kernel_hhl_version $khv" \
+     --define "_hhl_lsp_rev $lsprev" \
+     --define "vendor MontaVista Software, Inc." \
+     --define "packager <source@mvista.com>" \
+     --target=$arch-hardhat-linux $builddir/SPECS/$app* --nodeps
+else
+  rpm -ba --define "_topdir $builddir" \
+     --define "_hhl_build_id $buildid" \
+     --define "_hhl_kernel_base_version $kbv" \
+     --define "_hhl_kernel_hhl_version $khv" \
+     --define "_hhl_lsp_rev $lsprev" \
+     --define "vendor MontaVista Software, Inc." \
+     --define "packager <source@mvista.com>" \
+     --dbpath $dbpath \
+     --rcfile $rcfile \
+     --target=$arch-hardhat-linux $builddir/SPECS/$app*
+fi
+

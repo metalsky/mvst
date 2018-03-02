@@ -1,0 +1,711 @@
+#!/usr/bin/python
+from collectiveFunctions import *
+
+#Builds Database
+try:
+	import db
+	DB_ENABLE = 1
+	DB = db.database()
+except:
+	DB_ENABLE = 0
+	print "@@@@@@@@@@@@@@@ Not Using Build Database @@@@@@@@@@@@@@@"
+#Vars
+BUILD_ID = 0
+PRODUCT_ID = 0
+
+HOST_TYPE = ""
+ARCH_TYPE = ""
+
+
+def processArchHost(packageType, archName, hostName, productID):
+	'''figure out the correct arch and host ids if possible'''
+
+	ArchID = None
+	HostID = None
+	if packageType in ["cross", "target"] and archName:
+		arch = DB.getArch(archName, productID)
+		if arch:
+			ArchID = arch['id']
+		else:
+			DB.Error("Unknown arch: '%s' for product_id: %d"%(archName, productID))
+				
+	if packageType in ["host", "host-tool", "common", "cross"] and hostName:
+		host = DB.getHost(hostName, productID)
+		if host:
+			HostID = host['id']
+		else:
+			DB.Error("Unknown host: '%s' for product_id: %d"%(hostName, productID))
+	#else:
+		#This is probably some form of buildprep or cluster, or something
+
+	return ArchID, HostID
+#end processArchHost
+
+def checkArchHost(packageType, archID, hostID):
+	if packageType == "target" and archID:
+		return True
+	elif packageType == "cross" and archID and hostID:
+		return True
+	elif packageType in ["host-tool", "common", "host"] and hostID:
+		return True
+
+	return False
+#end checkArchHost	
+
+
+def processRpm(name, packageMapID, packageType, packageName, archID, hostID, buildID):
+	
+	#handle src rpms
+	rpm_type = None
+	s = name.split('.')
+	if len(s) > 1:
+		if s[-2] == "src":
+			rpm_type = "SRC"
+		elif s[-2] == "noarch":
+			rpm_type = "noarch"
+	#
+
+	if rpm_type:
+		#we have a specical rpm. get a new ids
+		result = DB.Command('''SELECT * FROM Builds.builds WHERE id=%d'''%(buildID))
+		if len(result) < 1:
+			DB.Error("Cant find Build: %d in database"%(buildID))
+		productID = result[0]['products_id']
+		
+		#Make sure we setup the corrct arch/hosts
+		if rpm_type == "SRC":
+			archID = DB.getArch(rpm_type, productID)['id']
+			hostID = DB.getHost(rpm_type, productID)['id']
+			packageMapID = DB.insertPackageMap(packageName, packageType, archID, hostID, buildID)
+		elif rpm_type == "noarch":
+			hostID = DB.getHost(rpm_type, productID)['id']
+			DB.updatePackageMapHost(packageType, packageMapID, hostID)
+		#insert new pkgMap
+		DB.setPackageMapBuilt(packageType, packageMapID)
+	#end src rpm 
+
+	return DB.insertRpm(name, packageMapID, packageType, archID, hostID, buildID) 
+#end processRpm
+#end Builds Database
+
+
+
+
+def ParseCore(CoreFileLocation, NewLogDir,Stats):
+	#Builds Database
+	IS_PKG = 0
+	#end Builds Database
+	
+
+	BuildFailed=0
+	if os.path.exists(CoreFileLocation):
+		CoreFile = open(CoreFileLocation).readlines()
+	else:
+		print CoreFileLocation + " doesn't exist"
+		return -1
+	Lenth = len(CoreFile)
+	i = 0
+	NumberOfApps = 0
+	NumberOfBrokenApps = 0
+	StatFile = open(Stats, "w") 
+        
+	while((i < Lenth) and (string.find(CoreFile[i], ".py>: building") == -1)):
+		i=i+1
+	while(i < Lenth):
+		if(string.find(CoreFile[i], ".py>: building") != -1):
+			App = string.split(CoreFile[i], " ")
+			
+			#Builds Database
+			if DB_ENABLE:
+				print 'a'
+				IS_PKG = 1
+				PKG_NAME = App[2]
+				PKG_TYPE = DB.getPackageType(PKG_NAME)
+				ARCH_ID, HOST_ID = processArchHost(PKG_TYPE, ARCH_TYPE, HOST_TYPE, PRODUCT_ID)
+				if checkArchHost(PKG_TYPE, ARCH_ID, HOST_ID):
+					MAP_ID = DB.insertPackageMap(PKG_NAME, PKG_TYPE, ARCH_ID, HOST_ID, BUILD_ID)   
+					if not MAP_ID:
+						DB.Error("Error inserting packageMap\n")
+				else:
+					IS_PKG = 0
+			#end Builds Database
+
+			ItemFile = open(NewLogDir + "/" + App[2], "w")
+			ItemFile.write(CoreFile[i])
+			NumberOfApps = NumberOfApps + 1
+			i = i + 1
+			AppNotBuilt = 0
+		elif(string.find(CoreFile[i],"BUILD ERROR: ") != -1):
+			ItemFile.write(CoreFile[i])
+			i = i + 1
+			NumberOfBrokenApps = NumberOfBrokenApps + 1
+			AppNotBuilt = 1
+		elif(string.find(CoreFile[i],".py>: finished") != -1):
+			ItemFile.write(CoreFile[i])
+			i = i + 1
+			ItemFile.close()
+			while(i < Lenth and (string.find(CoreFile[i], ".py>: building") == -1)):
+				i = i + 1
+			StatFile.write("%s %d\n" % (App[2], AppNotBuilt))
+			
+			#Builds Database
+		elif(string.find(CoreFile[i],"Wrote:") != -1):
+			tmp = string.split(CoreFile[i], " ")
+			rpm = os.path.basename(tmp[1].strip())
+			if IS_PKG:
+				rpm_id = processRpm(rpm, MAP_ID, PKG_TYPE, PKG_NAME, ARCH_ID, HOST_ID, BUILD_ID)
+				if not rpm_id:
+					DB.Error("Error inserting rpm\n")
+				DB.setPackageMapBuilt(PKG_TYPE, MAP_ID)
+			
+			ItemFile.write(CoreFile[i])
+			i = i + 1
+			#end Builds Database
+
+		else:
+			ItemFile.write(CoreFile[i])
+			i = i + 1
+	StatFile.write("----\n")
+	if(NumberOfApps):
+		StatFile.write("%d %d %d %d %2d\n" %  (NumberOfApps,
+				NumberOfBrokenApps,
+				NumberOfApps - NumberOfBrokenApps,
+				((NumberOfBrokenApps*100/NumberOfApps)),
+				(NumberOfApps - NumberOfBrokenApps)*100/NumberOfApps))
+	else:
+		StatFile.write("%d %d %d %d %d\n" %  (NumberOfApps,
+				NumberOfBrokenApps,
+				NumberOfApps - NumberOfBrokenApps,
+				0,
+				0))
+	StatFile.close()
+	for cf in CoreFile:
+		if string.find(cf,'BUILDCORE ERROR:') != -1:
+			BuildFailed = 1
+	if(BuildFailed):
+		print 'BuildFailed for ' + CoreFileLocation
+		return -1
+	else:
+		#print 'BuildFailed = 0 for ' + CoreFileLocation
+		return 1
+
+def ParseApps(AppsFileLocation, NewLogDir, StatsFile):
+	#Builds Database
+	IS_PKG = 0
+	#end Builds Database
+
+	AppFile = open(AppsFileLocation).readlines()
+	Length = len(AppFile)
+	i = 0
+	Apps=0
+	NumberOfApps = 0
+	NumberOfBrokenApps = 0
+	AppStat = open(StatsFile, "w")
+	while((i<Length) and (string.find(AppFile[i], "<./buildtargetapps.py>: building") == -1)):
+		i=i+1
+	while(i < Length):
+		if(string.find(AppFile[i], "<./buildtargetapps.py>: building") != -1):
+			App = string.split(AppFile[i], " ")
+
+			#Builds Database
+			if DB_ENABLE:
+				print 'b'
+				IS_PKG = 1
+				PKG_NAME = App[2]
+				PKG_TYPE = DB.getPackageType(PKG_NAME)
+				ARCH_ID, HOST_ID = processArchHost(PKG_TYPE, ARCH_TYPE, HOST_TYPE, PRODUCT_ID)
+				if checkArchHost(PKG_TYPE, ARCH_ID, HOST_ID):
+					MAP_ID = DB.insertPackageMap(PKG_NAME, PKG_TYPE, ARCH_ID, HOST_ID, BUILD_ID)   
+					if not MAP_ID:
+						DB.Error("Error inserting packageMap\n")
+				else:
+					IS_PKG = 0
+			#end ReleaseDatabase
+
+			ItemFile = open(NewLogDir + "/" + App[2], "w")
+			ItemFile.write(AppFile[i])
+			NumberOfApps = NumberOfApps + 1
+			i = i + 1
+			AppNotBuilt = 0
+		elif(string.find(AppFile[i],"BUILD ERROR: " + App[2]) != -1):
+			ItemFile.write(AppFile[i])
+			i = i + 1
+			NumberOfBrokenApps = NumberOfBrokenApps + 1
+			AppNotBuilt = 1
+		elif(string.find(AppFile[i],"<./buildtargetapps.py>: finished") != -1):
+			ItemFile.write(AppFile[i])
+			i = i + 1
+			ItemFile.close()
+			while(i<Length and (string.find(AppFile[i],"<./buildtargetapps.py>: building")== -1)):
+				i = i + 1
+			AppStat.write("%s %d\n" % (App[2], AppNotBuilt))
+			
+			#Builds Database
+		elif(string.find(AppFile[i],"Wrote:") != -1):
+			tmp = string.split(AppFile[i], " ")
+			rpm = os.path.basename(tmp[1].strip())
+			if IS_PKG:
+				rpm_id = processRpm(rpm, MAP_ID, PKG_TYPE, PKG_NAME, ARCH_ID, HOST_ID, BUILD_ID)	
+				if not rpm_id:
+					DB.Error("Error inserting rpm\n")
+				DB.setPackageMapBuilt(PKG_TYPE, MAP_ID)
+
+			ItemFile.write(AppFile[i])
+			i = i + 1
+			#end Builds Database
+
+		else:          
+			ItemFile.write(AppFile[i])
+			i = i + 1
+	AppStat.write("----\n")
+	if(NumberOfApps):
+		AppStat.write("%d %d %d %d %2d\n" %  (NumberOfApps, 
+			     NumberOfBrokenApps,
+			     NumberOfApps - NumberOfBrokenApps, 
+			     ((NumberOfBrokenApps*100/NumberOfApps)), 
+			    (NumberOfApps - NumberOfBrokenApps)*100/NumberOfApps))
+	else:
+		AppStat.write("%d %d %d %d %d\n" %  (NumberOfApps, 
+			     NumberOfBrokenApps,
+			     NumberOfApps - NumberOfBrokenApps, 
+			     0, 
+			     0))
+	AppStat.close()
+
+def ParseHost(HostFileLocation, NewLogDir,Stats):
+	#Builds Database
+	IS_PKG = 0
+	#end Builds Database
+	BuildFailed=0           
+	os.mkdir(NewLogDir)
+	if(os.path.isfile(HostFileLocation)):
+		HostFile = open(HostFileLocation).readlines()
+	else:
+		return
+	StatsFile = open(Stats, "w")
+	i=0                     
+	Lenth = len(HostFile)
+	NotBuiltPackages=0
+	NumPacks=0   
+	print HostFileLocation                
+	while((i < Lenth) and (string.find(HostFile[i], ">: building") == -1)):
+		i=i+1
+	while ( i < Lenth ):
+		if(string.find(HostFile[i],">: building") != -1):
+			Item = string.split(HostFile[i], " ")
+			
+			#Builds Database
+			if DB_ENABLE:
+				print 'c'
+				IS_PKG = 1
+				PKG_NAME = Item[2]
+				PKG_TYPE = DB.getPackageType(PKG_NAME)
+				ARCH_ID, HOST_ID = processArchHost(PKG_TYPE, ARCH_TYPE, HOST_TYPE, PRODUCT_ID)
+				if checkArchHost(PKG_TYPE, ARCH_ID, HOST_ID):
+					##print "@@@@@@@@@@@@ ARCH_ID:", ARCH_ID, "host_id", HOST_ID, "pkgtype:", PKG_TYPE
+					MAP_ID = DB.insertPackageMap(PKG_NAME, PKG_TYPE, ARCH_ID, HOST_ID, BUILD_ID)   
+					if not MAP_ID:
+						DB.Error("Error inserting packageMap\n")
+				else:
+					IS_PKG = 0
+			#end Builds Database
+
+			ItemFile = open(NewLogDir + "/" + Item[2], "w")
+			ItemFile.write(HostFile[i])
+			NumPacks=NumPacks + 1
+			i = i + 1
+			HostPackageNotBuilt = 0
+		elif(string.find(HostFile[i],"BUILD ERROR:") != -1):
+			ItemFile.write(HostFile[i])
+			i = i + 1
+			NotBuiltPackages = NotBuiltPackages + 1
+			HostPackageNotBuilt = 1
+		elif(string.find(HostFile[i],">: finished") != -1):
+			ItemFile.write(HostFile[i])
+			i = i + 1
+			ItemFile.close()
+			while(i < Lenth and (string.find(HostFile[i],">: building") == -1)):
+				i = i + 1
+			StatsFile.write("%s %d\n" % (Item[2], HostPackageNotBuilt))
+			
+			#Builds Database
+		elif(string.find(HostFile[i],"Wrote:") != -1):
+			tmp = string.split(HostFile[i], " ")
+			rpm = os.path.basename(tmp[1].strip())
+			if IS_PKG:
+				rpm_id = processRpm(rpm, MAP_ID, PKG_TYPE, PKG_NAME, ARCH_ID, HOST_ID, BUILD_ID)
+				if not rpm_id:
+					DB.Error("Error inserting rpm\n")
+				DB.setPackageMapBuilt(PKG_TYPE, MAP_ID)
+
+			ItemFile.write(HostFile[i])
+			i = i + 1
+			#end Builds Database
+		
+		else:
+			ItemFile.write(HostFile[i])
+			i = i + 1
+	StatsFile.write("----\n")
+	if(NumPacks):
+		StatsFile.write("%d %d %d %d %d" % (NumPacks, 
+			NotBuiltPackages,
+			NumPacks - NotBuiltPackages,
+			(NotBuiltPackages*100/NumPacks),
+			((NumPacks - NotBuiltPackages)*100/NumPacks)))
+	else:	
+		StatsFile.write("%d %d %d %d %d" % (NumPacks, 
+			NotBuiltPackages, 
+			NumPacks - NotBuiltPackages, 
+			0, 
+			0))
+	StatsFile.close()
+						
+def ParseLsps(LspFileLocation, NewLogDir, Stats):
+	os.mkdir(NewLogDir)
+	LspFile = open(LspFileLocation).readlines()
+	StatsFile = open(Stats, "w")
+	Lenth = len(LspFile)
+	i = 0
+	NumLsps=0
+	NotBuiltLsps=0
+	while((i < Lenth) and (string.find(LspFile[i], ">: building") == -1)):
+		i = i + 1
+	while(i < Lenth):
+		if(string.find(LspFile[i],">: building") != -1):
+			FileName = string.split(LspFile[i], " ")
+			ItemFile = open(NewLogDir + "/" + FileName[2], "w")
+			ItemFile.write(LspFile[i])
+			NumLsps = NumLsps + 1
+			i = i + 1
+			LspPackageNotBuilt = 0
+		elif(string.find(LspFile[i],"BUILD ERROR: ") != -1):
+			ItemFile.write(LspFile[i])
+			i = i + 1
+			NotBuiltLsps = NotBuiltLsps +1
+			LspPackageNotBuilt = 1
+		elif(string.find(LspFile[i],">: finished") != -1):
+			ItemFile.write(LspFile[i])
+			i = i + 1
+			ItemFile.close()
+			while(i < Lenth and (string.find(LspFile[i],">: building") == -1)):
+				i = i + 1
+			StatsFile.write("%s %d\n" % (FileName[2],LspPackageNotBuilt))
+		else:
+			ItemFile.write(LspFile[i])
+			i = i + 1
+	StatsFile.write("----\n")
+	if(NumLsps):
+		StatsFile.write("%d %d %d %d %d" % (NumLsps,
+				    NotBuiltLsps,
+				    NumLsps - NotBuiltLsps,
+				    (NotBuiltLsps*100)/NumLsps,
+				    ((NumLsps - NotBuiltLsps)*100)/NumLsps))
+	else:
+		StatsFile.write("%d %d %d %d %d" % (NumLsps,
+				    NotBuiltLsps,
+				    NumLsps - NotBuiltLsps,
+				    0,
+				    0))
+	StatsFile.close()
+
+def ParseCDs(CDImageFileLocation,NewLogDir,Arch,Stats):
+	os.system('mkdir -p ' + NewLogDir)
+	CDFile = open(CDImageFileLocation).readlines()
+	StatsFile = open(Stats, "w")
+	NumCDs = 0
+	NotBuiltCDs = 0
+	Built = "BUILT:"
+	BuildError = "BUILD ERROR:"
+	for Line in CDFile:
+		if string.find(Line,Built) > -1 and string.find(Line,Arch) > -1:
+			CDName = string.split(Line, " ")[1]
+			NumCDs = NumCDs + 1
+			ItemFile = open(NewLogDir + "/" + CDName, "w")
+			ItemFile.write(string.strip(Line))
+			ItemFile.close()
+			StatsFile.write("%s %d\n" % (CDName,0))
+		elif string.find(Line,BuildError) > -1 and string.find(Line,Arch) > -1:
+			CDName = string.split(Line, " ")[1]
+			NotBuiltCDs = NotBuiltCDs + 1
+			ItemFile = open(NewLogDir + "/" + CDName, "w")
+			ItemFile.write(string.strip(Line))
+			ItemFile.close()
+			StatsFile.write("%s %d\n" % (CDName,1))
+	StatsFile.write("----\n")
+	if(NumCDs):
+		StatsFile.write("%d %d %d %d %d" % (NumCDs,
+			NotBuiltCDs,
+			NumCDs - NotBuiltCDs,
+			(NotBuiltCDs*100)/NumCDs,
+			((NumCDs - NotBuiltCDs)*100)/NumCDs))
+	else:
+		StatsFile.write("%d %d %d %d %d" % (NumCDs,
+			NotBuiltCDs,
+			NumCDs - NotBuiltCDs,
+			0,
+			0))
+	StatsFile.close()
+
+def InitMain(TextFile, SHtmlFile, BHtmlFile, BuildId, BuildTag, HostList):
+	InitExcel(TextFile,HostList)
+	InitStatsHeader(SHtmlFile,BuildTag,HostList)
+	InitBuildHeader(BHtmlFile,BuildId,BuildTag,HostList,ChangeLog)
+	#Builds Database
+	global HOST_TYPE, ARCH_TYPE
+	#end Builds Database
+	ParseHost(LogDir + "buildprep-" + BuildId + ".log",
+		  DestDir + BuildTag + "/buildprep/",
+		  DestDir + BuildTag + "/buildprep/stats")
+	os.mkdir(DestDir + BuildTag + "/buildprep/html")
+	AddArch(Excel,Stats,Build,"buildprep")
+	StatFile=open(DestDir + BuildTag + "/buildprep/stats").readlines()
+	HtmlFile=open(DestDir + BuildTag + "/buildprep/html/buildprep.shtml", "w")
+	AddMain(Excel,Stats,Build,StatFile,"buildprep","buildprep",BuildTag)
+ 	GenItemHtml("/logs/" + BuildTag + "/buildprep/",
+			HtmlFile,
+			StatFile, 
+			"cvs tag and export", 
+			BuildTag)
+	SHtmlFile.write("</table>\n")
+	BHtmlFile.write("</table>\n")
+	if os.path.exists(LogDir + "sht-" + BuildId + ".log") or os.path.exists(LogDir + "cht-" + BuildId + ".log"):
+		InitStatsHT(SHtmlFile,BuildTag,HostList)
+		InitBuildHT(BHtmlFile,BuildId,BuildTag,HostList)
+		os.mkdir(DestDir + BuildTag + "/hosttool")
+		os.mkdir(DestDir + BuildTag + "/hosttool/stats")
+		os.mkdir(DestDir + BuildTag + "/hosttool/html")
+		#Builds Database
+		HOST_TYPE = "solaris8"
+		ARCH_TYPE = ''
+		#end Builds Database
+		if os.path.exists(LogDir + "sht-" + BuildId + ".log"):
+			ParseHost(LogDir + "sht-" + BuildId + ".log", 
+				  DestDir + BuildTag + "/hosttool/solaris/",
+				  DestDir + BuildTag + "/hosttool/stats/solaris")
+			AddArch(Excel,Stats,Build,"solaris")
+			StatFile=open(DestDir + BuildTag + "/hosttool/stats/solaris").readlines()
+			HtmlFile=open(DestDir + BuildTag + "/hosttool/html/solaris.shtml", "w")
+			AddMain(Excel,Stats,Build,StatFile,"solaris","hosttool",BuildTag)
+	 		GenItemHtml("/logs/" + BuildTag + "/hosttool/solaris/",
+					HtmlFile,
+					StatFile, 
+					"Host Tool Applications", 
+					BuildTag)
+		if os.path.exists(LogDir + "cht-" + BuildId + ".log"):
+			#Builds Database
+			HOST_TYPE = "windows2000"
+			ARCH_TYPE = ''
+			#end Builds Database
+			ParseHost(LogDir + "cht-" + BuildId + ".log", 
+				  DestDir + BuildTag + "/hosttool/cygwin/",
+				  DestDir + BuildTag + "/hosttool/stats/cygwin")
+			AddArch(Excel,Stats,Build,"cygwin")
+			StatFile=open(DestDir + BuildTag + "/hosttool/stats/cygwin").readlines()
+			HtmlFile=open(DestDir + BuildTag + "/hosttool/html/cygwin.shtml", "w")
+			AddMain(Excel,Stats,Build,StatFile,"cygwin","hosttool",BuildTag)
+		 	GenItemHtml("/logs/" + BuildTag + "/hosttool/cygwin/",
+					HtmlFile,
+					StatFile, 
+					"Host Tool Applications", 
+					BuildTag)
+	SHtmlFile.write("</table>\n")
+	BHtmlFile.write("</table>\n")
+	InitStatsHostHeader(SHtmlFile,BuildTag,HostList)
+	InitBuildHostHeader(BHtmlFile,BuildId,BuildTag,HostList)
+	os.mkdir(DestDir + BuildTag + "/hostapps")
+	os.mkdir(DestDir + BuildTag + "/hostapps/stats")
+	os.mkdir(DestDir + BuildTag + "/hostapps/html")
+	AddArch(Excel,Stats,Build,"Host")
+	if HostList != -1:
+		for host in HostList:
+			#Builds Database
+			HOST_TYPE = host
+			ARCH_TYPE = ''
+			#end Builds Database
+			ParseHost(LogDir + "host-" + host + '-' + BuildId + ".log", 
+				  DestDir + BuildTag + "/hostapps/" + host + "/",
+				  DestDir + BuildTag + "/hostapps/stats/" + host)
+			StatFile=open(DestDir + BuildTag + "/hostapps/stats/" + host).readlines()
+			HtmlFile=open(DestDir + BuildTag + "/hostapps/html/" + host + ".shtml", "w")
+			AddMain(Excel,Stats,Build,StatFile,host,"hostapps",BuildTag)
+	 		GenItemHtml("/logs/" + BuildTag + "/hostapps/" + host + "/",
+				HtmlFile, StatFile, "Host Tool Applications", BuildTag)
+	SHtmlFile.write("</table>\n")
+	BHtmlFile.write("</table>\n")
+	InitStats(SHtmlFile,BuildTag,HostList)
+	InitBuild(BHtmlFile,BuildId,BuildTag,HostList)
+
+#Start of what would be main
+if len(sys.argv) == 1:
+	print "Usage: %s %s %s %s %s" % (sys.argv[0],'<LogFile>','<DestDir>','<ChangeLog>', '[--nodb]')
+	sys.exit(1)
+
+LogFile = sys.argv[1]
+DestDir = sys.argv[2]
+ChangeLog = sys.argv[3]
+
+LogSplit = os.path.split(LogFile)
+LogDir = LogSplit[0] + "/"
+
+DestDir = DestDir + "/"
+if not os.path.exists(DestDir):
+  os.system('mkdir -p %s' % DestDir)
+
+MasterBuildLog = open(LogFile).readlines()
+
+#Builds Database
+if len(sys.argv) >= 5:
+	db = sys.argv[4]
+	if db.find("nodb") != -1:
+		'Turning DB Off.'
+		DB_ENABLE = 0
+
+if DB_ENABLE:
+	print 'd'
+	DB.Connect()
+	DB.Start()
+#end Builds Database
+
+
+ArchList=[]
+HostList=[]
+
+for each in range(len(MasterBuildLog)):
+	if (string.find(MasterBuildLog[each], "Building the following architectures") != -1):
+		i = 1;
+		while(string.find(MasterBuildLog[each + i], "Using") == -1):
+			ArchList.append(string.replace(MasterBuildLog[each + i],"\n",""))
+			i=i+1
+	if(string.find(MasterBuildLog[each],"for build_id") != -1):
+		BuildId= string.split(MasterBuildLog[each]," ")[1]
+	if(string.find(MasterBuildLog[each],"for buildtag") != -1):
+		BuildTag= string.split(MasterBuildLog[each]," ")[1]
+
+#Builds Database
+if DB_ENABLE:
+	print 'e'
+	BUILD_ID = int(BuildId)
+	BuildPathSplit = os.path.split(LogSplit[0])
+	product = DB.getBuildProduct(BuildTag)
+	#only import build once:
+	if DB.getBuild(BUILD_ID):
+	    	print "getBuild returning 0 -- Disabling database interaction."
+		DB_ENABLE = 0
+	elif product:
+		print 'product true, entering insertBuild'
+		PRODUCT_ID = product['id']
+		DB.insertBuild(BUILD_ID, BuildTag, BuildPathSplit[0])
+	else:
+	    	print "Product was nil -- Disabling database interaction"
+		DB_ENABLE = 0
+#end Database
+
+print ArchList
+if (os.path.isdir(DestDir + BuildTag)):
+	os.system("rm -rf " + DestDir + BuildTag)
+os.mkdir(DestDir + BuildTag)
+os.system('cp ' + LogFile + ' ' + DestDir + BuildTag)
+if os.path.exists(BuildTag + '.tab'):
+  os.system('cp ' + BuildTag + '.tab ' + DestDir + BuildTag)
+if ChangeLog != "skipcl":
+  os.system('cp ' + ChangeLog + ' ' + DestDir + BuildTag)
+  ChangeLog = ChangeLog[string.rfind(ChangeLog,'/')+1:]
+HostList=GetHostList(LogDir,BuildId)
+print "HostList:"
+print HostList
+if (HostList == -1):
+	AllCoresFailed=1
+print AllCoresFailed
+Excel = open(DestDir + BuildTag + "/" + BuildTag + ".dat","w")
+Stats = open(DestDir + BuildTag + "/stats.shtml", "w")
+Build = open(DestDir + BuildTag + "/build.shtml", "w")
+
+InitMain(Excel,Stats,Build,BuildId,BuildTag,HostList)
+for arch in ArchList:
+	#Builds Database
+	ARCH_TYPE = arch
+	HOST_TYPE = ''
+	#end Builds Database
+
+	BuildFailed = 0
+	os.mkdir(DestDir + BuildTag + "/" + arch)
+	os.mkdir(DestDir + BuildTag + "/" + arch + "/host")
+	os.mkdir(DestDir + BuildTag + "/" + arch + "/app")
+	os.mkdir(DestDir + BuildTag + "/" + arch + "/cds")
+	os.mkdir(DestDir + BuildTag + "/" + arch + "/postapp")
+	os.mkdir(DestDir + BuildTag + "/" + arch + "/stats")
+	os.mkdir(DestDir + BuildTag + "/" + arch + "/html")
+	
+	for Host in HostList:
+		if os.path.exists(LogDir + Host + "-" + arch + "-" + BuildId + ".log"):
+			#Builds Database
+			HOST_TYPE = Host
+			#end Builds Database
+			ParseHost(LogDir + Host + "-" + arch + "-" + BuildId + ".log", 
+				  DestDir + BuildTag + "/" + arch + "/host/" + Host,
+				  DestDir + BuildTag + "/" + arch + "/stats/" + Host)
+	#Release Databse
+	HOST_TYPE = ''
+	#end Builds Database
+	
+	# Applications processing
+	print 'running ParseApps...'
+	if os.path.exists(LogDir + "apps-" + arch + "-" + BuildId + ".log"):
+		ParseApps(LogDir + "apps-" + arch + "-" + BuildId + ".log",
+			  DestDir + BuildTag + "/" + arch + "/app",
+			  DestDir + BuildTag + "/" + arch + "/stats/apps")
+	if os.path.exists(LogDir + "lsp-" + arch + "-" + BuildId + ".log"):
+		ParseLsps(LogDir + "lsp-" + arch + "-" + BuildId + ".log", 
+		   DestDir + BuildTag + "/" + arch + "/lsp",
+		   DestDir + BuildTag + "/" + arch + "/stats/lsps")
+	if os.path.exists(LogDir + "cdimages-" + BuildId + ".log"):
+		ParseCDs(LogDir + "cdimages-" + BuildId + ".log",
+			DestDir + BuildTag + "/" + arch + "/cds",
+			arch, 
+			DestDir + BuildTag + "/" + arch + "/stats/cds")
+	
+	AddArch(Excel,Stats,Build,arch)
+	for Host in HostList:
+		if os.path.isfile(DestDir + BuildTag + "/" + arch + "/stats/" + Host):
+			StatFile=open(DestDir + BuildTag + "/" + arch + "/stats/" + Host).readlines()
+			HtmlFile=open(DestDir + BuildTag + "/" + arch +  "/html/" + Host + ".shtml", "w")
+			AddMain(Excel,Stats,Build,StatFile,Host,arch,BuildTag)
+ 			GenItemHtml("/logs/" + BuildTag + "/" + arch + "/host/"+ Host + "/",
+	 		   HtmlFile,StatFile, arch + " " + Host + " Applications", BuildTag)
+		else:
+			AddMainNA(Excel,Stats,Build)
+	
+	if os.path.exists(DestDir + BuildTag + "/" + arch + "/stats/apps"):
+		StatFile=open(DestDir + BuildTag + "/" + arch + "/stats/apps").readlines()
+		HtmlFile=open(DestDir + BuildTag + "/" + arch + "/html/apps.shtml", "w")
+		AddMain(Excel,Stats,Build,StatFile,"apps",arch,BuildTag)
+		GenItemHtml("/logs/" + BuildTag + "/" + arch + "/app/",
+		    	HtmlFile, StatFile, arch + " Applications", BuildTag)
+	if os.path.exists(DestDir + BuildTag + "/" + arch + "/stats/lsps"):
+		StatFile=open(DestDir + BuildTag + "/" + arch + "/stats/lsps").readlines()
+		HtmlFile=open(DestDir + BuildTag + "/" + arch + "/html/lsp.shtml", "w")
+		AddMain(Excel,Stats,Build,StatFile,"lsp",arch,BuildTag)
+	 	GenItemHtml("/logs/" + BuildTag + "/" + arch + "/lsp/",
+		    	HtmlFile, StatFile, arch + " Lsps", BuildTag)
+
+	if os.path.exists(DestDir + BuildTag + "/" + arch + "/stats/cds"):
+		StatFile=open(DestDir + BuildTag + "/" + arch + "/stats/cds").readlines()
+		HtmlFile=open(DestDir + BuildTag + "/" + arch + "/html/cds.shtml", "w")
+		AddMain(Excel,Stats,Build,StatFile,"cds",arch,BuildTag)
+	 	GenItemHtml("/logs/" + BuildTag + "/" + arch + "/cds/",
+		    	HtmlFile, StatFile, arch + " CDs", BuildTag)
+	else:
+		AddMainNA(Excel,Stats,Build)
+
+	ArchDone(Excel,Stats,Build)
+MainClose(Excel,Stats,Build)
+
+#Builds Database
+if DB_ENABLE:
+	DB.Commit()
+	DB.Close()
+#end Builds Database
+
+if(os.path.islink(DestDir + "/CurrentBuild")):
+	os.remove(DestDir + "/CurrentBuild")
+os.symlink(BuildTag, DestDir + "/CurrentBuild")

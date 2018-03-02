@@ -1,0 +1,35 @@
+##################
+# arm_xscale_le
+##################
+null
+##################
+# arm_iwmmxt_le
+##################
+Intel/intel-mainstone
+##################
+# arm_v4t_le
+##################
+Motorola/motorola-mx21ads
+TI/ti-omap161x_gsm_gprs
+TI/ti-omap730_gsm_gprs
+##################
+# arm_v5t_le
+##################
+TI/ti-omap161x_gsm_gprs
+##################
+# ppc_405
+##################
+null
+##################
+# mips_fp_le
+##################
+ITE/ite-it8172_qed5231
+##################
+# sh_sh3_le
+##################
+#Hitachi/hitachi-ms7300cp01-sh_sh3_le
+Hitachi/hitachi-ms73180cp01-sh_sh3_le
+##################
+# end
+##################
+

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# arg 1 = buildtag
+# arg 2 = product 
+# arg 3 = buildid 
+
+if [ "$2" = "pro" ]; then
+  imgs="lsps-arm_720t_le-$3.iso target-arm_720t_le-$3.iso cross-arm_720t_le-$3.iso lsps-arm_sa_le-$3.iso target-arm_sa_le-$3.iso cross-arm_sa_le-$3.iso lsps-arm_v4t_le-$3.iso target-arm_v4t_le-$3.iso cross-arm_v4t_le-$3.iso lsps-arm_xscale_be-$3.iso target-arm_xscale_be-$3.iso cross-arm_xscale_be-$3.iso lsps-arm_xscale_le-$3.iso target-arm_xscale_le-$3.iso cross-arm_xscale_le-$3.iso host-$3.iso lsps-ppc_405-$3.iso target-ppc_405-$3.iso cross-ppc_405-$3.iso lsps-ppc_440-$3.iso target-ppc_440-$3.iso cross-ppc_440-$3.iso lsps-ppc_74xx-$3.iso target-ppc_74xx-$3.iso cross-ppc_74xx-$3.iso lsps-ppc_7xx-$3.iso target-ppc_7xx-$3.iso cross-ppc_7xx-$3.iso lsps-ppc_82xx-$3.iso target-ppc_82xx-$3.iso cross-ppc_82xx-$3.iso lsps-ppc_8xx-$3.iso target-ppc_8xx-$3.iso cross-ppc_8xx-$3.iso"
+elif [ "$2" = "cge" ]; then
+  imgs="host-$2-$3.iso lsps-x86_pentium3-$3.iso cross-x86_pentium3-$3.iso target-x86_pentium3-$3.iso lsps-x86_pentium4-$3.iso cross-x86_pentium4-$3.iso target-x86_pentium4-$3.iso"
+else
+  imgs=""
+fi
+cd /mvista/dev_area/"$2"/cdimages/"$1"
+devenvcd="$(ls devrocket*)"
+cd /mvista/dev_area/"$2"/cdimages/"$2"_for_tempe
+mkdir $1
+cd $1
+cp /mvista/dev_area/"$2"/cdimages/"$2"_for_tempe/az.md5sums .
+
+for i in $imgs; do
+  ln ../../"$1"/"$i" .
+  cat ../../"$1"/README.md5sum | grep "$i" >> az.md5sums
+done
+
+# link devrocket cd
+ln ../../"$1"/"$devenvcd" .
+
+

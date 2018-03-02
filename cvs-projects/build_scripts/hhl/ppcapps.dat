@@ -1,0 +1,31 @@
+###############
+# ppc_405
+# ppc_405_uclibc
+# ppc_440
+# ppc_440_uclibc
+# ppc_83xx_nfp
+# ppc_8xx
+# ppc_8xx_uclibc
+# ppc_85xx_uclibc
+###############
+ltrace
+###############
+# ppc_403
+# ppc_440ep
+# ppc_7xx
+# ppc_74xx
+# ppc_82xx
+# ppc_83xx
+# ppc_85xx
+# ppc_pa6t
+###############
+lsb-3.0.0
+ltrace
+###############
+# ppc_9xx
+# ppc_e500mc
+###############
+lsb-3.0.0
+###############
+# end
+###############

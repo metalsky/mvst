@@ -1,0 +1,25 @@
+build@overlord:/mvista/dev_area$ for dir in `/usr/bin/find . -maxdepth 1 -type d`; do echo -n "/mvista/dev_area/$dir: " && du -sh $dir; done
+/mvista/dev_area/.: du: `./.snapshot': No such file or directory
+6.6T    .
+/mvista/dev_area/./pro: 1.4T    ./pro
+/mvista/dev_area/./sht-asyncfe: 42M     ./sht-asyncfe
+/mvista/dev_area/./mvl: 25G     ./mvl
+/mvista/dev_area/./asterisk: 55M        ./asterisk
+/mvista/dev_area/./buildtars: 7.0G      ./buildtars
+/mvista/dev_area/./cee: 104K    ./cee
+/mvista/dev_area/./cge: 1.6T    ./cge
+/mvista/dev_area/./cht-fe: 251M ./cht-fe
+/mvista/dev_area/./foundation: 2.2T     ./foundation
+/mvista/dev_area/./tsuki: 5.8G  ./tsuki
+/mvista/dev_area/./mobilinux: 435G      ./mobilinux
+/mvista/dev_area/./sht-fe: 130M ./sht-fe
+/mvista/dev_area/./sht-fe64: 132M       ./sht-fe64
+/mvista/dev_area/./sht-optional: 72K    ./sht-optional
+/mvista/dev_area/./sht-xtensa: 141M     ./sht-xtensa
+/mvista/dev_area/./RELEASED_by_buildtag: 244K   ./RELEASED_by_buildtag
+/mvista/dev_area/./devrocket: 80G       ./devrocket
+/mvista/dev_area/./integration_platform: 111G   ./integration_platform
+/mvista/dev_area/./license_server: 12K  ./license_server
+/mvista/dev_area/./mvl6: 931G   ./mvl6
+/mvista/dev_area/./cvs_changelog_scripts: 76K   ./cvs_changelog_scripts
+/mvista/dev_area/./.snapshot: du: `./.snapshot': No such file or directory

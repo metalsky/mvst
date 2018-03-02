@@ -1,0 +1,15 @@
+
+	Hotfix Cruft:
+	
+		- .pc/*
+		
+		- patches/*
+		
+		- top-level 'temp' directories, i.e:
+		
+			[nk@bx:~/bosch/hotfixes/M2-P61.51082]$ find . -type d -name temp -print
+			./qt4-native-4.7.4-r1.0.1/temp
+			./qt4-embedded-4.7.4-r33.1.5/temp
+			./qtwebkit-2.2.0-r3/temp
+		
+		

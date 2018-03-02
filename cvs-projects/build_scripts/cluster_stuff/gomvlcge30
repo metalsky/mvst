@@ -1,0 +1,104 @@
+#!/bin/bash
+# This script 
+
+# args:
+# 1- application or tool to build
+# 2- The bug or defect id (you must have a defect number)
+# 3- type of build -- i.e. target, cross or if app is cross and no arch use cross-noarch
+
+if [ "$#" != "3" ]; then
+  echo "Usage: $0 "<application or tool>" <bug-id> <type>"
+  echo "<application or tool> The tool chain app you are rebuilding"
+  echo "<bug-id> The defect number used to check the fixes into cvs"
+  echo "<type> This is the type of tool.. a target or cross"
+  exit 1
+fi
+
+hn="$(hostname -s)"
+
+if [ "$hn" = "node-1" ]; then
+  archs="x86_pentium2"
+elif [ "$hn" = "node-2" ]; then
+  archs="x86_pentium4"
+elif [ "$hn" = "node-3" ]; then
+  archs="x86_pentium3"
+fi
+
+apps="$1"
+bugid="$2"
+# if app is cross and noarch, use target="cross-noarch"
+# otherwise use "cross"
+type="$3"
+for p in $apps; do
+  for a in $archs; do
+   rm -rf /opt/mvlcge/*
+   cd /
+   rpm2cpio /mvista/release_area/mvlcge3.0.0/host/cluster/hhl-host-rpm-4*.rpm | cpio -id
+   rpm2cpio /mvista/release_area/mvlcge3.0.0/host/cluster/hhl-host-rpm-build*.rpm | cpio -id
+   rpm2cpio /mvista/release_area/mvlcge3.0.0/host/cluster/hhl-host-rpm-dev*.rpm | cpio -id
+   rpm2cpio /mvista/release_area/mvlcge3.0.0/host/cluster/hhl-host-popt*.rpm | cpio -id
+   cd /mvista/dev_area/mvlcge300_rebuilt_hostkernel/
+   /opt/mvlcge/host/bin/mvl-rpm -ihv *.rpm --nodeps
+   cd /mvista/release_area/mvlcge3.0.0/host/common/optional/
+   ls | grep -v solaris | grep -v kernel | xargs /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps 
+   cd /mvista/release_area/mvlcge3.0.0/host/common/ 
+   /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps *file* *ldd* *python* *setperm* *targetconf*  *rpmconfig* *platform*
+   cd /mvista/release_area/mvlcge3.0.0/host/cluster/
+   /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps *.rpm
+
+   cd /mvista/release_area/mvlcge3.0.0/$a/cross/common
+   ls | grep -v glib | xargs /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps
+   cd /mvista/release_area/mvlcge3.0.0/$a/cross/cluster
+   if [ "$p" = "gcc" ] && [ "$type" = "cross" ]; then
+      /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps *binutils* *hardhatutils* *ksymoops* *ldd* *linux86* 
+   else
+       ls | grep -v gdb | xargs /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps
+   fi
+   cd /mvista/release_area/mvlcge3.0.0/$a/target
+   if [ "$p" = "glibc" ]; then
+       /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch *filesystem* *kernel-headers* 
+   elif [ "$p" = "gcc" ]; then
+       /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch *filesystem* *kernel-headers* *binutils* *glibc* *ncurses*
+   elif [ "$p" = "apache" ] || [ "$p" = "OpenIPMI" ] || [ "$p" = "fsad" ]; then
+       ls *.rpm | grep -v $p | xargs /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch 
+   elif [ "$p" = "mxpipmi" ]; then
+       ls *.rpm | grep -v $p | xargs /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch 
+       /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch /mvista/release_area/mvlcge3.0.0-released-updates/OpenIPMI-async/$a/target/*.rpm 
+   elif [ "$p" = "ifenslave" ]; then
+       ls *.rpm | grep -v $p | xargs /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch 
+       /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch /mvista/release_area/mvlcge3.0.0-released-updates/kernel-headers-1-2S1JL/$a/target/*.rpm 
+   elif [ "$p" = "isv-compat" ]; then
+       ls *.rpm | grep -v glibc | xargs /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch 
+       /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch /mvista/release_area/mvlcge3.0.0-released-updates/glibc-1-2KVKH/$a/target/*.rpm 
+   else
+       /opt/mvlcge/host/bin/mvl-rpm -ihv --nodeps --ignorearch *filesystem* *kernel-headers* *binutils* *glibc* *ncurses* *cpp* *gcc* *g++* *libstdc++* *protoize* *flex* *libwrap* *zlib* *libpam* *libtool* *openssl* *perl*
+   fi	
+   cd ~/cge-userland/$p
+   if [ "$type" = "cross" ]; then
+     if [ "$p" = "gcc" ]; then
+       ~/bin/mk3.0appnoclean `pwd` mvlcge3.0.0 $a cross-"$p"2.95.3 /opt/mvlcge/rpmdb ~/.cgerpmrc /opt/mvlcge/host/bin/mvl-rpm > /mvista/dev_area/logs/mvlcge3.0.0-updates/$p-$bugid/$a.log 2>&1
+     else
+       ~/bin/mk3.0appnoclean `pwd` mvlcge3.0.0 $a cross-$p /opt/mvlcge/rpmdb ~/.cgerpmrc /opt/mvlcge/host/bin/mvl-rpm > /mvista/dev_area/logs/mvlcge3.0.0-updates/$p-$bugid/$a.log 2>&1
+     fi
+     mkdir -p /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/$a/cross/common
+     mkdir -p /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/SRPMS
+     cp -f SRPMS/* /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/SRPMS
+     cp /home/build/cge-userland/$p/RPMS/noarch/*$a* /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/$a/cross/common
+   elif [ "$type" = "target" ]; then
+     if [ "$p" = "gcc" ]; then
+       ~/bin/mk3.0appnoclean `pwd` mvlcge3.0.0 $a target-"$p"2.95.3 /opt/mvlcge/rpmdb ~/.cgerpmrc /opt/mvlcge/host/bin/mvl-rpm > /mvista/dev_area/logs/mvlcge3.0.0-updates/$p-$bugid/$a.log 2>&1
+     else
+       ~/bin/mk3.0appnoclean `pwd` mvlcge3.0.0 $a target-$p /opt/mvlcge/rpmdb ~/.cgerpmrc /opt/mvlcge/host/bin/mvl-rpm > /mvista/dev_area/logs/mvlcge3.0.0-updates/$p-$bugid/$a.log 2>&1
+     fi	
+     mkdir -p /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/$a/target
+     mkdir -p /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/SRPMS
+     cp -f /home/build/cge-userland/$p/SRPMS/* /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/SRPMS
+     cp /home/build/cge-userland/$p/RPMS/$a/* /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/$a/target
+   fi
+  done
+  cd /mvista/dev_area/mvlcge3.0.0-updates/$p-$bugid/$a/target
+  for x in *; do
+    echo "changing filename for $x"
+    mv $x $(echo $x | sed -e "s:.mvl$:.rpm:g")
+  done
+done

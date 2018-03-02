@@ -1,0 +1,7 @@
+MAILTO=build@mvista.com
+SHELL=/bin/bash
+PATH=/usr/local/bin:/usr/bin:/usr/X11R6/bin:/bin:/usr/openwin/bin:/sbin:/usr/sbin:/home/build/bin
+CVS_RSH=ssh
+CVSROOT=:ext:build@rodan.mvista.com:/cvsroot
+
+

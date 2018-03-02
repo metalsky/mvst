@@ -1,0 +1,6 @@
+#! /bin/sh
+
+ifclass AMD64 && ifclass BUILD && echo AMD64BUILD
+
+exit 0
+

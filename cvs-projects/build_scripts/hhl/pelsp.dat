@@ -1,0 +1,106 @@
+#!/usr/bin/python
+
+lsps = {
+	'arm_v6_vfp_le':	[
+				['ARM','arm-versatile1176jzfs'],
+				],
+	'arm_v7_vfp_le':	[
+				['TI','ti-omap3530_evm'],
+				],
+	'arm_v7_vfp_le_uclibc':	[
+				['TI','ti-omap3530_evm'],
+				],
+	'arm_v5t_le':		[
+				['ARM','arm-versatile926ejs'],
+				['TI','ti-omap5912_osk'],
+				['TI','ti-davinci_evm-arm_v5t_le'],
+				['Freescale','freescale-i.mx27_ads'],
+				],
+	'arm_v5t_le_uclibc':	[
+				['ARM','arm-versatile926ejs'],
+				['Freescale','freescale-i.mx27_ads'],
+				['TI','ti-davinci_evm-arm_v5t_le_uclibc'],
+				],
+	'arm_xscale_be':	[
+				['Intel','intel-ixdp42x-arm_xscale_be'],
+				['Intel','intel-kixrp435-arm_xscale_be'],
+				],
+	'arm_xscale_be_uclibc':	[
+				['Intel','intel-ixdp42x-arm_xscale_be_uclibc'],
+				['Intel','intel-kixrp435-arm_xscale_be_uclibc'],
+				],
+	'mips64_fp_be':		[
+				['Broadcom','broadcom-bcm91250-mips64_fp_be'],
+				['Broadcom','broadcom-bcm91480-mips64_fp_be'],
+				],
+	'mips2_fp_be':		[
+				['Broadcom','broadcom-bcm91250-mips2_fp_be'],
+				['Broadcom','broadcom-bcm91480-mips2_fp_be'],
+				['MIPS','mips-malta-mips2_fp_be'],
+				['MIPS','mips-malta34KC-mips2_fp_be'],
+				],
+	'mips2_fp_be_uclibc':	[
+				['Broadcom','broadcom-bcm91250-mips2_fp_be_uclibc'],
+				['Broadcom','broadcom-bcm91480-mips2_fp_be_uclibc'],
+				['MIPS','mips-malta-mips2_fp_be_uclibc'],
+				],
+	'mips2_fp_le':		[
+				['MIPS','mips-malta-mips2_fp_le'],
+				['MIPS','mips-malta34KC-mips2_fp_le'],
+				],
+	'mips2_fp_le_uclibc':	[
+				['MIPS','mips-malta-mips2_fp_le_uclibc'],
+				],
+	'ppc_405':		[
+				['Xilinx','xilinx-ml403'],
+				],
+	'ppc_440':		[
+				['AMCC','amcc-440grx_eval'],
+				['AMCC','amcc-440gx_taishan'],
+				['Xilinx','xilinx-ml507'],
+				],
+	'ppc_440ep':		[
+				['AMCC','amcc-440epx_eval'],
+				],
+	'ppc_74xx':		[
+				['Freescale','freescale-mpc8641d_hpcn'],
+				['Freescale','freescale-sandpoint'],
+				],
+	'ppc_83xx':		[
+				['Freescale','freescale-8349itx'],
+				['Freescale','freescale-8313rdb'],
+				['Freescale','freescale-8272ads'],
+				['Freescale','freescale-8323rdb'],
+				['Freescale','freescale-8360rdk'],
+				],
+	'ppc_83xx_nfp':		[
+				['Freescale','freescale-8323rdb'],
+				],
+	'ppc_85xx':		[
+				['Freescale','freescale-8540ads'],
+				['Freescale','freescale-8544ds'],
+				['Freescale','freescale-8548cds'],
+				['Freescale','freescale-8568mds'],
+				],
+	'ppc_8xx':		[
+				['Freescale','freescale-885ads'],
+				],
+	'ppc_9xx':		[
+				['IBM','ibm-970mp'],
+				],
+	'x86_586':		[
+				['x86','x86-pc_target-x86_586'],
+				],
+	'x86_em64t':		[
+				['x86','x86-pc_target-x86_em64t'],
+				],
+	'x86_586_uclibc':	[
+				['x86','x86-pc_target-x86_586_uclibc'],
+				],
+	'x86_pentium3':		[
+				['x86','x86-pc_target-x86_pentium3'],
+				],
+	'x86_pentium4':		[
+				['x86','x86-pc_target-x86_pentium4'],
+				],
+	}

@@ -1,0 +1,9 @@
+
+$ time for ((x=1;x<=8;x++)) do sudo scp hosts node-$x:/chroot/centos3/etc; done
+$ for ((x=1;x<=8;x++)) do echo -n "node-$x:  " && ssh node-$x md5sum /chroot/centos3/etc/hosts; done
+
+$ time for ((x=34;x<=38;x++)) do sudo scp hosts node-$x:/chroot/centos3/etc; done
+$ for ((x=34;x<=38;x++)) do echo -n "node-$x:  " && ssh node-$x md5sum /chroot/centos3/etc/hosts; done
+
+$ time for ((x=40;x<=47;x++)) do sudo scp hosts node-$x:/chroot/centos3/etc; done
+$ for ((x=40;x<=47;x++)) do echo -n "node-$x:  " && ssh node-$x md5sum /chroot/centos3/etc/hosts; done

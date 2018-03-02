@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if [ "$#" != "5" ]; then
+  echo "Usage $0 <builddir> <build_id> <arch> <app name> <rpmbin>"
+  exit
+fi
+#Note: builddir is builddir from gomvleditiion31.py + app"
+builddir="$1"
+buildid="$2"
+arch="$3"
+app="$4"
+rpmbin="$5"
+
+  "$rpmbin"build -ba --define "_topdir $builddir" \
+      --define "_hhl_build_id $buildid" \
+      --define "vendor MontaVista Software, Inc." \
+      --define "packager <source@mvista.com>" \
+      --target=$arch-hardhat-linux $builddir/SPECS/$app.spec --nodeps

@@ -1,0 +1,6 @@
+The 1024-bit ssh1 key (identity, identity.pub) is needed only for the
+rodan2 -> build@rodan connection.  Once rodan2 is out of the picture,
+we can use _just_ id_dsa,id_dsa.pub everywhere.  --g
+
+At that time, we can also ditch "authorized_keys2", since only the ssh
+on rodan2 needs it.

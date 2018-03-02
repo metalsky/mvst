@@ -1,0 +1,16 @@
+host-tool-binutils
+host-tool-gcc
+host-tool-bash
+host-tool-bzip2
+host-tool-coreutils
+host-tool-cpio
+host-tool-findutils
+host-tool-flex
+host-tool-gawk
+host-tool-grep
+host-tool-gzip
+host-tool-mvlutils
+host-tool-ncurses
+host-tool-perl
+host-tool-tar
+host-tool-zlib

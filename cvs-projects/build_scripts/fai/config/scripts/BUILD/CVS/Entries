@@ -1,0 +1,11 @@
+/03-add_nfs_mounts.sh/1.1/Fri Jun 29 15:54:10 2007//
+/04-add_user_build.sh/1.1/Fri Jun 29 15:54:10 2007//
+/10-grab_ssh_host_keys.sh/1.1/Fri Jun 29 15:54:10 2007//
+/20-enable_sudo.sh/1.2/Tue May 19 23:44:41 2009//
+/21-ntp_setup.sh/1.2/Mon Nov  5 19:09:52 2007//
+/22-rsync_cron.sh/1.1/Fri Jun 29 15:54:10 2007//
+/23-smartd_setup.sh/1.1/Mon Nov  5 19:09:52 2007//
+/30-install_chroot_environments.sh/1.4/Mon Jun  1 23:14:27 2009//
+/40-install_node_chroot.sh/1.1/Fri Jun 29 15:54:11 2007//
+/50-init_rpmdb.sh/1.1/Fri Jun 29 15:54:11 2007//
+D

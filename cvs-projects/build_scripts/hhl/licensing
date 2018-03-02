@@ -1,0 +1,88 @@
+#!/bin/bash
+
+bd="peadk$(date '+%y%m%d')"
+echo $bd
+buildid="$(./bumpid.py $bd)"
+echo $buildid
+cd /home/build/licensing
+sudo rm -rf flex*
+cvs co .
+tag="$bd"_"$buildid"
+echo $tag
+cvs tag $tag
+/opt/montavista/host/bin/mvl-rpm-forward -ivh /mvista/dev_area/foundation/fb031223/common/i386/common-jdk-* --nodeps
+cd flexnet
+mkappsrc `pwd` $buildid common-flexnet null null /opt/montavista/host/bin/mvl-rpm
+pushd /mvista/dev_area/licensing
+rm -f SRPMS/*
+rm -f host/redhat73/* host/redhat90/* host/suse90/* host/solaris7/* host/windows2000/*
+popd
+cp -a SRPMS/common-flexnet-*.src.rpm /mvista/dev_area/licensing/SRPMS/
+hosts="redhat73 redhat90 suse90"
+for h in $hosts; do
+  pushd /chroot/$h/home/build
+  rm -rf BUILD RPMS SRPMS SOURCES SPECS; mkdir BUILD RPMS SRPMS SOURCES SPECS
+  cp -a /mvista/dev_area/licensing/SRPMS/* SRPMS
+  cp -a /mvista/dev_area/foundation/fb031223/common/$h/common-jdk-* RPMS
+  sudo chroot /chroot/$h /bin/su - build -c "/opt/montavista/host/bin/mvl-rpm-forward -ivh --define \"_topdir /home/build\" SRPMS/*.rpm"
+  sudo chroot /chroot/$h /bin/su - build -c "/opt/montavista/host/bin/mvl-rpm-forward -ivh --nodeps RPMS/common-jdk*"
+  sudo chroot /chroot/$h /bin/su - build -c "/opt/montavista/host/bin/mvl-rpmbuild -bb --define \"_topdir /home/build\" --define \"_mvl_build_id $buildid\" --define \"_mvl_dist foundation\" --define \"vendor MontaVista Software, Inc.\" --define \"packager <source@mvista.com>\" --define \"_mvl_host_os_build $h\" /home/build/SPECS/common-flexnet.spec --nodeps"
+  cp -a /chroot/$h/home/build/RPMS/i386/* /mvista/dev_area/licensing/host/$h
+  popd
+done
+exit 1
+
+#solaris build...should run in a separate script?
+ssh root@solaris8-1
+chroot /chroot/sol7 /opt/montavista/host/bin/bash
+export PATH=/opt/montavista/host/bin/:$PATH; export MVL_UNAME_SOLARIS=solaris2.7
+cd /home/build/licensing/flexnet/
+mkdir BUILD
+/opt/montavista/host/bin/mvl-rpm-forward -ivh /mvista/dev_area/foundation/fb031223/common/solaris7/common-jdk-* --nodeps
+/opt/montavista/host/bin/mvl-rpmbuild -bb --define "_topdir `pwd`" --define "_mvl_build_id $buildid" --define "_mvl_dist foundation" --define "vendor MontaVista Software, Inc." --define "packager <source@mvista.com>" --define "_mvl_host_os_build solaris7" SPECS/common-flexnet.spec --nodeps
+cp -a RPMS/sun4u/common-flexnet-* /mvista/dev_area/licensing/host/solaris7/
+
+# Windows build
+rsh cygwin-7 "cd /home/build/dailybuild; rm -rf BUILD RPMS SOURCES SPECS SRPMS; mkdir BUILD RPMS SOURCES SPECS SRPMS"
+rcp /mvista/dev_area/licensing/SRPMS/common-flexnet-*.src.rpm cygwin-7:/home/build/dailybuild/SRPMS
+rsh cygwin-7 "/opt/montavista/host/bin/mvl-rpm-forward -ivh --define \"_topdir /home/build/dailybuild\" /home/build/dailybuild/SRPMS/*.rpm"
+rcp /mvista/dev_area/foundation/fb031223/common/windows2000/common-jdk-* cygwin-7:/home/build/dailybuild/RPMS
+rsh cygwin-7 "/opt/montavista/host/bin/mvl-rpm-forward -ivh /home/build/dailybuild/RPMS/*.mvl --nodeps"
+#
+# run build command on cygwin-7, not by rsh
+#
+rsh cygwin-7
+cd dailybuild
+. /home/build/bin/vsvars32.sh; /opt/montavista/host/bin/mvl-rpmbuild -bb --define "_topdir /home/build/dailybuild" --define "_mvl_build_id $buildid" --define "_mvl_dist foundation" --define "vendor MontaVista Software, Inc." --define "packager <source@mvista.com>" --define "_mvl_host_os_build windows2000" /home/build/dailybuild/SPECS/common-flexnet.spec --nodeps
+rcp cygwin-7:/home/build/dailybuild/RPMS/i386/common-flexnet-* /mvista/dev_area/licensing/host/windows2000
+
+#
+# windows installer
+# 
+pushd ~/mvl-installer
+cvs export -r license_server -d peadk04MMDD_buildid .
+cd peadk04MMDD_buildid
+rsh cygwin-7 "rm -rf /cygdrive/c/nsis_exp/*"
+rcp -r license_server/windows.src/nsis_exp/* cygwin-7:/cygdrive/c/nsis_exp
+rsh cygwin-7
+cd /cygdrive/c/nsis_exp
+`cygpath -W`/../Program\ Files/NSIS/makensis.exe /V4 `cygpath -w "/cygdrive/c/nsis_exp/example2.nsi"`
+rcp cygwin-7:/cygdrive/c/nsis_exp/compiles/lminstaller.exe /mvista/dev_area/licensing/media
+
+#
+# make cd
+#
+
+pushd /mvista/dev_area/licensing/media/install-components/license/host
+find | grep mvl | xargs rm -rf
+rm -rf windows2000/*
+mhosts="redhat73 redhat90 solaris7 suse90"
+for mh in $mhosts; do
+  cp -a /mvista/dev_area/licensing/host/$mh/common-flexnet-server* $mh
+done
+/opt/montavista/host/bin/mvl-rpm-forward -ivh --nodeps --ignoreos --prefix /mvista/dev_area/licensing/media/install-components/license/host/windows2000 /mvista/dev_area/licensing/host/windows2000/common-flexnet-server-*
+popd
+./licservcd $buildid
+rm -f /mvista/dev_area/licensing/cdimages/*.iso
+mv license_server-adk-$buildid.iso /mvista/dev_area/licensing/cdimages
+

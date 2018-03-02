@@ -1,0 +1,27 @@
+PACKAGES aptitude I386
+memtest86+ postfix udev openssh-server rsync cvs cvs2cl mkisofs sudo ntp ntpdate bzip2 vim ncurses-dev ant ibm-j2sdk1.4 linux-image-2.6.20-fai-client ant-optional libxerces-java libxml-commons-resolver1.1-java python2.4 pyro lm-sensors libsensors3 rpm makedev make snmpd python-mysqldb mailx smartmontools lsof
+
+PACKAGES aptitude CHROOT
+linux-image-486-
+
+PACKAGES aptitude AMD64
+memtest86+ udev openssh-server rsync cvs cvs2cl mkisofs sudo ntp ntpdate bzip2 vim linux32 ncurses-dev ant ibm-j2sdk1.4 ant-optional libxerces-java libxml-commons-resolver1.1-java python2.4 pyro linux-image-2.6.20-fai-client ibm-j2sdk1.4 lm-sensors libsensors3 rpm makedev make ia32-libs libstdc++5 snmpd python-mysqldb postfix lsof mailx smartmontools ipkg-utils binutils
+
+PACKAGES aptitude DHCPC
+dhcp3-client
+
+PACKAGES aptitude SCRATCH
+libnss-ldap ccache autofs gawk quilt patch git-core emacs autofs-ldap patchutils libcurl3-dev zip unzip libexpat1-dev tcl8.4 asciidoc monotone subversion sqlite3 python-pysqlite2 curl dstat libreadline5-dev texi2html g++ diffstat help2man texinfo
+
+PACKAGES aptitude GIT
+git gitweb git-email apache2 libnss-ldap autofs postfix mailx autofs-ldap
+
+PACKAGES aptitude GRUB
+grub lilo-
+
+PACKAGES aptitude LILO
+lilo grub-
+
+PACKAGES remove
+gcj-4.1-base libgcj-common libgcj7-0 libgcj7-jar java-gcj-compat exim4 exim4-base
+

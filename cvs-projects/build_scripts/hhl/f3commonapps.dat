@@ -1,0 +1,229 @@
+###############
+# some of these are not built for all targets...check buildtargetapps.py for lists of excludes
+# arm_720t_be
+# arm_720t_le
+# arm_iwmmxt_le
+# arm_iwmmxt_le_uclibc
+# arm_iwmmxt2_le
+# arm_iwmmxt2_le_uclibc
+# arm_sa_be
+# arm_sa_le
+# arm_v4t_be
+# arm_v4t_be_uclibc
+# arm_v4t_le
+# arm_v4t_le_uclibc
+# arm_v5t_arm_le_uclibc
+# arm_v5t_be
+# arm_v5t_le
+# arm_v5t_le_uclibc
+# arm_v6_be
+# arm_v6_le
+# arm_v6_be_uclibc
+# arm_v6_le_uclibc
+# arm_v6_vfp_be
+# arm_v6_vfp_le
+# arm_v6_vfp_le_uclibc
+# arm_v7_vfp_le
+# arm_v7_vfp_le_uclibc
+# arm_xscale_be
+# arm_xscale_be_uclibc
+# arm_xscale_le
+# arm_xscale_le_uclibc
+# ia64_i2
+# mips_fp_be
+# mips_fp_le
+# mips_nfp_be
+# mips_nfp_le
+# mips2_fp_be
+# mips2_fp_be_uclibc
+# mips2_fp_le
+# mips2_fp_le_uclibc
+# mips2_nfp_be
+# mips2_nfp_le
+# mips2_nfp_le_uclibc
+# mips2_fmath_be
+# mips2_fmath_le
+# mips64_fp_be
+# mips64_fp_be_uclibc
+# mips64_fp_le
+# mips64_nfp_be
+# mips64_nfp_le
+# ppc_405
+# ppc_405_uclibc
+# ppc_440
+# ppc_440ep
+# ppc_74xx
+# ppc_7xx
+# ppc_82xx
+# ppc_83xx
+# ppc_83xx_nfp
+# ppc_85xx
+# ppc_85xx_dpfp
+# ppc_8xx
+# ppc_9xx
+# sh_sh3_be
+# sh_sh3_le
+# sh_sh4_be
+# sh_sh4_le
+# x86_486
+# x86_586
+# x86_586_uclibc
+# x86_amd64
+# x86_crusoe
+# x86_em64t
+# x86_pentium
+# x86_pentium2
+# x86_pentium3
+# x86_pentium4
+# xtensa_linux_be
+# xtensa_linux_le
+# xtensa_linux_test
+###############
+minicom
+man-db
+lsb-helpers
+portmap
+cron
+libpng
+prelink
+adduser
+anacron
+dash
+at
+aumix
+base-passwd
+bonnie
+bootpc
+bsd-finger
+console-data
+cpio
+cproto
+cyclictest
+dhcpcd
+dialog
+diff
+dnrd
+dosfstools
+dtc
+ed
+eject
+ethtool
+fbgetty
+fbset
+findutils
+gdb
+genevent
+grep
+groff
+gzip
+hdparm
+hostapd
+hostap-utils
+hotplug
+thttpd
+ifupdown
+ipgrab
+iputils
+iproute
+jpreempt
+ksymoops
+lcap
+less
+alsa-utils
+lidstools
+linuxinfo
+logrotate
+lsof
+lrzsz
+m4
+mailx
+makedev
+man-pages
+memstat
+mgetty
+yaffs-utils
+module-init-tools
+net-tools
+netbase
+netkit-base
+netkit-ftp
+netkit-ntalk
+netkit-routed
+netkit-rsh
+netkit-telnet
+tftp-hpa
+nfs-utils
+nvi
+open-iscsi
+oprofile
+pcmcia-cs
+pcmciautils
+pidentd
+preempt
+procmail
+psmisc
+rarpd
+rdate
+dump
+rp-pppoe
+rstatd
+rsync
+setserial
+squashfs-tools
+squid
+strace
+sudo
+sysklogd
+sysutils
+tar
+dejagnu
+tcpdump
+texinfo
+time
+traceroute
+udev
+udev-static
+usbutils
+bluez-utils
+bluez-hcidump
+util-linux
+vim
+vlan
+wget
+wu-ftpd
+xinetd
+lmbench
+netperf
+ilmtk
+schedutils
+socket
+busybox
+busybox-static
+jfsutils
+pax
+bc
+tcsh
+sharutils
+doxygen
+nasm
+watchdog
+xfsdump
+rdist
+openssh
+mipl
+ntp
+lynx
+radvd
+postfix
+icewm
+rxvt
+xkbd
+gpp
+uSDE
+nano
+cross-cd-installer
+arch-cd-installer
+lsps-cd-installer
+###############
+# end
+###############

@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# First do the following:
+#    cvs import -m "import comment" <module> stable hhl_2_0
+
+# Make sure a module name is specified
+if [ "$1" = "" ] ; then
+    echo "Usage:  $0 <module>" >&2
+    exit 1
+fi
+
+# Get module name
+MODULE=$1
+
+# Must be in a directory where it's safe to check out the module
+if [ -e "${MODULE}" ] ; then
+    echo "\"${MODULE}\" exists in current directory; cannot proceed" >&2
+    exit 1
+fi
+
+if cvs -Q co ${MODULE} ; then
+    if cvs -Q rtag -r 1 DEV ${MODULE} ; then
+	echo "Setting default branch for module \"${MODULE}\":"
+	cvs -Q admin -bDEV ${MODULE}
+    fi
+    cvs -Q release -d ${MODULE}
+fi

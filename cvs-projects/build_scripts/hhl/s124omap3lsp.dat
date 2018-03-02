@@ -1,0 +1,9 @@
+#!/usr/bin/python
+
+lsps = {
+	'arm_v7_vfp_le':                [
+                                        ['TI','ti-omap3430_zoom'],
+                                        #['TI','ti-omap3530_beagle'],
+                                        #['TI','ti-omap3530_evm'],
+                                        ],
+	}

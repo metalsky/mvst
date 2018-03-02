@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<content server-time="2009-05-08T20:25:50.0Z">
+<result>success</result>
+<token>pL5PSuqoZ9YmaNOFJkgqybj1TrviKEAmVONWbmzX8cs=</token>
+<msds>
+
+	<msd id="arm-versatile-1176-2.6.28" description="arm-versatile-1176-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-1176-2.6.28_090916_0903048/content/msds/arm-versatile-1176-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="arm-versatile-926-2.6.28" description="arm-versatile-926-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-926-2.6.28_090911_0903002/content/msds/arm-versatile-926-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8349mds-2.6.27" description="freescale-8349mds-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8349mds-2.6.27_090911_0903013/content/msds/freescale-8349mds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8377rdb-2.6.27" description="freescale-8377rdb-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_090911_0903010/content/msds/freescale-8377rdb-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8548cds-2.6.27" description="freescale-8548cds-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8548cds-2.6.27_090911_0903005/content/msds/freescale-8548cds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8572ds-2.6.27" description="freescale-8572ds-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8572ds-2.6.27_090911_0903007/content/msds/freescale-8572ds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="mips-malta-2.6.28" description="mips-malta-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-2.6.28_090911_0903001/content/msds/mips-malta-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="mips-malta-mp-2.6.28" description="mips-malta-mp-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_090911_0903009/content/msds/mips-malta-mp-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="x86-target-2.6.28" description="x86-target-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_090911_0903011/content/msds/x86-target-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="xilinx-ml507-2.6.29" description="xilinx-ml507-2.6.29 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_090911_0903004/content/msds/xilinx-ml507-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+
+</msds>
+<collections>
+
+	<collection type="kernel" ordering="1" id="arm-versatile-1176-2.6.28" description="kernel collection for arm-versatile-1176-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-1176-2.6.28_090916_0903048/content/collections/arm-versatile-1176-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="arm-versatile-926-2.6.28" description="kernel collection for arm-versatile-926-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-926-2.6.28_090911_0903002/content/collections/arm-versatile-926-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8349mds-2.6.27" description="kernel collection for freescale-8349mds-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8349mds-2.6.27_090911_0903013/content/collections/freescale-8349mds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8349mds-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8377rdb-2.6.27" description="kernel collection for freescale-8377rdb-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_090911_0903010/content/collections/freescale-8377rdb-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8548cds-2.6.27" description="kernel collection for freescale-8548cds-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8548cds-2.6.27_090911_0903005/content/collections/freescale-8548cds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8572ds-2.6.27" description="kernel collection for freescale-8572ds-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8572ds-2.6.27_090911_0903007/content/collections/freescale-8572ds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8572ds-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="mips-malta-2.6.28" description="kernel collection for mips-malta-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-2.6.28_090911_0903001/content/collections/mips-malta-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="mips-malta-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="mips-malta-mp-2.6.28" description="kernel collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_090911_0903009/content/collections/mips-malta-mp-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="x86-target-2.6.28" description="kernel collection for x86-target-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_090911_0903011/content/collections/x86-target-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="x86-target-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="xilinx-ml507-2.6.29" description="kernel collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_090911_0903004/content/collections/xilinx-ml507-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+
+	</collection>
+	<collection type="wireless" ordering="2" id="wireless" description="wireless collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_090911_0903011/content/collections/wireless/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="x86-target-2.6.28"/>
+
+	</collection>
+	<collection type="foundation" ordering="3" id="foundation" description="foundation collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_090911_0903004/content/collections/foundation/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+		<msd-group id="freescale-8349mds-2.6.27"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+		<msd-group id="freescale-8572ds-2.6.27"/>
+		<msd-group id="mips-malta-2.6.28"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+
+	</collection>
+	<collection type="audio" ordering="4" id="audio" description="audio collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_090911_0903011/content/collections/audio/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="x86-target-2.6.28"/>
+
+	</collection>
+	<collection type="uboot" ordering="5" id="uboot" description="uboot collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8548cds-2.6.27_090911_0903005/content/collections/uboot/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+
+	</collection>
+	<collection type="core" ordering="6" id="core" description="core collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_090911_0903004/content/collections/core/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+		<msd-group id="freescale-8349mds-2.6.27"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+		<msd-group id="freescale-8572ds-2.6.27"/>
+		<msd-group id="mips-malta-2.6.28"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+
+	</collection>
+	<collection type="graphics" ordering="7" id="graphics" description="graphics collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_090911_0903011/content/collections/graphics/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="x86-target-2.6.28"/>
+
+	</collection>
+	<collection type="bluetooth" ordering="8" id="bluetooth" description="bluetooth collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_090911_0903011/content/collections/bluetooth/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="x86-target-2.6.28"/>
+
+	</collection>
+
+</collections></content>

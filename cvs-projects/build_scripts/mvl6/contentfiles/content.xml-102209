@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<content server-time="2009-05-08T20:25:50.0Z">
+<result>success</result>
+<token>pL5PSuqoZ9YmaNOFJkgqybj1TrviKEAmVONWbmzX8cs=</token>
+<msds>
+
+	<msd id="arm-versatile-926-2.6.28" description="arm-versatile-926-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-926-2.6.28_091016_0903519/content/msds/arm-versatile-926-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="arm-versatile-1176-2.6.28" description="arm-versatile-1176-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-1176-2.6.28_091016_0903511/content/msds/arm-versatile-1176-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8349mds-2.6.27" description="freescale-8349mds-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8349mds-2.6.27_091016_0903520/content/msds/freescale-8349mds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8377rdb-2.6.27" description="freescale-8377rdb-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_091016_0903512/content/msds/freescale-8377rdb-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8548cds-2.6.27" description="freescale-8548cds-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8548cds-2.6.27_091016_0903516/content/msds/freescale-8548cds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="freescale-8572ds-2.6.27" description="freescale-8572ds-2.6.27 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8572ds-2.6.27_091016_0903510/content/msds/freescale-8572ds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="mips-malta-2.6.28" description="mips-malta-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-2.6.28_091016_0903513/content/msds/mips-malta-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="mips-malta-mp-2.6.28" description="mips-malta-mp-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_091016_0903509/content/msds/mips-malta-mp-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="x86-target-2.6.28" description="x86-target-2.6.28 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_091016_0903514/content/msds/x86-target-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="xilinx-ml507-2.6.29" description="xilinx-ml507-2.6.29 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_091016_0903517/content/msds/xilinx-ml507-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="ti-omap3-zoom2-2.6.29" description="ti-omap3-zoom2-2.6.29 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-zoom2-2.6.29_091021_0903570/content/msds/ti-omap3-zoom2-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+	<msd id="ti-omap3-beagle-2.6.29" description="ti-omap3-beagle-2.6.29 prebuilt binaries">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/msds/ti-omap3-beagle-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+	</msd>
+
+</msds>
+<collections>
+
+	<collection type="kernel" ordering="1" id="arm-versatile-926-2.6.28" description="kernel collection for arm-versatile-926-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-926-2.6.28_091016_0903519/content/collections/arm-versatile-926-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="arm-versatile-1176-2.6.28" description="kernel collection for arm-versatile-1176-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/arm-versatile-1176-2.6.28_091016_0903511/content/collections/arm-versatile-1176-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8349mds-2.6.27" description="kernel collection for freescale-8349mds-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8349mds-2.6.27_091016_0903520/content/collections/freescale-8349mds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8349mds-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8377rdb-2.6.27" description="kernel collection for freescale-8377rdb-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8377rdb-2.6.27_091016_0903512/content/collections/freescale-8377rdb-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8548cds-2.6.27" description="kernel collection for freescale-8548cds-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8548cds-2.6.27_091016_0903516/content/collections/freescale-8548cds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="freescale-8572ds-2.6.27" description="kernel collection for freescale-8572ds-2.6.27">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8572ds-2.6.27_091016_0903510/content/collections/freescale-8572ds-2.6.27/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8572ds-2.6.27"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="mips-malta-2.6.28" description="kernel collection for mips-malta-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-2.6.28_091016_0903513/content/collections/mips-malta-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="mips-malta-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="mips-malta-mp-2.6.28" description="kernel collection for mips-malta-mp-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/mips-malta-mp-2.6.28_091016_0903509/content/collections/mips-malta-mp-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="x86-target-2.6.28" description="kernel collection for x86-target-2.6.28">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/x86-target-2.6.28_091016_0903514/content/collections/x86-target-2.6.28/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="x86-target-2.6.28"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="xilinx-ml507-2.6.29" description="kernel collection for xilinx-ml507-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/xilinx-ml507-2.6.29_091016_0903517/content/collections/xilinx-ml507-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="ti-omap3-zoom2-2.6.29" description="kernel collection for ti-omap3-zoom2-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-zoom2-2.6.29_091021_0903570/content/collections/ti-omap3-zoom2-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+
+	</collection>
+	<collection type="kernel" ordering="1" id="ti-omap3-beagle-2.6.29" description="kernel collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/ti-omap3-beagle-2.6.29/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="ti-omap3" ordering="2" id="ti-omap3" description="ti-omap3 collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/ti-omap3/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="foundation" ordering="3" id="foundation" description="foundation collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/foundation/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="freescale-8349mds-2.6.27"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+		<msd-group id="freescale-8572ds-2.6.27"/>
+		<msd-group id="mips-malta-2.6.28"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="uboot" ordering="4" id="uboot" description="uboot collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/freescale-8548cds-2.6.27_091016_0903516/content/collections/uboot/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+
+	</collection>
+	<collection type="core" ordering="5" id="core" description="core collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/core/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="freescale-8349mds-2.6.27"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="freescale-8548cds-2.6.27"/>
+		<msd-group id="freescale-8572ds-2.6.27"/>
+		<msd-group id="mips-malta-2.6.28"/>
+		<msd-group id="mips-malta-mp-2.6.28"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="xilinx-ml507-2.6.29"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="multimedia" ordering="6" id="multimedia" description="multimedia collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/multimedia/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="bluetooth" ordering="7" id="bluetooth" description="bluetooth collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/bluetooth/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="wireless" ordering="8" id="wireless" description="wireless collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/wireless/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="graphics" ordering="9" id="graphics" description="graphics collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/graphics/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+	<collection type="audio" ordering="10" id="audio" description="audio collection for ti-omap3-beagle-2.6.29">
+		<subscription start-time="2009-05-08T20:25:50.0Z" end-time="2199-07-09T04:25:50.0Z"/>
+		<url-info start-time="2009-05-08T20:25:50.0Z" url="http://collective.sh.mvista.com/dev_area/mvl6/ti-omap3-beagle-2.6.29_091021_0903569/content/collections/audio/" end-time="2199-07-09T04:25:50.0Z"/>
+		<msd-group id="arm-versatile-926-2.6.28"/>
+		<msd-group id="arm-versatile-1176-2.6.28"/>
+		<msd-group id="freescale-8377rdb-2.6.27"/>
+		<msd-group id="x86-target-2.6.28"/>
+		<msd-group id="ti-omap3-zoom2-2.6.29"/>
+		<msd-group id="ti-omap3-beagle-2.6.29"/>
+
+	</collection>
+
+</collections></content>

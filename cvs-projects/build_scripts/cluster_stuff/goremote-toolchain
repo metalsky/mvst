@@ -1,0 +1,271 @@
+#!/bin/bash
+
+if [ "$#" != "5" ]; then
+  echo "Usage: $0 <app name list> <app type> <arch> <build type> <bug>"
+  echo "Where <host app name> is a list of apps like \"host-ltt host-ltt-dynamic\""
+  echo "<app type> is host|cross|target"
+  echo "<arch> is the arch.  You must specifyu this even if building host apps"
+  echo "in case you build an arch not in the mvl2.1.0-orig archs"
+  echo "<build type> is mvl, cge or hanalei, arctic"
+  echo "<bug> is the bug id"
+  exit 1
+fi
+
+apps="$1"
+echo "apps = $1"
+apptype="$2"
+arch="$3"
+type="$4"
+bug="$5"
+bid=""
+
+#echo "checking for hostname on $(hostname -s)..."
+rr="$(cat /etc/redhat-release)"
+if [ "$rr" = "Red Hat Linux release 7.0 (Guinness)" ]; then
+  hostname="redhat70"
+elif [ "$rr" = "Red Hat Linux release 6.2 (Zoot)" ]; then
+  hostname="redhat62"
+elif [ "$rr" = "Red Hat Linux release 7.2 (Enigma)" ]; then
+  hostname="redhat72"
+elif [ "$rr" = "Yellow Dog Linux release 2.1 (Fuji)" ]; then
+  hostname="yellowdog21"
+elif [ "$rr" = "SuSE 7.3" ]; then
+  hostname="suse73"
+elif [ "$rr" = "Mandrake Linux release 8.1 (Vitamin) for i586" ]; then
+  hostname="mandrake81"
+elif [ "$rr" = "Linux Mandrake release 7.2 (Odyssey) for i586" ]; then
+  hostname="mandrake72"
+elif [ "$rr" = "Linux Mandrake release 8.0 (Traktopel) for i586" ]; then
+  hostname="mandrake80"
+elif [ "$rr" = "Solaris 7 3/99 s998s_u1SunServer_10 SPARC" ]; then
+  hostname="solaris7"
+elif [ "$rr" = "node-1" ]; then
+  hostname="cluster"
+elif [ "$rr" = "node-16" ]; then
+  hostname="cluster"
+fi
+
+if [ "$type" = "mvl" ]; then
+  instdir="hardhat"
+  if [ "$arch" = "mips_nfp_le" ]; then
+    updir="mvl300_x225"
+  elif [ "$arch" = "xtensa_linux_be" ] || [ "$arch" = "xtensa_linux_le" ]; then
+    updir="mvl300_xtensa"
+  else
+    updir="mvl3.0.0"
+  fi
+  bid="mvl3.0.0"
+  if [ "$hostname" = "cluster" ]; then
+    rpmrc=".perpmrc"
+  else
+    rpmrc="."$hostname"perpmrc"
+  fi
+elif [ "$type" = "cge" ]; then
+  instdir="mvlcge"
+  updir="mvlcge2.1.0"
+  bid="mvlcge2.1.0"
+  if [ "$hostname" = "cluster" ]; then
+    rpmrc=".cgerpmrc"
+  else
+    rpmrc="."$hostname"cgerpmrc"
+  fi
+elif [ "$type" = "hanalei" ]; then
+  instdir="mvlcee"
+  updir="mvlcee300_innovator"
+  bid="mvlcee3.0.0"
+  if [ "$hostname" = "cluster" ]; then
+    rpmrc=".ceerpmrc"
+  else
+    rpmrc="."$hostname"ceerpmrc"
+  fi
+elif [ "$type" = "arctic" ]; then
+  instdir="mvlcee"
+  updir="mvlcee300_405lp_ref"
+  bid="mvlcee3.0.0"
+  if [ "$hostname" = "cluster" ]; then
+    rpmrc=".ceerpmrc"
+  else
+    rpmrc="."$hostname"ceerpmrc"
+  fi
+fi
+
+if [ "$hostname" = "yellowdog21" ]; then
+  hostarch="ppc"
+elif [ "$hostname" = "solaris7" ]; then
+  hostarhc="sparc64"
+  if [ "$type" = "mvl" ]; then
+    rpmrc=".perpmrc"
+  elif [ "$type" = "cge" ]; then
+    rpmrc=".cgerpmrc"
+  elif [ "$type" = "hanalei" ]; then
+    rpmrc=".ceerpmrc"
+  elif [ "$type" = "arctic" ]; then
+    rpmrc=".ceerpmrc"
+  fi
+else
+  hostarch="i386"
+fi
+
+if [ "$hostname" != "solaris7" ] && [ "$apptype" = "host" ]; then
+  echo "Building non-solaris host app"
+  for ap in $apps; do
+    if [ "$ap" = "ltt-dynamic" ]; then
+      p="ltt"
+    else
+      p="$ap"
+    fi
+    if [ "$p" = "ltt" ] && [ "$hostname" = "cluster" ]; then
+      echo "not building $p on cluster..."
+      exit 1
+    fi
+    mkdir -p /mvista/dev_area/logs/"$updir"-updates/$ap-$bug
+    rm -rf /opt/$instdir/*
+    cp -a /var/lib/rpm /opt/$instdir/rpmdb
+    cd /mvista/release_area/"$updir"/host/common/optional/
+    rpm -i *.rpm --dbpath /opt/$instdir/rpmdb
+    cd /mvista/release_area/"$updir"/host/common
+    rpm -i *file* *ldd* *python* *setperm* *targetconf* --dbpath /opt/$instdir/rpmdb
+    cd /home/build/toolchain/$p
+    #echo "in dir: $(pwd)..."
+    rm -rf $hostname/BUILD $hostname/SRPMS $hostname/RPMS
+    mkdir -p $hostname/BUILD $hostname/SRPMS $hostname/RPMS
+    /home/build/bin/mkhostnoclean `pwd` $bid host-$ap /opt/$instdir/rpmdb ~/$rpmrc /home/build/toolchain/$p/$hostname > /mvista/dev_area/logs/"$updir"-updates/$ap-$bug/$hostname-build.log 2>&1
+    mkdir -p /mvista/dev_area/"$updir"-updates/$ap-$bug/host/"$hostname"
+    mkdir -p /mvista/dev_area/"$updir"-updates/$ap-$bug/SRPMS
+    cp -f $hostname/SRPMS/* /mvista/dev_area/"$updir"-updates/$ap-$bug/SRPMS
+    cp $hostname/RPMS/"$hostarch"/* /mvista/dev_area/"$updir"-updates/$ap-$bug/host/"$hostname"
+  done
+elif [ "$hostname" = "solaris7" ] && [ "$apptype" = "host" ]; then
+  echo "Building solaris host app"
+  PATH=/opt/$instdir/host/bin:$PATH
+  export PATH
+  export MVL_UNAME_SOLARIS=solaris2.7
+  rm -rf /opt/$instdir/devkit
+  rm -rf /opt/$instdir/config
+  rm -rf /opt/$instdir/rpmdb
+  cp -a /opt/$instdir/host/lib/rpm /opt/$instdir/rpmdb
+  id="/mvista/release_area/$updir"
+  rpm -i --dbpath /opt/$instdir/rpmdb "$id"/host/common/optional/*rpmconfig* "$id"/host/common/optional/*platformtest* --ignoreos
+  for ap in $apps; do
+    builddir="$(pwd)/$ap"
+    cd $builddir
+    if [ "$ap" = "ltt-dynamic" ]; then
+      p="ltt"
+    else
+      p="$ap"
+    fi
+    rm -rf SRPMS RPMS SOURCES SPECS BUILD
+    mkdir BUILD SRPMS RPMS SOURCES SPECS
+    scp build@rodan2:/home/build/toolchain/$p/SOURCES/* SOURCES
+    scp build@rodan2:/home/build/toolchain/$p/SPECS/* SPECS
+    ssh build@rodan2 "mkdir -p /mvista/dev_area/logs/"$updir"-updates/$ap-$bug"
+    rpm -bb \
+          --define "_topdir $builddir" \
+          --define "_hhl_build_id $bid" \
+          --define "vendor MontaVista Software, Inc." \
+          --define "packager <source@mvista.com>" \
+          --dbpath /opt/$instdir/rpmdb \
+          --rcfile /$rpmrc \
+          #--target=$arch-hardhat-linux (for cross apps)
+          SPECS/hhl-host-$ap.spec --nodeps > solaris7-build.log 2>&1
+    scp solaris7-build.log build@rodan2:/mvista/dev_area/logs/"$updir"-updates/$ap-$bug
+    ssh build@rodan2 "mkdir -p /mvista/dev_area/$updir-updates/$ap-$bug/host/solaris7"
+    #scp RPMS/$arch/* build@rodan2:/mvista/dev_area/"$updir"-updates/$ap-$bug/$arch/cross/solaris7
+    scp RPMS/sparc64/* build@rodan2:/mvista/dev_area/"$updir"-updates/$ap-$bug/host/solaris7
+  done
+elif [ "$hostname" != "solaris7" ] && [ "$apptype" = "cross" ]; then
+  echo "Building non-solaris cross app"
+  for ap in $apps; do
+    mkdir -p /mvista/dev_area/logs/"$updir"-updates/$ap-$bug
+    rm -rf /opt/$instdir/*
+    cp -a /var/lib/rpm /opt/$instdir/rpmdb
+    cd /mvista/release_area/"$updir"/host/common/optional/
+    rpm -i *.rpm --dbpath /opt/$instdir/rpmdb
+    cd /mvista/release_area/"$updir"/host/common
+    # add rpmconfig and platformtest install from host/common, since that's where they were for xtensa
+    rpm -i *file* *ldd* *python* *setperm* *targetconf* *rpmconfig* *platform* --dbpath /opt/$instdir/rpmdb
+    cd /mvista/release_area/"$updir"/host/$hostname
+    rpm -i *.rpm --dbpath /opt/$instdir/rpmdb
+    cd /mvista/release_area/"$updir"/$arch/cross/common
+    rpm -i *.rpm --dbpath /opt/$instdir/rpmdb
+    cd /mvista/release_area/"$updir"/$arch/cross/$hostname
+    if [ "$ap" = "gcc" ]; then
+      rpm -i --dbpath /opt/$instdir/rpmdb *binutils* *hard* *ksym* *ldd* --nodeps
+    else
+      rpm -i --dbpath /opt/$instdir/rpmdb *.rpm --nodeps
+    fi
+    cd /mvista/release_area/"$updir"/$arch/target
+    if [ "$ap" = "gcc" ]; then
+      rpm -i --ignorearch --dbpath /opt/$instdir/rpmdb *filesystem* *binutils* *glibc* *kernel-headers* --nodeps
+    else
+      rpm -i --ignorearch --dbpath /opt/$instdir/rpmdb *filesystem* *binutils* *glibc* *ncurses* *kernel-headers* *gcc* *cpp* *g++* *libstdc++* --nodeps
+    fi
+    cd /home/build/toolchain/$ap
+    echo "in dir: $(pwd)..."
+    rm -rf $hostname/BUILD $hostname/SRPMS $hostname/RPMS
+    mkdir -p $hostname/BUILD $hostname/SRPMS $hostname/RPMS
+    if [ "$ap" = "gcc" ]; then
+      if [ "$hostname" != "mandrake81" ] && [ "$hostname" != "redhat72" ]; then
+        /home/build/bin/mkremoteapp `pwd` $bid cross-"$ap"3.2 $arch /opt/$instdir/rpmdb ~/$rpmrc /home/build/toolchain/$ap/$hostname > /mvista/dev_area/logs/"$updir"-updates/$ap-$bug/$hostname-build.log 2>&1
+      elif [ "$hostname" = "mandrake81" ] || [ "$hostname" = "redhat72" ]; then
+        /home/build/bin/mkremoteapphack `pwd` $bid cross-"$ap"3.2 $arch /opt/$instdir/rpmdb ~/$rpmrc /home/build/toolchain/$ap/$hostname > /mvista/dev_area/logs/"$updir"-updates/$ap-$bug/$hostname-$arch-build.log 2>&1
+      fi
+    elif [ "$hostname" = "mandrake81" ] || [ "$hostname" = "redhat72" ]; then
+      /home/build/bin/mkremoteapphack `pwd` $bid cross-$ap $arch /opt/$instdir/rpmdb ~/$rpmrc /home/build/toolchain/$ap/$hostname > /mvista/dev_area/logs/"$updir"-updates/$ap-$bug/$hostname-build.log 2>&1
+    else
+      /home/build/bin/mkremoteapp `pwd` $bid cross-$ap $arch /opt/$instdir/rpmdb ~/$rpmrc /home/build/toolchain/$ap/$hostname > /mvista/dev_area/logs/"$updir"-updates/$ap-$bug/$hostname-build.log 2>&1
+    fi
+    mkdir -p /mvista/dev_area/"$updir"-updates/$ap-$bug/$arch/cross/"$hostname"
+    cp $hostname/RPMS/"$hostarch"/* /mvista/dev_area/"$updir"-updates/$ap-$bug/$arch/cross/"$hostname"
+  done
+elif [ "$hostname" = "solaris7" ] && [ "$apptype" = "cross" ]; then
+  echo "Building solaris cross app"
+  PATH=/opt/$instdir/host/bin:$PATH
+  export PATH
+  export MVL_UNAME_SOLARIS=solaris2.7
+  rm -rf /opt/$instdir/devkit
+  rm -rf /opt/$instdir/config
+  rm -rf /opt/$instdir/rpmdb
+  cp -a /opt/$instdir/host/lib/rpm /opt/$instdir/rpmdb
+  id="/mvista/release_area/$updir"
+  rpm -i --dbpath /opt/$instdir/rpmdb "$id"/host/common/optional/*rpmconfig* "$id"/host/common/optional/*platformtest* --ignoreos
+  rpm -i --dbpath /opt/$instdir/rpmdb "$id"/host/common/*file* "$id"/host/common/*ldd* "$id"/host/common/*python* "$id"/host/common/*setperm* "$id"/host/common/*targetconf* --ignoreos
+  rpm -i --dbpath /opt/$instdir/rpmdb "$id"/host/solaris7/*.rpm --ignoreos --nodeps
+  rpm -i --dbpath /opt/$instdir/rpmdb "$id"/$arch/cross/common/* --ignoreos
+  for ap in $apps; do
+    builddir="$(pwd)/$ap"
+    cd $builddir
+    if [ "$ap" = "gcc" ]; then
+      rpm -i --dbpath /opt/$instdir/rpmdb "$id"/$arch/cross/solaris7/*binutils* "$id"/$arch/cross/solaris7/*hard* "$id"/$arch/cross/solaris7/*ksym* "$id"/$arch/cross/solaris7/*ldd* --ignoreos
+      rpm -i --dbpath /opt/$instdir/rpmdb "$id"/$arch/target/*filesystem* "$id"/$arch/target/*kernel-headers* "$id"/$arch/target/*binutils* "$id"/$arch/target/*glibc*  --ignoreos --ignorearch
+    else
+      rpm -i --dbpath /opt/$instdir/rpmdb "$id"/$arch/cross/solaris7/* --ignoreos
+      rpm -i --dbpath /opt/$instdir/rpmdb "$id"/$arch/target/*filesystem* "$id"/$arch/target/*kernel-headers* "$id"/$arch/target/*binutils* "$id"/$arch/target/*glibc* "$id"/$arch/target/*ncurses* "$id"/$arch/target/*gcc* "$id"/$arch/target/*cpp* "$id"/$arch/target/*g++* "$id"/$arch/target/*libstdc++* "$id"/$arch/target/*protoize* --ignoreos --ignorearch
+    fi
+    mkdir -p /mvista/dev_area/logs/"$updir"-updates/$ap-$bug
+    if [ "$ap" = "gcc" ]; then
+      rpm -bb \
+          --define "_topdir $builddir" \
+          --define "_hhl_build_id $bid" \
+          --define "vendor MontaVista Software, Inc." \
+          --define "packager <source@mvista.com>" \
+          --dbpath /opt/$instdir/rpmdb \
+          --rcfile /$rpmrc \
+          --target=$arch-hardhat-linux \
+          SPECS/hhl-cross-"$ap"3.2.spec --nodeps > /mvista/dev_area/logs/"$updir"-updates/$ap-$bug/solaris7-$arch-build.log 2>&1
+    else
+      rpm -bb \
+          --define "_topdir $builddir" \
+          --define "_hhl_build_id $bid" \
+          --define "vendor MontaVista Software, Inc." \
+          --define "packager <source@mvista.com>" \
+          --dbpath /opt/$instdir/rpmdb \
+          --rcfile /$rpmrc \
+          --target=$arch-hardhat-linux \
+          SPECS/hhl-cross-$ap.spec --nodeps > /mvista/dev_area/logs/"$updir"-updates/$ap-$bug/solaris7-$arch-build.log 2>&1
+    fi
+    mkdir -p /mvista/dev_area/$updir-updates/$ap-$bug/$arch/cross/solaris7
+    #cp -a RPMS/$arch/* /mvista/dev_area/"$updir"-updates/$ap-$bug/$arch/cross/solaris7
+    cp -a RPMS/sparc64/* /mvista/dev_area/"$updir"-updates/$ap-$bug/$arch/cross/solaris7
+  done
+fi

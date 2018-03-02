@@ -1,0 +1,16 @@
+###################
+# arm_v4t_be_uclibc
+# arm_v4t_le_uclibc
+# mips_fp_le_uclibc
+# ppc_405_uclibc
+###################
+base-passwd
+gdb
+thttpd
+ltt-control
+mtd-utils
+strace
+busybox
+###################
+# end
+###################

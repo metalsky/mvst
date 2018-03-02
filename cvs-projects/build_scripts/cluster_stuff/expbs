@@ -1,0 +1,25 @@
+#!/bin/bash
+
+branch="$1"
+expdir="$2"
+
+if [ "$2" = "" ]; then
+  echo "Need export directory name"
+  exit 1
+fi
+
+cd /home/build
+
+if [ -d "$expdir" ]; then
+  rm -rf /home/build/$expdir
+fi
+mkdir -p /home/build/$expdir
+cd /home/build/$expdir
+if [ "$branch" = "dev" ]; then
+  echo "expbs: Exporting from dev..."
+  cvs -Q -d :ext:build@cvs.sh.mvista.com:/cvsdev/build_scripts export -f -R -D "now" -d build_scripts .
+else
+  echo "Exporting from $branch..."
+  cvs -Q -d :ext:build@cvs.sh.mvista.com:/cvsdev/build_scripts export -R -r "$branch" -d build_scripts .
+fi
+

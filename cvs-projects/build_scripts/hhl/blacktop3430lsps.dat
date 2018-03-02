@@ -1,0 +1,11 @@
+#!/usr/bin/python
+
+lsps = {
+	'arm_v7_vfp_le':		[
+					#['TI','ti-omap3430_blacktop'],
+					['Dell','dell-omap3430_blacktop'],
+					],
+	#'x86_586':			[
+	#				['x86','x86-pc_target-x86_586'],
+	#				],
+	}

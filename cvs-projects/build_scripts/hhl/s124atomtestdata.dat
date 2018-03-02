@@ -1,0 +1,126 @@
+copydir         = '/mvista/dev_area/mvl'
+docsmodule	= 'mvl'
+docsgp		= { 
+		        'docs/':                'docs/ ',
+                        'README':               'README '
+		  }
+# the cvspaths dictionary is used to indicate the paths to the repositories in
+# the build, as well as the branches they use
+cvspaths = {
+	'git-kernel':		[homepath+'/f2.6.24-s124atom','kernel/f2.6.24-s124atom','f2.6.24-s124atom','dev','branch'],
+        'mvlt':                 [homepath + '/mvlt',            "null"],
+        'mvl-installer':        [homepath + '/mvl-installer',   "se_50"],
+        'userland':             [homepath + '/userland',        "special_edition_atom"],
+	'toolchain':		[homepath + '/toolchain',	"foundation_five_branch"],
+        }
+mkcd		= 0
+mkdvd		= 0
+hostcdinstall	= 1
+targetcdinstall	= 1
+mkdoccd		= 1
+mktargetcd	= 1
+mksrccd		= 1
+mkcdbom		= 1
+mktar		= 0
+nocl		= 1
+mkvert		= 0
+rebuildgcc	= 1
+version		= '5.0.24'
+btype		= 'Step One Atom 2.6.24'
+varstr		= 'Special_Edition'	# for eclipse
+dvdname		= 'mvl-host'
+appsfile	= ''
+libraryapps	= scriptpath + '/s124atomapps.dat'
+lspdat		= scriptpath + '/s124atomlsp.dat'
+foundation	= '/mvista/dev_area/foundation/last_f2624'
+hosttoolpath	= '/mvista/dev_area/foundation/host-tools/last_f2624'
+selfhosttarget  = 'x86_586'
+selfhostinstalldata = { 
+		'x86_586':		['x86_586','x86-pc_target-x86_586'], 
+		'x86_pentium3':		['x86_586','x86-pc_target-x86_586'],
+		'x86_pentium4':		['x86_586','x86-pc_target-x86_586'],
+		}
+edition		= 'mvl'
+chroothosts	= ( 'centos3', 'centos3_64','suse90')
+targethost	= 'centos3'
+#hosts 		= ('solaris8','windows2000')
+hosts 		= ()
+all_targets	= ( 
+	        'x86_586',
+		)
+# here are the definitions for apps built in buildremotehost.py (brh = build remote host)
+brhcommonapps	= { 'userland':	['apt-rpm-config',],}
+brhhostapps	= { 'userland':	['apt-rpm-config','elfmbind','glib','lttv'], 
+		    'mvlt':	['nfs-user-server',], }
+brhnoarchapps	= { 'host':	['eclipse-templates','eclipse-edition','kernel-html',
+		                 'pnx8950-tool','docs-cd-installer'],}
+# here are the definitions for apps built in buildcore.py
+path = cvspaths['userland'][0]
+toolpath = cvspaths['toolchain'][0]
+crosseclipseinstall = 'eclipse-enabler-arch-' + edition
+#crosseclipseadkinstall = 'eclipse-enabler-arch-' + edition + '_adk'
+crossapps = { 
+    'a': [path,'cross','eclipse-templates','eclipse-arch','noarch','',[crosseclipseinstall,]],
+    'b': [path,'cross','apt-rpm-config','apt-rpm-config','hostarch','',['apt-rpm-config',]],
+    'c': [toolpath,'cross','gcc','gcc','hostarch','--define \\"_mvl_gcc_license false\\"',['gcc',]],
+    'd': [toolpath,'target','gcc','gcc','hostarch','',['gcc',]],
+	}
+# these are the apps built in buildremote.py
+brcrossapps	= ('apt-rpm-config','gccfalse')
+
+# remove glibc & kernel-headers rpms in targetapp build since they were installed by buildcore.py
+removerpms = ('glibc','kernel-headers','uclibc','gcc','g++','libgcc1','libstdc++6','libgomp')
+
+# these are the apps that get copied to <arch>/target/optional
+optionalApps    = ('dhcp-client','mvlutils-which','pump','nfs-user-server','rp-pppoe','proftpd',
+                'jed-rgrep','thttpd','netkit-ping','libinet6','XFree86-xf86cfg','uSDE',
+                'installation-enum-hooks','busybox-links','xorg-x11-Xvfb','gtk2-directfb',
+                'pango-directfb','cairo-directfb')
+
+# these are the apps to not build for uclibc archs
+uclibcxcludes   = ['nis','libposixtime','pax','libinet6','lilo','sctl','utempter','rxvt','xalan']
+                                                                                                        
+cdnames		= [ 'lsps', ]
+
+outtakes        = ('netperf','lmbench','dejagnu','mvlpk-dev','mvlpk-base','preempt',
+                   'previewkit-dev','previewkit-base','previewkit-fsimages',
+                   'pxelinux-previewkit','ethereal','mvl-installer','mvl_install',
+		   'cross-lilo','common-elfutils','common-jdk','common-apache-ant',
+		   'lup','common-db2html','common-mozilla','installation-enum','ltp','staf',
+		   'install-uSDE','install-libuSDE','install-uSDEpolicies','install-uSDE-debuginfo',
+                   'cyclictest','bootstrap'
+		)
+uclibc_outtakes	= ()
+lspouttakes	= { }
+srcouttakes	= ('cross-eclipse-enabler-arch',
+		'cross-eclipse-enabler-lsp',
+		'host-eclipse-enabler-edition-pro',
+		'host-eclipse-templates',
+		'libxml','common-gcc-license',
+		)
+src_link_exclusions = ('common-apt-rpm-config','apt-rpm-config','base-files','ramdisk',
+                'eclipse-edition','eclipse-templates','lsp','netbase',
+                'eclipse-enabler','host-kernel','host-rpm','rpm-edition','host-postinstall',
+                'uSDE','libuSDE','host-cd-installer','host-mvlinstaller',
+		'host-glib',
+		)
+host_link_exclusions = ('host-mvlinstaller','host-rpm','host-postinstall','host-glib','common-gcc-license')
+cross_link_exclusions = ('eclipse','ramdisk')
+target_link_exclusions = ('base-files','rpm-edition','netbase','mvl-install',
+			)
+targopt_link_exclusions = ('uSDE','libuSDE')
+#x11apps = ('gtk2','cairo','pango','xorg-x11','xkbd','rxvt','icewm','matchbox')
+x11uninstall = ('xorg-x11','xorg-x11-debuginfo','xorg-x11-dev','xorg-x11-doc', 
+		'xorg-x11-fonts-100dpi','xorg-x11-fonts-75dpi','xorg-x11-fonts-cyrillic', 
+		'xorg-x11-fonts-encodings','xorg-x11-fonts-misc','xorg-x11-fonts-truetype', 
+		'xorg-x11-fonts-type1','xorg-x11-libGL','xorg-x11-libs','xorg-x11-xserver', 
+		'cairo-libs','gtk2','gtk2-dev','icewm','matchbox','matchbox-desktop', 
+		'matchbox-dock','matchbox-menu','matchbox-miniapps',
+		'montavista-lsb3.0.0-graphics','pango','rxvt','xkbd','cairo','cairo-dev', 
+		'gtk2-libopt','matchbox-dev','montavista-lsb3.0.0','pango-dev',
+		)
+x11remove = ('xorg-x11','xorg-x11-debuginfo','xorg-x11-dev','xorg-x11-doc',
+	'xorg-x11-fonts-100dpi','xorg-x11-fonts-75dpi','xorg-x11-fonts-cyrillic', 
+	'xorg-x11-fonts-encodings','xorg-x11-fonts-misc','xorg-x11-fonts-truetype', 
+	'xorg-x11-fonts-type1','xorg-x11-libGL','xorg-x11-libs','xorg-x11-xserver', 
+	)

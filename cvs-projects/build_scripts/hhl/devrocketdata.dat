@@ -1,0 +1,30 @@
+copydir         = '/mvista/dev_area/devrocket/devrocket_51'
+nodetype	= 'node-64'
+# the cvspaths dictionary is used to indicate the paths to the repositories in 
+# the build, as well as the branches they use
+cvspaths = {
+	'tsuki':	[homepath + '/tsuki',	"null"],
+	}
+commoncdinstall = 0
+hostcdinstall   = 0
+targetcdinstall = 0
+mkcommoncd	= 1
+mkcdbom		= 1
+mkvert		= 0
+lsps		= 0
+version		= '5.1'
+btype		= 'Tsuki'
+varstr		= 'Tsuki'          # for devrocket
+appsfile	= ''
+lspdat		= ''
+devrocketpath	= ""
+edition		= 'devrocket_51'
+mkretardlink	= 1
+linkname	= 'last_devrocket51'
+chroothosts	= ('centos3', )
+
+targethost	= 'centos3'
+
+outtakes	= ()
+devrocket_src_outtakes  =       ()
+

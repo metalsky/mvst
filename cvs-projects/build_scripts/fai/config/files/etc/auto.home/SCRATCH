@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if [ $# != 1 ]
+then
+  exit 1
+fi
+
+key=$1
+map=$(basename $0)
+shift
+
+logger -t ${map}-prg "Received key $key and args $*"
+
+if [ -z "$(id -u $key)" ]
+then
+   logger -t ${map}-prg "$key is not a user leaving"
+   exit 1
+fi
+
+if [ -d /local/$key ]
+then
+    logger -t ${map}-prg "Home dir exists, exiting..."
+    echo "-fstype=bind :/local/$key" | tr ' ' '\t'
+else
+    logger -t ${map}-prg "Creating home dir for user: $key"
+    mkdir /local/$key
+    cp /etc/skel/.* /local/$key
+    chown -R $key:engr /local/$key/
+    echo "-fstype=bind :/local/$key" | tr ' ' '\t'
+fi
+

@@ -1,0 +1,29 @@
+Hello and Welcome to the engineering scratch pad!
+
+SERVICE AGREEMENT:
+Although this machine is for public MontaVistan use, ettiquette still applies.  
+Any attempts to hack this box will be met with an angry manager.
+
+SETUP INFO:
+Every user has a local home directory to this machine.  Copy relevant data 
+to your home directory and perform whatever tasks you deem necessary.  Home 
+directories are not backed up and not intended to be your primary MontaVista 
+home directory.  These home directories can be viewed as each user's scratch 
+pad area to do work.
+
+DO NOT KEEP ANYTHING IMPORTANT IN YOUR HOME DIRECTORY.  
+THIS MACHINE CAN AND WILL BE WIPED CLEAN AT SOME POINT WITHOUT WARNING.
+
+Where to find stuff:
+
+/mvista/dev_area -> Builds as cd/dvd images and mvl(rpm) packages.
+/mvista/release_area -> Released builds and updated packages
+/mvista/engr_area -> Build environment tars with built packages installed
+
+Special Commands:
+env_setup -> This sets up a chroot environment and installs a build for you.  Takes about 2 minutes.  
+mychroot ->  This places you into your development environment
+
+If there are any issues, please contact: build@mvista.com
+
+Have a nice day! :)
